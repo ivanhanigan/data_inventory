@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -74,3 +75,8 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
+
+def entry_datasets():
+    """returns a form where the can entry a post"""
+    form = crud.create(db.datainventory)
+    return dict(form=form)

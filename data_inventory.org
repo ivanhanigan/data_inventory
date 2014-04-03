@@ -5,8 +5,16 @@
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 #+LATEX: \tableofcontents
 -----
+* Init
+*** COMMENT torun-code
+#+name:torun
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:torun####
+- include the server config: 
+python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
+#+end_src
 
-*** COMMENT README.md-code
+** COMMENT README.md-code
 #+name:README.md
 #+begin_src R :session *R* :tangle README.md :exports none :eval no
 #### Data Inventory
@@ -14,9 +22,207 @@
 A web2py app to help manage research data
 
 #+end_src
-*** COMMENT init-code (Note this is done BEFORE git or org are created)
+** COMMENT init-code (Note this is done BEFORE git or org are created)
 #+name:init
 #+begin_src sh :session *shell* :tangle no :exports none :eval no
   cd ~/tools/web2py 
   ./web2py.py -S data_inventory
+#+end_src
+* DB
+*** COMMENT create.db-code
+#+name:create.db
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:create.db####
+  sudo su
+  su - postgres 
+  createdb data_inventory
+  psql -d data_inventory -U postgres  
+  GRANT USAGE ON SCHEMA public TO public_group;
+  
+#+end_src
+
+*** COMMENT models/db.py-code
+#+name:db.py
+#+begin_src markdown :tangle models/db.py :exports none :eval no
+  # -*- coding: utf-8 -*-
+  
+  #########################################################################
+  ## This scaffolding model makes your app work on Google App Engine too
+  ## File is released under public domain and you can use without limitations
+  #########################################################################
+  
+  ## if SSL/HTTPS is properly configured and you want all HTTP requests to
+  ## be redirected to HTTPS, uncomment the line below:
+  # request.requires_https()
+  
+  if not request.env.web2py_runtime_gae:
+      ## if NOT running on Google App Engine use SQLite or other DB
+      # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/data_inventory")
+  else:
+      ## connect to Google BigTable (optional 'google:datastore://namespace')
+      db = DAL('google:datastore')
+      ## store sessions and tickets there
+      session.connect(request, response, db=db)
+      ## or store session in Memcache, Redis, etc.
+      ## from gluon.contrib.memdb import MEMDB
+      ## from google.appengine.api.memcache import Client
+      ## session.connect(request, response, db = MEMDB(Client()))
+  
+  ## by default give a view/generic.extension to all actions from localhost
+  ## none otherwise. a pattern can be 'controller/function.extension'
+  response.generic_patterns = ['*'] #if request.is_local else []
+  ## (optional) optimize handling of static files
+  # response.optimize_css = 'concat,minify,inline'
+  # response.optimize_js = 'concat,minify,inline'
+  ## (optional) static assets folder versioning
+  # response.static_version = '0.0.0'
+  #########################################################################
+  ## Here is sample code if you need for
+  ## - email capabilities
+  ## - authentication (registration, login, logout, ... )
+  ## - authorization (role based authorization)
+  ## - services (xml, csv, json, xmlrpc, jsonrpc, amf, rss)
+  ## - old style crud actions
+  ## (more options discussed in gluon/tools.py)
+  #########################################################################
+  
+  from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
+  auth = Auth(db)
+  crud, service, plugins = Crud(db), Service(), PluginManager()
+  
+  ## create all tables needed by auth if not custom tables
+  auth.define_tables(username=False, signature=False)
+  
+  ## configure email
+  mail = auth.settings.mailer
+  mail.settings.server = 'logging' or 'smtp.gmail.com:587'
+  mail.settings.sender = 'you@gmail.com'
+  mail.settings.login = 'username:password'
+  
+  ## configure auth policy
+  auth.settings.registration_requires_verification = False
+  auth.settings.registration_requires_approval = False
+  auth.settings.reset_password_requires_verification = True
+  
+  ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
+  ## register with janrain.com, write your domain:api_key in private/janrain.key
+  from gluon.contrib.login_methods.rpx_account import use_janrain
+  use_janrain(auth, filename='private/janrain.key')
+  
+  #########################################################################
+  ## Define your tables below (or better in another model file) for example
+  ##
+  ## >>> db.define_table('mytable',Field('myfield','string'))
+  ##
+  ## Fields can be 'string','text','password','integer','double','boolean'
+  ##       'date','time','datetime','blob','upload', 'reference TABLENAME'
+  ## There is an implicit 'id integer autoincrement' field
+  ## Consult manual for more options, validators, etc.
+  ##
+  ## More API examples for controllers:
+  ##
+  ## >>> db.mytable.insert(myfield='value')
+  ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
+  ## >>> for row in rows: print row.id, row.myfield
+  #########################################################################
+  
+  ## after defining tables, uncomment below to enable auditing
+  # auth.enable_record_versioning(db)
+  
+  
+  db.define_table('datainventory',
+      Field('plot_network_study_name', 'text'),
+      Field('pn_group', 'text'),
+      Field('pn_code', 'text'),
+      Field('data_custodian', 'text'))
+  
+  
+#+end_src
+*** COMMENT controllers/default.py-code
+#+name:controllers/default.py
+#+begin_src R :session *R* :tangle controllers/default.py :exports none :eval no
+  # -*- coding: utf-8 -*-
+  # this file is released under public domain and you can use without limitations
+  
+  #########################################################################
+  ## This is a sample controller
+  ## - index is the default action of any application
+  ## - user is required for authentication and authorization
+  ## - download is for downloading files uploaded in the db (does streaming)
+  ## - call exposes all registered services (none by default)
+  #########################################################################
+  
+  
+  def index():
+      """
+      example action using the internationalization operator T and flash
+      rendered by views/default/index.html or views/generic.html
+  
+      if you need a simple wiki simply replace the two lines below with:
+      return auth.wiki()
+      """
+      response.flash = T("Welcome to web2py!")
+      return dict(message=T('Hello World'))
+  
+  
+  def user():
+      """
+      exposes:
+      http://..../[app]/default/user/login
+      http://..../[app]/default/user/logout
+      http://..../[app]/default/user/register
+      http://..../[app]/default/user/profile
+      http://..../[app]/default/user/retrieve_password
+      http://..../[app]/default/user/change_password
+      http://..../[app]/default/user/manage_users (requires membership in
+      use @auth.requires_login()
+          @auth.requires_membership('group name')
+          @auth.requires_permission('read','table name',record_id)
+      to decorate functions that need access control
+      """
+      return dict(form=auth())
+  
+  @cache.action()
+  def download():
+      """
+      allows downloading of uploaded files
+      http://..../[app]/default/download/[filename]
+      """
+      return response.download(request, db)
+  
+  
+  def call():
+      """
+      exposes services. for example:
+      http://..../[app]/default/call/jsonrpc
+      decorate with @services.jsonrpc the functions to expose
+      supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+      """
+      return service()
+  
+  
+  @auth.requires_signature()
+  def data():
+      """
+      http://..../[app]/default/data/tables
+      http://..../[app]/default/data/create/[table]
+      http://..../[app]/default/data/read/[table]/[id]
+      http://..../[app]/default/data/update/[table]/[id]
+      http://..../[app]/default/data/delete/[table]/[id]
+      http://..../[app]/default/data/select/[table]
+      http://..../[app]/default/data/search/[table]
+      but URLs must be signed, i.e. linked with
+        A('table',_href=URL('data/tables',user_signature=True))
+      or with the signed load operator
+        LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+      """
+      return dict(form=crud())
+  
+  def entry_datasets():
+      """returns a form where the can entry a post"""
+      form = crud.create(db.datainventory)
+      return dict(form=form)
+  
+  
 #+end_src

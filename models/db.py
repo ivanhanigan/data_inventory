@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 #########################################################################
@@ -11,7 +12,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/data_inventory")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -24,7 +26,7 @@ else:
 
 ## by default give a view/generic.extension to all actions from localhost
 ## none otherwise. a pattern can be 'controller/function.extension'
-response.generic_patterns = ['*'] if request.is_local else []
+response.generic_patterns = ['*'] #if request.is_local else []
 ## (optional) optimize handling of static files
 # response.optimize_css = 'concat,minify,inline'
 # response.optimize_js = 'concat,minify,inline'
@@ -82,3 +84,10 @@ use_janrain(auth, filename='private/janrain.key')
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
+
+db.define_table('datainventory',
+    Field('plot_network_study_name', 'text'),
+    Field('pn_group', 'text'),
+    Field('pn_code', 'text'),
+    Field('data_custodian', 'text'))
