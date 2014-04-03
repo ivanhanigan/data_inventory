@@ -1,0 +1,16 @@
+#+TITLE:data inventory 
+#+AUTHOR: Ivan Hanigan
+#+email: ivan.hanigan@anu.edu.au
+#+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX: \tableofcontents
+-----
+
+*** COMMENT README.md-code
+#+name:README.md
+#+begin_src R :session *R* :tangle README.md :exports none :eval no
+#### Data Inventory
+
+A web2py app to help manage research data
+
+#+end_src
