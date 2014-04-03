@@ -13,7 +13,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/data_inventory")
+    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/datainventory")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -87,7 +87,41 @@ use_janrain(auth, filename='private/janrain.key')
 
 
 db.define_table('datainventory',
-    Field('plot_network_study_name', 'text'),
-    Field('pn_group', 'text'),
-    Field('pn_code', 'text'),
-    Field('data_custodian', 'text'))
+    Field('plot_network_study_name','text'),
+    Field('pn_group','text'),
+    Field('pn_code','text'),
+    Field('data_custodian','text'),
+    Field('plot_network','text'),
+    Field('pi','text'),
+    Field('data_custodian_pl_pi','text'),
+    Field('data_custodian_organisation','text'),
+    Field('data_type','text'),
+    Field('notes_issues','text'),
+    Field('start_date','integer'),
+    Field('end_date','integer'),
+    Field('current_status','date'),
+    Field('sites_plots','integer'),
+    Field('collection_timeframes','text'),
+    Field('ecosystem_mvg_numbers','integer'),
+    Field('mvg_names','text'),
+    Field('tern_type','text'),
+    Field('data_interview_status','text'),
+    Field('data_interview_date','date'),
+    Field('deed_status','text'),
+    Field('deed_status_date','date'),
+    Field('licence_code','text'),
+    Field('access_restrictions','text'),
+    Field('estimate_timeframe_data_ready_by_plot','date'),
+    Field('date_data_expected_by_ltern','date'),
+    Field('date_data_received_by_ltern','date'),
+    Field('stored_at','text'),
+    Field('eda_status','text'),
+    Field('eda_status_date','date'),
+    Field('metadata_status','text'),
+    Field('metadata_status_date','date'),
+    Field('publishing','text'),
+    Field('date_published','date'),
+    Field('estimated_effort','text'),
+    Field('allocated_to','text'),
+    Field('depends_on','text'),
+    Field('todo_or_done','text'))
