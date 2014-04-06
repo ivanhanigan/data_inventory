@@ -8,9 +8,9 @@
 * Init
 *** COMMENT torun-code
 #+name:torun
-#+begin_src R :session *R* :tangle no :exports none :eval no
+#+begin_src sh :session *shell* :tangle no :exports none :eval yes
 #### name:torun####
-- include the server config: 
+# - include the server config: 
 python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 #+end_src
 
@@ -257,4 +257,21 @@ A web2py app to help manage research data
       return dict(form=form)
   
   
+#+end_src
+*** COMMENT load old access data
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:asdf####
+  fpath <- dir("/home/ivan_hanigan/Dropbox/Z_New_T_Drive/Data inventory", pattern = "csv", full.names=T)
+  fpath
+  dat <- read.csv(fpath, stringsAsFactors = F)
+  str(dat)
+  dat[1,2]
+  require(swishdbtools)
+  
+  ch <- connect2postgres2("datainventory")
+  pgListTables(ch, "public")
+  
+  dat2 <- dbGetQuery(ch, "select * from datainventory")
+  str(dat2)
+  names(dat2)
 #+end_src
