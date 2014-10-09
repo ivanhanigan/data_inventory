@@ -78,7 +78,7 @@ def data():
 
 def entry_datasets():
     """returns a form where the can entry a post"""
-    form = crud.create(db.datainventory)
+    form = crud.create(db.data_inventory)
     return dict(form=form)
 
 #def search_dogs():
@@ -86,5 +86,5 @@ def entry_datasets():
 #    return dict(form=form, records=records)
 
 def search_dogs():
-    return dict(form=SQLFORM.grid(db.datainventory, user_signature=False, maxtextlength =200,
-                                  fields = [db.datainventory.id, db.datainventory.plot_network_study_name, db.datainventory.pn_group, db.datainventory.data_type, db.datainventory.eda_status_date]))
+    return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
+                                  fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))

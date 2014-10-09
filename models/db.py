@@ -13,7 +13,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/datainventory")
+    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/data_inventory")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -86,7 +86,7 @@ use_janrain(auth, filename='private/janrain.key')
 # auth.enable_record_versioning(db)
 
 
-db.define_table('datainventory',
+db.define_table('data_inventory',
     Field('plot_network_study_name','text'),
     Field('pn_group','text'),
     Field('pn_code','text'),
@@ -99,7 +99,7 @@ db.define_table('datainventory',
     Field('notes_issues','text'),
     Field('start_date','integer'),
     Field('end_date','integer'),
-    Field('current_status','date'),
+    Field('current_status','text'),
     Field('sites_plots','integer'),
     Field('collection_timeframes','text'),
     Field('ecosystem_mvg_numbers','integer'),

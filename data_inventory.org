@@ -26,7 +26,7 @@ A web2py app to help manage research data
 #+name:init
 #+begin_src sh :session *shell* :tangle no :exports none :eval no
   cd ~/tools/web2py 
-  ./web2py.py -S data_inventory
+  python ./web2py.py -S data_inventory
 #+end_src
 * DB
 *** COMMENT create.db-code
