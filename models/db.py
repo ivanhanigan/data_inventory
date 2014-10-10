@@ -85,8 +85,17 @@ use_janrain(auth, filename='private/janrain.key')
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 
+db.define_table('dataset',
+  Field('pn_code', 'string'),
+  Field('plot_network_study_name', 'string'),
+  Field('dataset', 'string'),
+  Field('tern_type', 'string'),
+  Field('ltern_publ_url','string'),
+  Field('abstract', 'text')
+)
 
 db.define_table('data_inventory',
+    Field('id2', 'integer'),
     Field('plot_network_study_name','text'),
     Field('pn_group','text'),
     Field('pn_code','text'),

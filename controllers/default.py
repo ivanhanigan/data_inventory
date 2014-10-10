@@ -88,3 +88,10 @@ def entry_datasets():
 def search_dogs():
     return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
                                   fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))
+
+
+def search_datasets():
+    return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=False, maxtextlength =200,
+                                  fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
+
+
