@@ -98,5 +98,8 @@ def search_datasets():
 
 def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
+                             fields = [db.project.title,
+                                       db.dataset.title, db.dataset.creator,
+                                       db.attribute.name, db.attribute.definition],
                              user_signature=False)
     return dict(grid=grid)
