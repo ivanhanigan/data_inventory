@@ -95,3 +95,8 @@ def search_datasets():
                                   fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
 
 
+
+def manage_projects():
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
+                             user_signature=False)
+    return dict(grid=grid)

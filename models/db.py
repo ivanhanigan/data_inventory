@@ -13,7 +13,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://ivan_hanigan:kazoowazoo@localhost:5432/data_inventory")
+    db = DAL("postgres://postgres:trojan9!@localhost:5432/data_inventory")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -85,14 +85,14 @@ use_janrain(auth, filename='private/janrain.key')
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 
-db.define_table('dataset',
-  Field('pn_code', 'string'),
-  Field('plot_network_study_name', 'string'),
-  Field('dataset', 'string'),
-  Field('tern_type', 'string'),
-  Field('ltern_publ_url','string'),
-  Field('abstract', 'text')
-)
+# db.define_table('dataset',
+#   Field('pn_code', 'string'),
+#   Field('plot_network_study_name', 'string'),
+#   Field('dataset', 'string'),
+#   Field('tern_type', 'string'),
+#   Field('ltern_publ_url','string'),
+#   Field('abstract', 'text')
+# )
 
 db.define_table('data_inventory',
     Field('id2', 'integer'),
@@ -135,3 +135,27 @@ db.define_table('data_inventory',
     Field('depends_on','text'),
     Field('todo_or_done','text'))
 
+#### projects and datasets
+db.define_table(
+    'project',
+    Field('title', 'string'),
+    Field('abstract', 'text')
+    )
+
+#### ONE (project) TO MANY (datasets)
+
+db.define_table(
+    'dataset',
+    Field('project_id',db.project),
+    Field('title','string'),
+    Field('creator', 'string')
+    )
+
+#### ONE (dataset) TO MANY (attributes/variables)
+
+db.define_table(
+    'attribute',
+    Field('dataset_id',db.dataset),
+    Field('name','string'),
+    Field('definition', 'string')
+    )
