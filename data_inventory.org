@@ -158,7 +158,7 @@ A web2py app to help manage research data
 - Here we added projects, datasets, datatables and attributes.
 
 
-#+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
+#+begin_src markdown :tangle models/db.py :exports none :eval no :padline no
   # -*- coding: utf-8 -*-
   
   #########################################################################
@@ -245,10 +245,11 @@ A web2py app to help manage research data
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-*** our tbs
+*** define our tables
 #+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
   
   #### projects
+  
   db.define_table(
       'project',
       Field('title', 'string'),
@@ -282,8 +283,30 @@ A web2py app to help manage research data
       Field('definition', 'string')
       )
   
+  #### accessors
+  
+  db.define_table(
+      'accessor',
+      Field('name'),
+      Field('email')
+      )
+  
+  
+  #### MANY (datasets) TO MANY (accessors)
+  
+  db.define_table(
+      'access',
+      Field('datatset_id',db.dataset),
+      Field('accessor_id',db.accessor),
+      Field('title', 'string')
+      )
+  
+  db.accessor.name.requires = IS_NOT_EMPTY()
+  db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+
+  
 #+end_src
-*** COMMENT controllers/default.py-code
+*** controllers/default.py-code
 - Following the example in the documentation just added the manage\_projects() function
 
 #+name:controllers/default.py
@@ -366,9 +389,10 @@ A web2py app to help manage research data
       return dict(form=crud())
 
 #+end_src
-*** our tbs
-#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no :padline no
 
+*** Manging Projects form
+#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no :padline no
+  
   #def manage_projects():
   #    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset'],
   #                             fields = [db.project.title,
@@ -377,7 +401,7 @@ A web2py app to help manage research data
   #    return dict(grid=grid)
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attribute'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attribute','access'],
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
                                          db.datatable.entityname,
@@ -385,6 +409,28 @@ A web2py app to help manage research data
                                user_signature=False)
       return dict(grid=grid)
   
+#+end_src
+*** top menu and register accessors
+From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. SQLFORM.accepts is similar to FORM.accepts but, if form is validated, the corresponding insert is also performed. SQLFORM can also do update and edit if a record is passed as its second argument. SQLTABLE instead turns a set of records (result of a select) into an HTML table with links as specified by its optional parameters. The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
+#+name:top menu and register a person
+#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no
+response.menu = [['Manage Projects', False, URL('manage_projects')],
+                 ['Register Accessor', False, URL('register_accessor')],
+                 ['Access Dataset', False, URL('access_dataset')]]
+
+def register_accessor():
+    # create an insert form from the table
+    form = SQLFORM(db.accessor).process()
+
+    # if form correct perform the insert
+    if form.accepted:
+        response.flash = 'new record inserted'
+
+    # and get a list of all persons
+    records = SQLTABLE(db().select(db.accessor.ALL),headers='fieldname:capitalize')
+
+    return dict(form=form, records=records)
+
 #+end_src
 * COMMENT Code
 ** COMMENT load data-code
