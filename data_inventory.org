@@ -5,10 +5,10 @@
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 #+LATEX: \tableofcontents
 -----
-* Init
-*** COMMENT torun-code
+* COMMENT Init
+** COMMENT torun-code
 #+name:torun
-#+begin_src sh :session *shell* :tangle no :exports none :eval yes
+#+begin_src sh :session *shell* :tangle no :exports none :eval no
 #### name:torun####
 # - include the server config: 
 python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
@@ -22,26 +22,416 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 A web2py app to help manage research data
 
 #+end_src
-** COMMENT init-code (Note this is done BEFORE git or org are created)
-#+name:init
-#+begin_src sh :session *shell* :tangle no :exports none :eval no
-  cd ~/tools/web2py 
-  python ./web2py.py -S data_inventory
+* Introduction
+- There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
+- The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
+- This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
+* EML
+- the schema is defined at xxx
+- We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
+- the scehmatic below shows the structure of the XML (closing tags omitted)
+#+begin_src R :session *R* :tangle no :exports reports :eval no
+    <eml>
+        <dataset>
+            <title>
+            <creator> 
+            <contact> 
+            <project> 
+                <title> 
+                <personnel>
+                <role>
+                <abstract>
+                <funding>
+                <studyAreaDescription>
+                <designDescription>
+            <publisher>
+            <pubDate>
+            <keywords>
+            <abstract> 
+            <intellectualRights>
+            <methods> 
+            <coverage>
+            <dataTable>
+                <entityName>
+                <entityDescription>                
+                <physical>
+                <attributeList>
+        <additionalMetadata>
+            <additionalLinks>
+  
 #+end_src
-* DB
-*** COMMENT create.db-code
+** The parts of an EML document 
+- In EML, the term dataset is applied to a document which may contain
+  general information such as the title, creator, and contacts,
+  abstract and keywords as well as one or more data entities, such as
+  datatables, that provide more specific research details.
+- The information is at the level of a particular data collection or
+  study, however there is also a level above this at the "project"
+  level where research studies can be grouped together.
+- [TODO] Remember that, “In EML, the term dataset refers to one or more data
+  entities.” There is no generally accepted practice on what to
+  include in an EML-dataset document. Some people will choose to have
+  a one-to-one correspondence between an EML document and a data
+  entity and a single physical file. Others will document several data
+  entities in one dataset document. 
+- Below is a brief description of the way we interpret the EML parts
+
+*** Datasets
+- Dataset is the top level of the EML.  The miminum necessary to
+  proeduce a valid EML document is <title>, <creator>, <contract>.
+  But one can't tell very much  with just a title and a name.  
+- Our aim is to create an EML document that contains enough
+  information about the data and research to make funding agencies
+  happy and give other ecologists something to work with
+*** Projects
+- The optional <project> module provides an overall description of the
+  larger-scale project or research context with which that dataset is
+  associated.  For  example it might be an Longterm Ecological Research Network (LTER) site.
+*** Datatables  
+- As stated earlier, a dataset consists of one or more data entities,
+  and the most common data entity is a <dataTable>. A data table is
+  something that looks like a matrix with rows for observations and
+  columns for variables
+- [TODO] In addition to datatables, people using database applications may
+  also produce a <view> from a database management system or a
+  <storedProcedure> that results in data output. People using GIS
+  (geographical information system) applications generate both
+  <spatialVector>, also referred to as boundary or shape files, and
+  <spatialRaster>. A <spatialRaster> is a geo-referenced image usually
+  produced by a camera on a satellite or other remote sensing
+  device. The final kind of data entity is <otherEntity>. An
+  <otherEntity> is a data entity that cannot be represented by any of
+  the previously defined data entity structures. A non-geo-referenced
+  photograph is an <otherEntity>, e.g., a photograph of two different
+  types of butterflies.
+
+
+*** Attributes
+- An attribute or as it is sometime referred to, variable, in this
+  context refers to the name of the column of a datatable
+- This is where Morpho and other EML tools come into their own.  Our
+  database solution might be useful as an initial stage of data
+  documentation, to be further refined using specialised EML tools
+
+* web2py 
+** set up web2py 
+- Web2py comes packaged up with everything it needs to run on a system (just needs python)
+- run this using:
+#+begin_src sh :session *shell* :tangle no :exports reports :eval no
+#### Code:
+    python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
+#+end_src
+
+** the web2py database example
+- once the web server is running the example can be visited at this link:
+- [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
+- The default configuration of web2py uses the SQLite database engine
+- Our implementation also utilises the PostgreSQL database which should be installed separately
+* Design the database and interface
+** Create a new database
+- create a new postgres database using the following  code
 #+name:create.db
-#+begin_src R :session *R* :tangle no :exports none :eval no
-  #### name:create.db####
+#+begin_src sh :session *shell* :tangle no :exports reports :eval no
   sudo su
   su - postgres 
   createdb data_inventory
+  psql -d data_inventory
+  CREATE ROLE w2p_user LOGIN PASSWORD 'xpassword';
+  grant all on schema public to w2p_user;
+  \q
+#+end_src
+** Create a new web2py application
+- this will create a directory in the applications folder of the web2py home directory
+#+begin_src sh :session *shell* :tangle no :exports reports :eval no
+  cd ~/tools/web2py 
+  python ./web2py.py -S data_inventory
+#+end_src
+
+** Set up database tables
+*** relational model
+- The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
+*** models/db.py
+- the database tables are set up in the models/db.py file that comes with default settings
+- The first bit to change is the db reference from SQLite to postgres
+- also note that "#if request.is\_local else []" will allow using as a server
+- Then add new table definitions down the bottom.  
+- Here we added projects, datasets, datatables and attributes.
+
+
+#+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
+  # -*- coding: utf-8 -*-
+  
+  #########################################################################
+  ## This scaffolding model makes your app work on Google App Engine too
+  ## File is released under public domain and you can use without limitations
+  #########################################################################
+  
+  ## if SSL/HTTPS is properly configured and you want all HTTP requests to
+  ## be redirected to HTTPS, uncomment the line below:
+  # request.requires_https()
+  
+  if not request.env.web2py_runtime_gae:
+      ## if NOT running on Google App Engine use SQLite or other DB
+      ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory3")
+  else:
+      ## connect to Google BigTable (optional 'google:datastore://namespace')
+      db = DAL('google:datastore')
+      ## store sessions and tickets there
+      session.connect(request, response, db=db)
+      ## or store session in Memcache, Redis, etc.
+      ## from gluon.contrib.memdb import MEMDB
+      ## from google.appengine.api.memcache import Client
+      ## session.connect(request, response, db = MEMDB(Client()))
+  
+  ## by default give a view/generic.extension to all actions from localhost
+  ## none otherwise. a pattern can be 'controller/function.extension'
+  response.generic_patterns = ['*'] # if request.is_local else []
+  ## (optional) optimize handling of static files
+  # response.optimize_css = 'concat,minify,inline'
+  # response.optimize_js = 'concat,minify,inline'
+  ## (optional) static assets folder versioning
+  # response.static_version = '0.0.0'
+  #########################################################################
+  ## Here is sample code if you need for
+  ## - email capabilities
+  ## - authentication (registration, login, logout, ... )
+  ## - authorization (role based authorization)
+  ## - services (xml, csv, json, xmlrpc, jsonrpc, amf, rss)
+  ## - old style crud actions
+  ## (more options discussed in gluon/tools.py)
+  #########################################################################
+  
+  from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
+  auth = Auth(db)
+  crud, service, plugins = Crud(db), Service(), PluginManager()
+  
+  ## create all tables needed by auth if not custom tables
+  auth.define_tables(username=False, signature=False)
+  
+  ## configure email
+  mail = auth.settings.mailer
+  mail.settings.server = 'logging' or 'smtp.gmail.com:587'
+  mail.settings.sender = 'you@gmail.com'
+  mail.settings.login = 'username:password'
+  
+  ## configure auth policy
+  auth.settings.registration_requires_verification = False
+  auth.settings.registration_requires_approval = False
+  auth.settings.reset_password_requires_verification = True
+  
+  ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
+  ## register with janrain.com, write your domain:api_key in private/janrain.key
+  from gluon.contrib.login_methods.rpx_account import use_janrain
+  use_janrain(auth, filename='private/janrain.key')
+  
+  #########################################################################
+  ## Define your tables below (or better in another model file) for example
+  ##
+  ## >>> db.define_table('mytable',Field('myfield','string'))
+  ##
+  ## Fields can be 'string','text','password','integer','double','boolean'
+  ##       'date','time','datetime','blob','upload', 'reference TABLENAME'
+  ## There is an implicit 'id integer autoincrement' field
+  ## Consult manual for more options, validators, etc.
+  ##
+  ## More API examples for controllers:
+  ##
+  ## >>> db.mytable.insert(myfield='value')
+  ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
+  ## >>> for row in rows: print row.id, row.myfield
+  #########################################################################
+  
+  ## after defining tables, uncomment below to enable auditing
+  # auth.enable_record_versioning(db)
+#+end_src
+*** our tbs
+#+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
+  
+  #### projects
+  db.define_table(
+      'project',
+      Field('title', 'string'),
+      Field('abstract', 'text')
+      )
+  
+  #### ONE (project) TO MANY (dataset)
+  
+  db.define_table(
+      'dataset',
+      Field('project_id',db.project),
+      Field('title','string'),
+      Field('creator', 'string')
+      )
+    
+  #### ONE (dataset) TO MANY (datatables)
+  
+  db.define_table(
+      'datatable',
+      Field('dataset_id',db.dataset),
+      Field('entityname','string'),
+      Field('entitydescription', 'text')
+      )
+  
+  #### ONE (datatable) TO MANY (attributes/variables)
+  
+  db.define_table(
+      'attribute',
+      Field('datatable_id',db.datatable),
+      Field('name','string'),
+      Field('definition', 'string')
+      )
+  
+#+end_src
+*** COMMENT controllers/default.py-code
+- Following the example in the documentation just added the manage\_projects() function
+
+#+name:controllers/default.py
+#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no :padline no
+  # -*- coding: utf-8 -*-
+  # this file is released under public domain and you can use without limitations
+  
+  #########################################################################
+  ## This is a sample controller
+  ## - index is the default action of any application
+  ## - user is required for authentication and authorization
+  ## - download is for downloading files uploaded in the db (does streaming)
+  ## - call exposes all registered services (none by default)
+  #########################################################################
+  
+  
+  def index():
+      """
+      example action using the internationalization operator T and flash
+      rendered by views/default/index.html or views/generic.html
+  
+      if you need a simple wiki simply replace the two lines below with:
+      return auth.wiki()
+      """
+      response.flash = T("Welcome to web2py!")
+      return dict(message=T('Hello World'))
+  
+  
+  def user():
+      """
+      exposes:
+      http://..../[app]/default/user/login
+      http://..../[app]/default/user/logout
+      http://..../[app]/default/user/register
+      http://..../[app]/default/user/profile
+      http://..../[app]/default/user/retrieve_password
+      http://..../[app]/default/user/change_password
+      http://..../[app]/default/user/manage_users (requires membership in
+      use @auth.requires_login()
+          @auth.requires_membership('group name')
+          @auth.requires_permission('read','table name',record_id)
+      to decorate functions that need access control
+      """
+      return dict(form=auth())
+  
+  @cache.action()
+  def download():
+      """
+      allows downloading of uploaded files
+      http://..../[app]/default/download/[filename]
+      """
+      return response.download(request, db)
+  
+  
+  def call():
+      """
+      exposes services. for example:
+      http://..../[app]/default/call/jsonrpc
+      decorate with @services.jsonrpc the functions to expose
+      supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+      """
+      return service()
+  
+  
+  @auth.requires_signature()
+  def data():
+      """
+      http://..../[app]/default/data/tables
+      http://..../[app]/default/data/create/[table]
+      http://..../[app]/default/data/read/[table]/[id]
+      http://..../[app]/default/data/update/[table]/[id]
+      http://..../[app]/default/data/delete/[table]/[id]
+      http://..../[app]/default/data/select/[table]
+      http://..../[app]/default/data/search/[table]
+      but URLs must be signed, i.e. linked with
+        A('table',_href=URL('data/tables',user_signature=True))
+      or with the signed load operator
+        LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+      """
+      return dict(form=crud())
+
+#+end_src
+*** our tbs
+#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no :padline no
+
+  #def manage_projects():
+  #    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset'],
+  #                             fields = [db.project.title,
+  #                                       db.dataset.title, db.dataset.creator],
+  #                             user_signature=False)
+  #    return dict(grid=grid)
+  
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attribute'],
+                               fields = [db.project.title,
+                                         db.dataset.title, db.dataset.creator,
+                                         db.datatable.entityname,
+                                         db.attribute.name, db.attribute.definition],
+                               user_signature=False)
+      return dict(grid=grid)
+  
+#+end_src
+* COMMENT Code
+** COMMENT load data-code
+#+name:load data
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:load data####
+  indir <- "~/Dropbox/projects/0.3 Catalogue/backups/csvs/2014-04-15"
+  dir(indir)
+  dat <- read.csv(file.path(indir, "STDYDSCR_edit.csv"))
+  str(dat)
+  names(table(dat$IDNO))
+  stdy <- dat[grep("DPI", dat$IDNO),]
+  t(stdy[,1:25])
+  
+  
+  dat <- read.csv(file.path(indir, "FILEDSCR.csv"))
+  str(dat)
+  names(table(dat$IDNO))
+  file <- dat[grep("DPI", dat$IDNO),]
+  file
   
 #+end_src
 
+* COMMENT DEPRECATED old crap
+** COMMENT load old access data
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:asdf####
+  fpath <- dir("/home/ivan_hanigan/Dropbox/Z_New_T_Drive/Data inventory", pattern = "csv", full.names=T)
+  fpath
+  dat <- read.csv(fpath, stringsAsFactors = F)
+  str(dat)
+  dat[1,2]
+  require(swishdbtools)
+  
+  ch <- connect2postgres2("datainventory")
+  pgListTables(ch, "public")
+  
+  dat2 <- dbGetQuery(ch, "select * from datainventory")
+  str(dat2)
+  names(dat2)
+#+end_src
+** COMMENT first attempt at data inventory tables
+
 *** COMMENT models/db.py-code
-#+name:db.py
-#+begin_src markdown :tangle models/db.py :exports none :eval no
+- 
+- The first bit to change is the db reference from SQLite to postgres
+#+begin_src markdown :tangle no :exports reports :eval no :padline no
   # -*- coding: utf-8 -*-
   
   #########################################################################
@@ -56,7 +446,7 @@ A web2py app to help manage research data
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://ivan_hanigan:mypassword@localhost:5432/datainventory")
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -128,8 +518,17 @@ A web2py app to help manage research data
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
   
+  # db.define_table('dataset',
+  #   Field('pn_code', 'string'),
+  #   Field('plot_network_study_name', 'string'),
+  #   Field('dataset', 'string'),
+  #   Field('tern_type', 'string'),
+  #   Field('ltern_publ_url','string'),
+  #   Field('abstract', 'text')
+  # )
   
-  db.define_table('datainventory',
+  db.define_table('data_inventory',
+      Field('id2', 'integer'),
       Field('plot_network_study_name','text'),
       Field('pn_group','text'),
       Field('pn_code','text'),
@@ -142,7 +541,7 @@ A web2py app to help manage research data
       Field('notes_issues','text'),
       Field('start_date','integer'),
       Field('end_date','integer'),
-      Field('current_status','date'),
+      Field('current_status','text'),
       Field('sites_plots','integer'),
       Field('collection_timeframes','text'),
       Field('ecosystem_mvg_numbers','integer'),
@@ -169,11 +568,35 @@ A web2py app to help manage research data
       Field('depends_on','text'),
       Field('todo_or_done','text'))
   
+  #### projects and datasets
+  db.define_table(
+      'project',
+      Field('title', 'string'),
+      Field('abstract', 'text')
+      )
+  
+  #### ONE (project) TO MANY (datasets)
+  
+  db.define_table(
+      'dataset',
+      Field('project_id',db.project),
+      Field('title','string'),
+      Field('creator', 'string')
+      )
+  
+  #### ONE (dataset) TO MANY (attributes/variables)
+  
+  db.define_table(
+      'attribute',
+      Field('dataset_id',db.dataset),
+      Field('name','string'),
+      Field('definition', 'string')
+      )
   
 #+end_src
 *** COMMENT controllers/default.py-code
 #+name:controllers/default.py
-#+begin_src R :session *R* :tangle controllers/default.py :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval no :padline no
   # -*- coding: utf-8 -*-
   # this file is released under public domain and you can use without limitations
   
@@ -253,25 +676,30 @@ A web2py app to help manage research data
   
   def entry_datasets():
       """returns a form where the can entry a post"""
-      form = crud.create(db.datainventory)
+      form = crud.create(db.data_inventory)
       return dict(form=form)
   
+  #def search_dogs():
+  #    form, records = crud.search(db.datainventory)
+  #    return dict(form=form, records=records)
   
-#+end_src
-*** COMMENT load old access data
-#+begin_src R :session *R* :tangle no :exports none :eval no
-  #### name:asdf####
-  fpath <- dir("/home/ivan_hanigan/Dropbox/Z_New_T_Drive/Data inventory", pattern = "csv", full.names=T)
-  fpath
-  dat <- read.csv(fpath, stringsAsFactors = F)
-  str(dat)
-  dat[1,2]
-  require(swishdbtools)
+  def search_dogs():
+      return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
+                                    fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))
   
-  ch <- connect2postgres2("datainventory")
-  pgListTables(ch, "public")
   
-  dat2 <- dbGetQuery(ch, "select * from datainventory")
-  str(dat2)
-  names(dat2)
+  def search_datasets():
+      return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=False, maxtextlength =200,
+                                    fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
+  
+  
+  
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
+                               fields = [db.project.title,
+                                         db.dataset.title, db.dataset.creator,
+                                         db.attribute.name, db.attribute.definition],
+                               user_signature=False)
+      return dict(grid=grid)
+  
 #+end_src
