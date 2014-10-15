@@ -29,7 +29,7 @@ A web2py app to help manage research data
 * EML
 - the schema is defined at xxx
 - We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
-- the scehmatic below shows the structure of the XML (closing tags omitted)
+- the schematic below shows the structure of a minimally adequate EML XML document (closing tags omitted)
 #+begin_src R :session *R* :tangle no :exports reports :eval no
     <eml>
         <dataset>
@@ -290,7 +290,7 @@ A web2py app to help manage research data
       'accessor',
       Field('name'),
       Field('email'),
-      format = '%(name)s'
+      format = '%(email)s'
       )
   
   
@@ -309,11 +309,11 @@ A web2py app to help manage research data
   
   
 #+end_src
-*** controllers/default.py-code
-- Following the example in the documentation just added the manage\_projects() function
+*** Defaults for controllers/default.py
+- Following the example in the documentation 
 
 #+name:controllers/default.py
-#+begin_src R :session *R* :tangle controllers/default.py :exports reports :eval no :padline no
+#+begin_src R :session *R* :tangle controllers/default.py :exports none :eval no :padline no
   # -*- coding: utf-8 -*-
   # this file is released under public domain and you can use without limitations
   
@@ -334,9 +334,9 @@ A web2py app to help manage research data
       if you need a simple wiki simply replace the two lines below with:
       return auth.wiki()
       """
-      response.flash = T("Welcome to web2py!")
-      return dict(message=T('Hello World'))
-  
+      response.flash = T("Welcome to the data inventory!")
+      return dict(message=T('This is a data inventory for ecological data collections'))
+   
   
   def user():
       """
@@ -392,21 +392,6 @@ A web2py app to help manage research data
       return dict(form=crud())
 
 #+end_src
-
-*** Main form
-#+begin_src R :session *R* :tangle controllers/forms.py :exports reports :eval no :padline no
-  
-  def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attribute','access'],
-                               fields = [db.project.title,
-                                         db.dataset.title, db.dataset.creator,
-                                         db.datatable.entityname,
-                                         db.attribute.name, db.attribute.definition,
-                                         db.access.accessor_id, db.access.dataset_id, db.access.title],
-                               user_signature=False,maxtextlength =200)
-      return dict(grid=grid)
-  
-#+end_src
 *** Top Menu And Register Accessors
 - From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
 - The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
@@ -436,7 +421,7 @@ def register_accessor():
 #+begin_src R :session *R* :tangle controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('accessor_id',requires=IS_IN_DB(db,db.accessor.id,'%(name)s')),
+          Field('accessor_id',requires=IS_IN_DB(db,db.accessor.id,'%(email)s')),
           Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
           Field('title','string',requires=IS_NOT_EMPTY())).process()
       if form.accepted:
@@ -472,6 +457,50 @@ def register_accessor():
   [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
   <h2>Current access (SQL JOIN!)</h2>
 <p>{{=records}}</p>
+#+end_src
+
+*** Main form ties it all together
+#+begin_src R :session *R* :tangle controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attribute','access'],
+                               fields = [db.project.title,
+                                         db.dataset.title, db.dataset.creator,
+                                         db.datatable.entityname,
+                                         db.attribute.name, db.attribute.definition,
+                                         db.access.accessor_id, db.access.dataset_id, db.access.title],
+                               user_signature=False,maxtextlength =200)
+      return dict(grid=grid)
+  
+#+end_src
+
+*** finesse the interface
+
+#+begin_src markdown :tangle views/default/index.html :exports reports :eval no :padline
+  {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
+  {{extend 'layout.html'}}
+  
+  {{if 'message' in globals():}}
+  <h3>{{=message}}</h3>
+  
+  <h4>{{=T('Instructions')}}</h4>
+  <ol>
+    <li>{{=T('You are using the data inventory')}}</li>
+    <li>{{=XML(T('The main tool for managing projects is at %s',
+             A('%(application)s/forms/manage_projects/'%request,
+             _href=URL('forms','manage_projects'))))}}</li>
+  </ol>
+  {{elif 'content' in globals():}}
+  {{=content}}
+  {{else:}}
+  {{=BEAUTIFY(response._vars)}}
+  {{pass}}
+  
+  {{block right_sidebar}}
+  {{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
+       _style='margin-top: 1em;')}}
+  {{end}}
+  
 #+end_src
 
 * COMMENT Code
@@ -707,7 +736,7 @@ def register_accessor():
       """
       response.flash = T("Welcome to web2py!")
       return dict(message=T('Hello World'))
-  
+   
   
   def user():
       """
