@@ -173,7 +173,7 @@ A web2py app to help manage research data
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory3")
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -246,6 +246,7 @@ A web2py app to help manage research data
   # auth.enable_record_versioning(db)
 #+end_src
 *** define our tables
+**** project
 #+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
   
   #### projects
@@ -253,8 +254,12 @@ A web2py app to help manage research data
   db.define_table(
       'project',
       Field('title', 'string'),
+      Field('personnel','string'),
       Field('abstract', 'text')
       )
+#+end_src
+**** rest
+#+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
   
   #### ONE (project) TO MANY (dataset)
   
@@ -263,6 +268,7 @@ A web2py app to help manage research data
       Field('project_id',db.project),
       Field('title','string'),
       Field('creator', 'string'),
+      Field('contact','string'),
       format = '%(title)s'
       )
     
@@ -503,24 +509,39 @@ def register_accessor():
   
 #+end_src
 
-* COMMENT Code
+* COMMENT migrate DDI R Code
 ** COMMENT load data-code
 #+name:load data
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:load data####
+  library(swishdbtools)
+  ch <- connect2postgres2("data_inventory2")
+  
+  pgListTables(ch, "public")
+  
   indir <- "~/Dropbox/projects/0.3 Catalogue/backups/csvs/2014-04-15"
   dir(indir)
   dat <- read.csv(file.path(indir, "STDYDSCR_edit.csv"))
   str(dat)
+  dbWriteTable(ch, "stdydscr", dat)
+  
   names(table(dat$IDNO))
-  stdy <- dat[grep("DPI", dat$IDNO),]
+  names(table(dat$AUTHENTY))
+  names(table(dat$DISTRBTR))
+  
+  
+  stdy <- dat[grep("ECOR", dat$IDNO),]
   t(stdy[,1:25])
+  matrix(names(stdy))
+  
   
   
   dat <- read.csv(file.path(indir, "FILEDSCR.csv"))
   str(dat)
   names(table(dat$IDNO))
-  file <- dat[grep("DPI", dat$IDNO),]
+  dat[grep("mesic", dat$FILENAME),]
+  
+  file <- dat[grep("ECOR", dat$IDNO),]
   file
   
 #+end_src
