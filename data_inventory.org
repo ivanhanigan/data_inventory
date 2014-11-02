@@ -284,6 +284,28 @@ A web2py app to help manage research data
       Field('abstract', 'text')
       )
 #+end_src
+**** COMMENT dataset-setup-code
+#+name:dataset-setup
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:dataset-setup####
+  
+  library(gdata)
+  indir <- "~/projects/opensoftware-restricteddata.github.com/lib"
+  dir(indir)
+  dat <-  read.xls(file.path(indir, "setup_emldb_crosswalks_master.xlsx"))
+  str(dat)
+  head(dat)
+  table(dat$eml.table)
+  tbl <- "dataset"
+  psql <- paste(
+    as.character(
+      dat[which(dat$eml.table == tbl & dat$w2p_code !=""),"w2p_code"]
+      ), sep = "", collapse = "\n"
+    )
+  psql <- gsub("&apos;", "'", psql)
+  cat(psql)
+#+end_src
+
 **** dataset
 #+begin_src markdown :tangle models/db.py :exports reports :eval no :padline no
   
