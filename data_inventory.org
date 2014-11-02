@@ -297,6 +297,7 @@ A web2py app to help manage research data
       Field('contact','string'),
       Field('intellectualrights','string'),
       Field('pubdate','date'),
+      Field('geographicdescription','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
       format = '%(title)s'
