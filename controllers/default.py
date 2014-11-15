@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -19,9 +18,9 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    response.flash = T("Welcome to web2py!")
-    return dict(message=T('Hello World'))
-
+    response.flash = T("Welcome to the data inventory!")
+    return dict(message=T('This is a data inventory for ecological data collections'))
+ 
 
 def user():
     """
@@ -75,31 +74,3 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
-
-def entry_datasets():
-    """returns a form where the can entry a post"""
-    form = crud.create(db.data_inventory)
-    return dict(form=form)
-
-#def search_dogs():
-#    form, records = crud.search(db.datainventory)
-#    return dict(form=form, records=records)
-
-def search_dogs():
-    return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
-                                  fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))
-
-
-def search_datasets():
-    return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=False, maxtextlength =200,
-                                  fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
-
-
-
-def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
-                             fields = [db.project.title,
-                                       db.dataset.title, db.dataset.creator,
-                                       db.attribute.name, db.attribute.definition],
-                             user_signature=False)
-    return dict(grid=grid)

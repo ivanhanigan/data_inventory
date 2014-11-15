@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 #########################################################################
@@ -12,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    # db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://postgres:trojan9!@localhost:5432/data_inventory")
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -26,7 +25,7 @@ else:
 
 ## by default give a view/generic.extension to all actions from localhost
 ## none otherwise. a pattern can be 'controller/function.extension'
-response.generic_patterns = ['*'] #if request.is_local else []
+response.generic_patterns = ['*'] # if request.is_local else []
 ## (optional) optimize handling of static files
 # response.optimize_css = 'concat,minify,inline'
 # response.optimize_js = 'concat,minify,inline'
@@ -84,78 +83,66 @@ use_janrain(auth, filename='private/janrain.key')
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+#### projects
 
-# db.define_table('dataset',
-#   Field('pn_code', 'string'),
-#   Field('plot_network_study_name', 'string'),
-#   Field('dataset', 'string'),
-#   Field('tern_type', 'string'),
-#   Field('ltern_publ_url','string'),
-#   Field('abstract', 'text')
-# )
-
-db.define_table('data_inventory',
-    Field('id2', 'integer'),
-    Field('plot_network_study_name','text'),
-    Field('pn_group','text'),
-    Field('pn_code','text'),
-    Field('data_custodian','text'),
-    Field('plot_network','text'),
-    Field('pi','text'),
-    Field('data_custodian_pl_pi','text'),
-    Field('data_custodian_organisation','text'),
-    Field('data_type','text'),
-    Field('notes_issues','text'),
-    Field('start_date','integer'),
-    Field('end_date','integer'),
-    Field('current_status','text'),
-    Field('sites_plots','integer'),
-    Field('collection_timeframes','text'),
-    Field('ecosystem_mvg_numbers','integer'),
-    Field('mvg_names','text'),
-    Field('tern_type','text'),
-    Field('data_interview_status','text'),
-    Field('data_interview_date','date'),
-    Field('deed_status','text'),
-    Field('deed_status_date','date'),
-    Field('licence_code','text'),
-    Field('access_restrictions','text'),
-    Field('estimate_timeframe_data_ready_by_plot','date'),
-    Field('date_data_expected_by_ltern','date'),
-    Field('date_data_received_by_ltern','date'),
-    Field('stored_at','text'),
-    Field('eda_status','text'),
-    Field('eda_status_date','date'),
-    Field('metadata_status','text'),
-    Field('metadata_status_date','date'),
-    Field('publishing','text'),
-    Field('date_published','date'),
-    Field('estimated_effort','text'),
-    Field('allocated_to','text'),
-    Field('depends_on','text'),
-    Field('todo_or_done','text'))
-
-#### projects and datasets
 db.define_table(
     'project',
-    Field('title', 'string'),
+    Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('personnel','string'),
     Field('abstract', 'text')
     )
-
-#### ONE (project) TO MANY (datasets)
+#### ONE (project) TO MANY (dataset)
 
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-    Field('title','string'),
-    Field('creator', 'string')
+    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage] blag blah blah adssdfsdfasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafdasfsdafsdafsd   asdfadsfasdf asdfa'),
+    Field('creator','string', comment='The name of the person, organization, or position who created the data'),
+    Field('abstract','string'),
+    Field('intellectualrights','string'),
+    Field('contact','string'),
+    Field('pubdate','date'),
+    Field('geographicdescription','string'),
+    Field('boundingcoordinates','string'),
+    Field('temporalcoverage','string'),
+    Field('metadataprovider','string'),
+    format = '%(title)s'
     )
-
-#### ONE (dataset) TO MANY (attributes/variables)
+  
+db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
+#### ONE (dataset) TO MANY (datatables)
 
 db.define_table(
-    'attribute',
+    'datatable',
     Field('dataset_id',db.dataset),
+    Field('entityname','string'),
+    Field('entitydescription', 'text')
+    )
+#### ONE (datatable) TO MANY (attributes/variables)
+
+db.define_table(
+    'attributelist',
+    Field('datatable_id',db.datatable),
     Field('name','string'),
     Field('definition', 'string')
+    )
+#### accessors
+
+db.define_table(
+    'accessor',
+    Field('name'),
+    Field('email'),
+    format = '%(email)s'
+    )
+
+db.accessor.name.requires = IS_NOT_EMPTY()
+db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+#### MANY (datasets) TO MANY (accessors)
+
+db.define_table(
+    'accessrequest',
+    Field('dataset_id',db.dataset),
+    Field('accessor_id',db.accessor),
+    Field('title', 'string'),
+    format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
     )
