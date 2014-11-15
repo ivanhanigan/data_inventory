@@ -5,6 +5,15 @@
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 #+LATEX: \tableofcontents
 -----
+*** COMMENT publish-code
+#+name:publish
+#+begin_src sh :session *shell* :tangle no :exports none :eval yes
+#### name:publish####
+mv data_inventory.html index.html
+#+end_src
+
+#+RESULTS: publish
+
 * todo list
 > drv <- dbDriver("SQLite")
 > tfile <- tempfile()
