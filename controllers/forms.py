@@ -40,11 +40,13 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest'],
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
                              fields = [db.project.title,
                                        db.dataset.title, db.dataset.creator,
                                        db.datatable.entityname,
                                        db.attributelist.name, db.attributelist.definition,
-                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id, db.accessrequest.title],
+                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.title, 
+                                       db.keyword.thesaurus, db.keyword.keyword],
                              user_signature=False,maxtextlength =200)
     return dict(grid=grid)

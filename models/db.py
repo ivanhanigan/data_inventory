@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
+    ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -96,7 +96,7 @@ db.define_table(
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage] blag blah blah adssdfsdfasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafdasfsdafsdafsd   asdfadsfasdf asdfa'),
+    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
     Field('abstract','string'),
     Field('intellectualrights','string'),
@@ -108,8 +108,10 @@ db.define_table(
     Field('metadataprovider','string'),
     format = '%(title)s'
     )
+
+db.dataset.contact.requires = [IS_EMAIL()]
   
-db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
+# db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (datatables)
 
 db.define_table(
@@ -145,4 +147,12 @@ db.define_table(
     Field('accessor_id',db.accessor),
     Field('title', 'string'),
     format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
+    )
+#### MANY (keywords) TO one (dataset)
+
+db.define_table(
+    'keyword',
+    Field('dataset_id',db.dataset),
+    Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
+    Field('keyword', 'string')
     )
