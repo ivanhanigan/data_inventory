@@ -8,7 +8,8 @@
 1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
 
 To use:
-1. Download web2py http://www.web2py.com/init/default/download
+
+1. Download web2py http://www.web2py.com/init/default/download (not sure if you also need python)
 1. Put all the files into your web2py/applications as 'data_inventory'
 1. Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
 
