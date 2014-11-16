@@ -718,21 +718,108 @@ def register_accessor():
 
 * COMMENT DEPRECATED old crap
 ** COMMENT load old access data
-#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:asdf####
-  fpath <- dir("/home/ivan_hanigan/Dropbox/Z_New_T_Drive/Data inventory", pattern = "csv", full.names=T)
-  fpath
-  dat <- read.csv(fpath, stringsAsFactors = F)
-  str(dat)
-  dat[1,2]
-  require(swishdbtools)
-  
-  ch <- connect2postgres2("datainventory")
+  library(stringr)
+  library(swishdbtools)
+  library(sqldf)
+  ch <- connect2postgres2("data_inventory2")
   pgListTables(ch, "public")
   
-  dat2 <- dbGetQuery(ch, "select * from datainventory")
+  dat2 <- dbGetQuery(ch, "select * from project")
   str(dat2)
+  head(dat2)
   names(dat2)
+  
+  
+  fpath1 <- dir("/home/ivan_hanigan/Dropbox/data/ltern_data_inventory-backups", pattern = "csv", full.names=T)
+  fpath1
+  flist <-  as.data.frame(matrix(    unlist(str_split(fpath1,"-"))                       , ncol =9, byrow=T))
+  flist[,3:6]
+  head(flist)
+  flist$date <- as.Date(
+    paste(flist$V4,"-", flist$V5,"-", flist$V6,sep = "")
+    )
+  infile <- flist[which(flist$date == max(flist$date)),]
+  infiles <- fpath1[which(flist$date == max(flist$date))]
+  infiles
+  
+  
+  # for
+  i <- 3
+  fpath <-infiles[i]
+  fpath
+  
+  dat <- read.csv(fpath, stringsAsFactors = F)
+  str(dat)
+  dat
+  
+  names(dat)
+  
+  datx <- as.data.frame(table(dat$pn_code_broad_group))
+  datx
+  for(i in 2:nrow(datx)){
+  #  i <- 2
+  t(datx[i,1]  )
+  sql <- sprintf(
+    "INSERT INTO project(
+              title)
+      VALUES ('%s')
+    ", datx$Var1[i])
+  cat(sql)
+  dbSendQuery(ch, sql)
+  }
+  
+  
+  infiles
+  i <- 2
+  fpath <-infiles[i]
+  fpath
+  
+  dat <- read.csv(fpath, stringsAsFactors = F)
+  str(dat)
+  #dat
+  
+  names(dat)
+  
+  
+  for(i in 2:nrow(dat)){
+    i <- 1
+  pid <- dbGetQuery(ch,
+                    sprintf(
+                      "select id from project where title = %s",
+                      )
+  
+    
+  sql <- sprintf(
+     "INSERT INTO dataset(
+              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
+              abstract)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 
+              ?, ?, ?, ?, 
+              ?)"
+  , dat$refid[i], dat$data_package_title[i], dat$notes[i], dat$contact_name[i])
+  cat(sql)
+  dbSendQuery(ch, sql)
+  }
+  
+  
+  for(i in 2:nrow(dat)){
+  #  i <- 1
+  sql <- sprintf(
+  "INSERT INTO dataset(
+              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
+              abstract)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 
+              ?, ?, ?, ?, 
+              ?);
+    ", dat$refid[i], dat$data_package_title[i], dat$notes[i], dat$contact_name[i])
+  cat(sql)
+  dbSendQuery(ch, sql)
+  }
+  
 #+end_src
 ** COMMENT first attempt at data inventory tables
 
