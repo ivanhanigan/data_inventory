@@ -1,5 +1,6 @@
 
 response.menu = [['Manage Projects', False, URL('manage_projects')],
+                 ['Manage Datasets', False, URL('manage_datasets')],
                  ['Register Accessor', False, URL('register_accessor')],
                  ['Access Dataset', False, URL('access_dataset')]]
 
@@ -40,13 +41,33 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest',  'errata_and_addenda',
+                                                      'checklist','deed'],
                              fields = [db.project.title,
-                                       db.dataset.title, db.dataset.creator,
+                                       db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                        db.datatable.entityname,
                                        db.attributelist.name, db.attributelist.definition,
                                        db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.keyword.thesaurus, db.keyword.keyword],
+                                       db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                       db.checklist.checked_by, db.checklist.check_date, 
+                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                       db.deed.data_owner],
+                             user_signature=False,maxtextlength =200)
+    return dict(grid=grid)
+
+def manage_datasets():
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'datatable', 'attributelist','accessrequest', 'errata_and_addenda', 
+                                                       'checklist','deed'],
+                             fields = [db.project.title,
+                                       db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                                       db.datatable.entityname,
+                                       db.attributelist.name, db.attributelist.definition,
+                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.title, 
+                                       db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                       db.checklist.checked_by, db.checklist.check_date, 
+                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                       db.deed.data_owner],
                              user_signature=False,maxtextlength =200)
     return dict(grid=grid)
