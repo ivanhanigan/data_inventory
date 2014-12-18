@@ -236,7 +236,7 @@ Field('reporting_checklist_metadata_feed_to_tddp_and_rda','boolean'),
 Field('reporting_checklist_passed','boolean')
     )
     
-db.checklist.checked_by.requires = IS_NOT_EMPTY()
+db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
 db.checklist.check_date.requires = IS_NOT_EMPTY()
     
 #### ONE (deed) TO one (dataset)
