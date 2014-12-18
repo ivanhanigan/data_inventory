@@ -6,7 +6,7 @@
 #character(0)
 require(swishdbtools)
 get_passwordTable()
-con <- connect2postgres2("data_inventory_ltern")
+con <- connect2postgres2("data_inventory_ltern_dev")
 pgListTables(con, "public")
 
 dbGetQuery(con, "select * from project")
@@ -27,8 +27,8 @@ proj
 proj$abstract <- ""
 # dbWriteTable(con, name = "project", value = proj, append = T)
   
-for(i in 6:12){
-  #i = 2
+for(i in 1:12){
+  #i = 1
   pl <- proj[i,"title"]
   print(pl)
   
@@ -45,6 +45,7 @@ ON ltern.data_package.plot_network_study_name = ltern.plot_network_code.plot_net
 WHERE ltern.plot_network_code.pn_code_broad_group = '",pl,"' 
  AND (ltern.data_package.tern_type Like 'Project%' OR ltern.data_package.tern_type='Background') 
  AND ltern.data_package.availability='Available'
+order by ltern.data_package.data_package_title
 ",sep = "")
 )
 
