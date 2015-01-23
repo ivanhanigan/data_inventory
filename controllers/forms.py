@@ -43,7 +43,7 @@ def access_dataset():
 def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest',  'errata_and_addenda',
                                                       'checklist','deed'],
-                             fields = [db.project.title,
+                             fields = [db.project.title,db.project.id,
                                        db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                        db.datatable.entityname,
                                        db.attributelist.name, db.attributelist.definition,
@@ -53,6 +53,7 @@ def manage_projects():
                                        db.checklist.checked_by, db.checklist.check_date, 
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                        db.deed.data_owner],
+                                       orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=False,maxtextlength =200)
     return dict(grid=grid)
 
