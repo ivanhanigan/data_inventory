@@ -226,17 +226,17 @@ Field('homepage_content','boolean'),
 Field('eml_homepage_links','boolean'),
 Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
 Field('draft_publication_checklist_passed','boolean'),
+Field('metacat_publication_checklist_check_public_or_mediated_access','boolean'),
+Field('metacat_publication_checklist_add_publication_date_to_data_inventory','boolean'),
+Field('metacat_publication_checklist_passed','boolean'),
 Field('reporting_checklist_licenced','boolean'),
 Field('reporting_checklist_described_with_metadata_','boolean'),
 Field('reporting_checklist_doi_minted','boolean'),
 Field('reporting_checklist_metadata_feed_to_tddp_and_rda','boolean'),
 Field('reporting_checklist_passed','boolean')
-
-
-
     )
     
-db.checklist.checked_by.requires = IS_NOT_EMPTY()
+db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
 db.checklist.check_date.requires = IS_NOT_EMPTY()
     
 #### ONE (deed) TO one (dataset)
