@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>data inventory </title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="data inventory "/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2014-10-15T12:01+1100"/>
+<meta name="author" content="Ivan Hanigan"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">data inventory </h1>
+
+
+<hr/>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Introduction</a></li>
+<li><a href="#sec-2">2 EML</a>
+<ul>
+<li><a href="#sec-2-1">2.1 The parts of an EML document</a>
+<ul>
+<li><a href="#sec-2-1-1">2.1.1 Datasets</a></li>
+<li><a href="#sec-2-1-2">2.1.2 Projects</a></li>
+<li><a href="#sec-2-1-3">2.1.3 Datatables</a></li>
+<li><a href="#sec-2-1-4">2.1.4 Attributes</a></li>
+</ul></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 web2py</a>
+<ul>
+<li><a href="#sec-3-1">3.1 set up web2py</a></li>
+<li><a href="#sec-3-2">3.2 the web2py database example</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 Design the database and interface</a>
+<ul>
+<li><a href="#sec-4-1">4.1 Create a new database</a></li>
+<li><a href="#sec-4-2">4.2 Create a new web2py application</a></li>
+<li><a href="#sec-4-3">4.3 Set up database tables</a>
+<ul>
+<li><a href="#sec-4-3-1">4.3.1 relational model</a></li>
+<li><a href="#sec-4-3-2">4.3.2 defaults for models/db.py</a></li>
+<li><a href="#sec-4-3-3">4.3.3 define our tables</a></li>
+<li><a href="#sec-4-3-4">4.3.4 Defaults for controllers/default.py</a></li>
+<li><a href="#sec-4-3-5">4.3.5 Top Menu And Register Accessors</a></li>
+<li><a href="#sec-4-3-6">4.3.6 Access a dataset</a></li>
+<li><a href="#sec-4-3-7">4.3.7 Register access view</a></li>
+<li><a href="#sec-4-3-8">4.3.8 Main form ties it all together</a></li>
+<li><a href="#sec-4-3-9">4.3.9 finesse the interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+
+<ul>
+<li>There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
+</li>
+<li>The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
+</li>
+<li>This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> EML</h2>
+<div class="outline-text-2" id="text-2">
+
+<ul>
+<li>the schema is defined at xxx
+</li>
+<li>We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
+</li>
+<li>the schematic below shows the structure of a minimally adequate EML XML document (closing tags omitted)
+</li>
+</ul>
+
+
+
+
+<pre class="src src-R">&lt;eml&gt;
+    &lt;dataset&gt;
+        &lt;title&gt;
+        &lt;creator&gt; 
+        &lt;contact&gt; 
+        &lt;project&gt; 
+            &lt;title&gt; 
+            &lt;personnel&gt;
+            &lt;role&gt;
+            &lt;abstract&gt;
+            &lt;funding&gt;
+            &lt;studyAreaDescription&gt;
+            &lt;designDescription&gt;
+        &lt;publisher&gt;
+        &lt;pubDate&gt;
+        &lt;keywords&gt;
+        &lt;abstract&gt; 
+        &lt;intellectualRights&gt;
+        &lt;methods&gt; 
+        &lt;coverage&gt;
+        &lt;dataTable&gt;
+            &lt;entityName&gt;
+            &lt;entityDescription&gt;                
+            &lt;physical&gt;
+            &lt;attributeList&gt;
+    &lt;additionalMetadata&gt;
+        &lt;additionalLinks&gt;
+  
+</pre>
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> The parts of an EML document</h3>
+<div class="outline-text-3" id="text-2-1">
+
+<ul>
+<li>In EML, the term dataset is applied to a document which may contain
+  general information such as the title, creator, and contacts,
+  abstract and keywords as well as one or more data entities, such as
+  datatables, that provide more specific research details.
+</li>
+<li>The information is at the level of a particular data collection or
+  study, however there is also a level above this at the "project"
+  level where research studies can be grouped together.
+</li>
+<li>[TODO] Remember that, “In EML, the term dataset refers to one or more data
+  entities.” There is no generally accepted practice on what to
+  include in an EML-dataset document. Some people will choose to have
+  a one-to-one correspondence between an EML document and a data
+  entity and a single physical file. Others will document several data
+  entities in one dataset document. 
+</li>
+<li>Below is a brief description of the way we interpret the EML parts
+</li>
+</ul>
+
+
+
+</div>
+
+<div id="outline-container-2-1-1" class="outline-4">
+<h4 id="sec-2-1-1"><span class="section-number-4">2.1.1</span> Datasets</h4>
+<div class="outline-text-4" id="text-2-1-1">
+
+<ul>
+<li>Dataset is the top level of the EML.  The miminum necessary to
+  proeduce a valid EML document is &lt;title&gt;, &lt;creator&gt;, &lt;contract&gt;.
+  But one can't tell very much  with just a title and a name.  
+</li>
+<li>Our aim is to create an EML document that contains enough
+  information about the data and research to make funding agencies
+  happy and give other ecologists something to work with
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-2" class="outline-4">
+<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> Projects</h4>
+<div class="outline-text-4" id="text-2-1-2">
+
+<ul>
+<li>The optional &lt;project&gt; module provides an overall description of the
+  larger-scale project or research context with which that dataset is
+  associated.  For  example it might be an Longterm Ecological Research Network (LTER) site.
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-3" class="outline-4">
+<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> Datatables</h4>
+<div class="outline-text-4" id="text-2-1-3">
+
+<ul>
+<li>As stated earlier, a dataset consists of one or more data entities,
+  and the most common data entity is a &lt;dataTable&gt;. A data table is
+  something that looks like a matrix with rows for observations and
+  columns for variables
+</li>
+<li>[TODO] In addition to datatables, people using database applications may
+  also produce a &lt;view&gt; from a database management system or a
+  &lt;storedProcedure&gt; that results in data output. People using GIS
+  (geographical information system) applications generate both
+  &lt;spatialVector&gt;, also referred to as boundary or shape files, and
+  &lt;spatialRaster&gt;. A &lt;spatialRaster&gt; is a geo-referenced image usually
+  produced by a camera on a satellite or other remote sensing
+  device. The final kind of data entity is &lt;otherEntity&gt;. An
+  &lt;otherEntity&gt; is a data entity that cannot be represented by any of
+  the previously defined data entity structures. A non-geo-referenced
+  photograph is an &lt;otherEntity&gt;, e.g., a photograph of two different
+  types of butterflies.
+</li>
+</ul>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-4" class="outline-4">
+<h4 id="sec-2-1-4"><span class="section-number-4">2.1.4</span> Attributes</h4>
+<div class="outline-text-4" id="text-2-1-4">
+
+<ul>
+<li>An attribute or as it is sometime referred to, variable, in this
+  context refers to the name of the column of a datatable
+</li>
+<li>This is where Morpho and other EML tools come into their own.  Our
+  database solution might be useful as an initial stage of data
+  documentation, to be further refined using specialised EML tools
+</li>
+</ul>
+
+
+</div>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> web2py</h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> set up web2py</h3>
+<div class="outline-text-3" id="text-3-1">
+
+<ul>
+<li>Web2py comes packaged up with everything it needs to run on a system (just needs python)
+</li>
+<li>run this using:
+</li>
+</ul>
+
+
+
+
+<pre class="src src-sh"><span style="color: #93a1a1;">#### </span><span style="color: #93a1a1;">Code:</span>
+    python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> the web2py database example</h3>
+<div class="outline-text-3" id="text-3-2">
+
+<ul>
+<li>once the web server is running the example can be visited at this link:
+</li>
+<li><a href="http://127.0.0.1:8181/examples/default/examples#database\_examples">http://127.0.0.1:8181/examples/default/examples#database_examples</a>
+</li>
+<li>The default configuration of web2py uses the SQLite database engine
+</li>
+<li>Our implementation also utilises the PostgreSQL database which should be installed separately
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Design the database and interface</h2>
+<div class="outline-text-2" id="text-4">
+
+
+</div>
+
+<div id="outline-container-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Create a new database</h3>
+<div class="outline-text-3" id="text-4-1">
+
+<ul>
+<li>create a new postgres database using the following  code
+</li>
+</ul>
+
+
+
+
+<pre class="src src-sh">sudo su
+su - postgres 
+createdb data_inventory
+psql -d data_inventory
+CREATE ROLE w2p_user LOGIN PASSWORD <span style="color: #2aa198;">'xpassword'</span>;
+grant all on schema public to w2p_user;
+\q
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Create a new web2py application</h3>
+<div class="outline-text-3" id="text-4-2">
+
+<ul>
+<li>this will create a directory in the applications folder of the web2py home directory
+</li>
+</ul>
+
+
+
+
+<pre class="src src-sh"><span style="color: #268bd2; font-style: italic;">cd</span> ~/tools/web2py 
+python ./web2py.py -S data_inventory
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Set up database tables</h3>
+<div class="outline-text-3" id="text-4-3">
+
+
+</div>
+
+<div id="outline-container-4-3-1" class="outline-4">
+<h4 id="sec-4-3-1"><span class="section-number-4">4.3.1</span> relational model</h4>
+<div class="outline-text-4" id="text-4-3-1">
+
+<ul>
+<li>The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-2" class="outline-4">
+<h4 id="sec-4-3-2"><span class="section-number-4">4.3.2</span> defaults for models/db.py</h4>
+<div class="outline-text-4" id="text-4-3-2">
+
+<ul>
+<li>the database tables are set up in the models/db.py file that comes with default settings
+</li>
+<li>The first bit to change is the db reference from SQLite to postgres
+</li>
+<li>also note that "#if request.is_local else []" will allow using as a server
+</li>
+<li>Then add new table definitions down the bottom.  
+</li>
+<li>Here we added projects, datasets, datatables and attributes.
+</li>
+</ul>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-3" class="outline-4">
+<h4 id="sec-4-3-3"><span class="section-number-4">4.3.3</span> define our tables</h4>
+<div class="outline-text-4" id="text-4-3-3">
+
+
+
+
+<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">projects</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'project',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('title', 'string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('abstract', 'text')</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (project) TO MANY (dataset)</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'dataset',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('project_id',db.project),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('title','string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('creator', 'string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    format = '%(title)s'</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+<span style="color: #268bd2; font-weight: bold;">  </span>
+<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (dataset) TO MANY (datatables)</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'datatable',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('dataset_id',db.dataset),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('entityname','string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('entitydescription', 'text')</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (datatable) TO MANY (attributes/variables)</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'attribute',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('datatable_id',db.datatable),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('name','string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('definition', 'string')</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">accessors</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'accessor',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('name'),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('email'),</span>
+<span style="color: #268bd2; font-weight: bold;">    format = '%(email)s'</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+
+<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">MANY (datasets) TO MANY (accessors)</span>
+
+db.define_table(
+<span style="color: #268bd2; font-weight: bold;">    'access',</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('dataset_id',db.dataset),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('accessor_id',db.accessor),</span>
+<span style="color: #268bd2; font-weight: bold;">    Field('title', 'string'),</span>
+<span style="color: #268bd2; font-weight: bold;">    format = '%(title)s %(accessor_id)s -&gt; %(dataset_id)s'</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+db.accessor.name.requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()
+db.accessor.email.requires = [IS<span style="color: #268bd2; font-style: italic;">_EMAIL(), IS_</span>NOT<span style="color: #268bd2; font-style: italic;">_IN_</span>DB(db, 'accessor.email')]
+
+
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-4" class="outline-4">
+<h4 id="sec-4-3-4"><span class="section-number-4">4.3.4</span> Defaults for controllers/default.py</h4>
+<div class="outline-text-4" id="text-4-3-4">
+
+<ul>
+<li>Following the example in the documentation 
+</li>
+</ul>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-5" class="outline-4">
+<h4 id="sec-4-3-5"><span class="section-number-4">4.3.5</span> Top Menu And Register Accessors</h4>
+<div class="outline-text-4" id="text-4-3-5">
+
+<ul>
+<li>From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
+</li>
+<li>The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
+</li>
+</ul>
+
+
+
+
+<pre class="src src-R">response.menu = [[<span style="color: #2aa198;">'Manage Projects'</span>, False, URL(<span style="color: #2aa198;">'manage_projects'</span>)],
+                 [<span style="color: #2aa198;">'Register Accessor'</span>, False, URL(<span style="color: #2aa198;">'register_accessor'</span>)],
+                 [<span style="color: #2aa198;">'Access Dataset'</span>, False, URL(<span style="color: #2aa198;">'access_dataset'</span>)]]
+
+def register_accessor():
+    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">create an insert form from the table</span>
+    form = SQLFORM(db.accessor).process()
+
+    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">if form correct perform the insert</span>
+    <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
+        response.flash = <span style="color: #2aa198;">'new record inserted'</span>
+
+    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">and get a list of all persons</span>
+    records = SQLTABLE(db().select(db.accessor.ALL),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
+
+    <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)
+
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-6" class="outline-4">
+<h4 id="sec-4-3-6"><span class="section-number-4">4.3.6</span> Access a dataset</h4>
+<div class="outline-text-4" id="text-4-3-6">
+
+<ul>
+<li>Example 32 is a rather sophisticated buy form. It checks that the buyer and the product are in the database and updates the corresponding record or inserts a new purchase. It also does a JOIN to list all purchases. 
+</li>
+</ul>
+
+
+
+
+<pre class="src src-R">def access_dataset():
+    form = SQLFORM.factory(
+        Field(<span style="color: #2aa198;">'accessor_id'</span>,requires=IS_IN_DB(db,db.accessor.id,<span style="color: #2aa198;">'%(email)s'</span>)),
+        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(title)s'</span>)),
+        Field(<span style="color: #2aa198;">'title'</span>,<span style="color: #2aa198;">'string'</span>,requires=IS_NOT_EMPTY())).process()
+    <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
+        <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">get previous access for same dataset</span>
+        access = db((db.access.accessor_id == form.vars.accessor_id)&amp;
+            (db.access.dataset_id==form.vars.dataset_id)).select().first()
+
+        <span style="color: #859900; font-weight: bold;">if</span> access:
+            <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">if list contains a record, update that record</span>
+            access.update_record(
+                title = form.vars.title)
+        <span style="color: #859900; font-weight: bold;">else</span>:
+            <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">self insert a new record in table</span>
+            db.access.insert(accessor_id=form.vars.accessor_id,
+                             dataset_id=form.vars.dataset_id,
+                             title=form.vars.title)
+        response.flash = <span style="color: #2aa198;">'dataset accessed!'</span>
+    elif form.errors:
+        response.flash = <span style="color: #2aa198;">'invalid values in form!'</span>
+
+    
+    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">now get a list of all purchases</span>
+    accessing = (db.accessor.id==db.access.accessor_id)&amp;(db.dataset.id==db.access.dataset_id)
+    records = SQLTABLE(db(accessing).select(),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
+    <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)
+
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-7" class="outline-4">
+<h4 id="sec-4-3-7"><span class="section-number-4">4.3.7</span> Register access view</h4>
+<div class="outline-text-4" id="text-4-3-7">
+
+
+
+
+<pre class="src src-R">{{extend <span style="color: #2aa198;">'layout.html'</span>}}
+&lt;h1&gt;Access form&lt;/h1&gt;
+  {{=form}}
+  [ {{=A(<span style="color: #2aa198;">'delete accesses'</span>,_href=URL(<span style="color: #2aa198;">'delete_accessed'</span>))}} ]
+  &lt;h2&gt;Current access (SQL JOIN!)&lt;/h2&gt;
+&lt;p&gt;{{=records}}&lt;/p&gt;
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-8" class="outline-4">
+<h4 id="sec-4-3-8"><span class="section-number-4">4.3.8</span> Main form ties it all together</h4>
+<div class="outline-text-4" id="text-4-3-8">
+
+
+
+
+<pre class="src src-R">def manage_projects():
+    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'datatable'</span>, <span style="color: #2aa198;">'attribute'</span>,<span style="color: #2aa198;">'access'</span>],
+                             fields = [db.project.title,
+                                       db.dataset.title, db.dataset.creator,
+                                       db.datatable.entityname,
+                                       db.attribute.name, db.attribute.definition,
+                                       db.access.accessor_id, db.access.dataset_id, db.access.title],
+                             user_signature=False,maxtextlength =200)
+    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
+
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3-9" class="outline-4">
+<h4 id="sec-4-3-9"><span class="section-number-4">4.3.9</span> finesse the interface</h4>
+<div class="outline-text-4" id="text-4-3-9">
+
+
+
+
+
+<pre class="src src-markdown">{{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+
+{{if 'message' in globals():}}
+&lt;h3&gt;{{=message}}&lt;/h3&gt;
+
+&lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
+  &lt;li&gt;{{=XML(T('The main tool for managing projects is at %s',
+           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
+<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
+&lt;/ol&gt;
+{{elif 'content' in globals():}}
+{{=content}}
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}
+
+{{block right_sidebar}}
+{{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
+     _style='margin-top: 1em;')}}
+{{end}}
+
+</pre>
+
+
+
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
