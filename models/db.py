@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+    ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -87,10 +87,22 @@ use_janrain(auth, filename='private/janrain.key')
 
 db.define_table(
     'project',
-    Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('personnel','string', comment='This is the data owner, and a compulsory field'),
-    Field('abstract', 'text')
+    Field('title', 'string', comment=
+    A('The EML Project module places the data into its larger research context. Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='title', scheme=True, host=True)))
+    ),
+    Field('personnel','string', comment=
+    A('Compulsory. A project must have at least one originator. This is assumed to be the data owner unless role is specified.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
+    ),
+    Field('abstract', 'text', comment = 
+    A('A descriptive abstract.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='abstract', scheme=True, host=True)))
+    ),
+    Field('studyAreaDescription','string', comment=
+    A('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='studyAreaDescription', scheme=True, host=True)))
+    ), 
+
     )
+
+db.project.personnel.requires = IS_NOT_EMPTY()
 #### ONE (project) TO MANY (dataset)
 
 db.define_table(
