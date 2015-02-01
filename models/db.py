@@ -92,28 +92,28 @@ db.define_table(
     Field('abstract', 'text')
     )
 #### ONE (project) TO MANY (dataset)
- 
- db.define_table(
-     'dataset',
-     Field('project_id',db.project),
-     Field('ltern_id','integer'),
-     Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-     Field('contact','string', comment = 'Compulsory'),
-     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-     Field('abstract','string'),
-     Field('intellectualrights','string'),
-     Field('pubdate','date'),
-     Field('geographicdescription','string'),
-     Field('boundingcoordinates','string'),
-     Field('temporalcoverage','string'),
-     Field('metadataprovider','string'),
--    Field('tern_contract_type','string'),
-     format = '%(title)s'
-     )
 
- db.dataset.contact.requires = [IS_EMAIL()]
-   
- # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
+db.define_table(
+    'dataset',
+    Field('project_id',db.project),
+    Field('ltern_id','integer'),
+    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('contact','string', comment = 'Compulsory'),
+    Field('creator','string', comment='The name of the person, organization, or position who created the data'),
+    Field('abstract','string'),
+    Field('intellectualrights','string'),
+    Field('pubdate','date'),
+    Field('geographicdescription','string'),
+    Field('boundingcoordinates','string'),
+    Field('temporalcoverage','string'),
+    Field('metadataprovider','string'),
+    Field('tern_contract_type','string'),
+    format = '%(title)s'
+    )
+
+db.dataset.contact.requires = [IS_EMAIL()]
+  
+# db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (datatables)
 
 db.define_table(

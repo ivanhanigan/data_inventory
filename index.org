@@ -332,7 +332,6 @@ A web2py app to help manage research data
 **** dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-  
   #### ONE (project) TO MANY (dataset)
   
   db.define_table(
@@ -349,14 +348,14 @@ A web2py app to help manage research data
       Field('boundingcoordinates','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
- -    Field('tern_contract_type','string'),
+      Field('tern_contract_type','string'),
       format = '%(title)s'
       )
-
+  
   db.dataset.contact.requires = [IS_EMAIL()]
     
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
-    
+     
 #+end_src
 
 **** old dataset
@@ -766,7 +765,7 @@ def register_accessor():
                                          db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                          db.deed.data_owner],
                                          orderby = dict(project=db.project.id, dataset=db.dataset.title),
-                               user_signature=False,maxtextlength =200)
+                               user_signature=True,maxtextlength =200)
       return dict(grid=grid)
 #+end_src  
 *** COMMENT deprecated manageproj-code
@@ -783,7 +782,7 @@ def register_accessor():
                                          db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.thesaurus, db.keyword.keyword],
-                               user_signature=False,maxtextlength =200)
+                               user_signature=True,maxtextlength =200)
       return dict(grid=grid)
   
 #+end_src
@@ -805,7 +804,7 @@ def manage_datasets():
                                        db.checklist.checked_by, db.checklist.check_date, 
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                        db.deed.data_owner],
-                             user_signature=False,maxtextlength =200)
+                             user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 
 #+end_src
@@ -1243,12 +1242,12 @@ def manage_datasets():
   #    return dict(form=form, records=records)
   
   def search_dogs():
-      return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
+      return dict(form=SQLFORM.grid(db.data_inventory, user_signature=True, maxtextlength =200,
                                     fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))
   
   
   def search_datasets():
-      return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=False, maxtextlength =200,
+      return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=True, maxtextlength =200,
                                     fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
   
   
@@ -1258,7 +1257,7 @@ def manage_datasets():
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
                                          db.attribute.name, db.attribute.definition],
-                               user_signature=False)
+                               user_signature=True)
       return dict(grid=grid)
   
 #+end_src

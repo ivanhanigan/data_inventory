@@ -54,7 +54,7 @@ def manage_projects():
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                        db.deed.data_owner],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
-                             user_signature=False,maxtextlength =200)
+                             user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'datatable', 'attributelist','accessrequest', 'errata_and_addenda', 
@@ -69,5 +69,5 @@ def manage_datasets():
                                        db.checklist.checked_by, db.checklist.check_date, 
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                        db.deed.data_owner],
-                             user_signature=False,maxtextlength =200)
+                             user_signature=True,maxtextlength =200)
     return dict(grid=grid)
