@@ -207,8 +207,8 @@ A web2py app to help manage research data
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
+      ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -289,7 +289,7 @@ A web2py app to help manage research data
   db.define_table(
       'project',
       Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-      Field('personnel','string'),
+      Field('personnel','string', comment='This is the data owner, and a compulsory field'),
       Field('abstract', 'text')
       )
 #+end_src
@@ -338,16 +338,18 @@ A web2py app to help manage research data
   db.define_table(
       'dataset',
       Field('project_id',db.project),
+      Field('ltern_id','integer'),
       Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('contact','string', comment = 'Compulsory'),
       Field('creator','string', comment='The name of the person, organization, or position who created the data'),
       Field('abstract','string'),
       Field('intellectualrights','string'),
-      Field('contact','string'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('boundingcoordinates','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
+ -    Field('tern_contract_type','string'),
       format = '%(title)s'
       )
 
@@ -446,7 +448,121 @@ A web2py app to help manage research data
       )
     
 #+end_src
+**** checklists
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
+#### ONE (checklist) TO one (dataset)
+db.define_table(
+    'checklist',
+    Field('dataset_id',db.dataset),
+Field('checked_by','string'),
+Field('check_date','date'),
+Field('notes_comments','text'),
+Field('data_package_title_check','boolean'),
+Field('data_set_citation_check','boolean'),
+Field('data_package_owner_check','boolean'),
+Field('data_package_owner_check_individual_name','boolean'),
+Field('data_package_owner_check_position_role','boolean'),
+Field('data_package_owner_check_organization','boolean'),
+Field('data_package_owner_check_address','boolean'),
+Field('data_package_owner_check_phone','boolean'),
+Field('data_package_owner_check_email_address','boolean'),
+Field('associated_parties','boolean'),
+Field('associated_parties_individual_name','boolean'),
+Field('associated_parties_position','boolean'),
+Field('associated_parties_organization','boolean'),
+Field('associated_parties_physical_address','boolean'),
+Field('associated_parties_phone','boolean'),
+Field('associated_parties_email_address','boolean'),
+Field('abstract','boolean'),
+Field('keywords_and_subject_categories','boolean'),
+Field('gcmd_science_keywords','boolean'),
+Field('anzsrc_for_codes','boolean'),
+Field('ltern_monitoring_themes','boolean'),
+Field('keywords_free_text','boolean'),
+Field('geographic_coverage','boolean'),
+Field('geographic_description','boolean'),
+Field('bounding_coordinates','boolean'),
+Field('temporal_coverage','boolean'),
+Field('contacts_individual_names','boolean'),
+Field('contacts_positions','boolean'),
+Field('contacts_organizations','boolean'),
+Field('contacts_addresses','boolean'),
+Field('contacts_phone','boolean'),
+Field('contacts_email_addresses','boolean'),
+Field('methods_and_sampling_information','boolean'),
+Field('method_step_titles','boolean'),
+Field('method_step_description','boolean'),
+Field('instrumentation_details','boolean'),
+Field('sampling_area_and_frequency','boolean'),
+Field('sampling_description','boolean'),
+Field('research_project_title','boolean'),
+Field('research_project_funding_sources','boolean'),
+Field('research_project_personnel_information','boolean'),
+Field('research_project_individual_name','boolean'),
+Field('research_project_position_role','boolean'),
+Field('research_project_organization','boolean'),
+Field('research_project_address','boolean'),
+Field('research_project_phone','boolean'),
+Field('research_project_email_address','boolean'),
+Field('research_project_role','boolean'),
+Field('additional_metadata','boolean'),
+
+Field('access_control','boolean'),
+
+Field('usage_rights','boolean'),
+Field('special_conditions','boolean'),
+Field('datatable_metadata','boolean'),
+Field('homepage_content','boolean'),
+Field('eml_homepage_links','boolean'),
+Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
+Field('draft_publication_checklist_passed','boolean'),
+Field('metacat_publication_checklist_check_public_or_mediated_access','boolean'),
+Field('metacat_publication_checklist_add_publication_date_to_data_inventory','boolean'),
+Field('metacat_publication_checklist_passed','boolean'),
+Field('reporting_checklist_licenced','boolean'),
+Field('reporting_checklist_described_with_metadata_','boolean'),
+Field('reporting_checklist_doi_minted','boolean'),
+Field('reporting_checklist_metadata_feed_to_tddp_and_rda','boolean'),
+Field('reporting_checklist_passed','boolean')
+    )
+    
+db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
+db.checklist.check_date.requires = IS_NOT_EMPTY()
+  
+#+end_src
+
+**** deeds
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+    
+#### ONE (deed) TO one (dataset)
+db.define_table(
+    'deed',
+    Field('dataset_id',db.dataset),
+    Field('data_owner', 'string'),
+    Field('special_permissions', 'string')
+    )
+    
+db.deed.data_owner.requires = IS_NOT_EMPTY()    
+#+end_src
+
+**** errata and addenda
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
+#### ONE (errata_and_addenda) TO one (dataset)
+db.define_table(
+    'errata_and_addenda',
+    Field('dataset_id',db.dataset),
+Field('logged_by','string'),
+Field('date_logged','date'),
+Field('date_actioned','date'),
+Field('errata','text'),
+Field('addenda','text')
+    )
+    
+db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
+db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()    
+#+end_src
 *** Defaults for controllers/default.py
 - Following the example in the documentation 
 
@@ -536,6 +652,7 @@ A web2py app to help manage research data
 #+name:top menu and register a person
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no
 response.menu = [['Manage Projects', False, URL('manage_projects')],
+                 ['Manage Datasets', False, URL('manage_datasets')],
                  ['Register Accessor', False, URL('register_accessor')],
                  ['Access Dataset', False, URL('access_dataset')]]
 
@@ -634,19 +751,63 @@ def register_accessor():
 
 *** Main form ties it all together
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
-    
-    def manage_projects():
-        grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
-                                 fields = [db.project.title,
-                                           db.dataset.title, db.dataset.creator,
-                                           db.datatable.entityname,
-                                           db.attributelist.name, db.attributelist.definition,
-                                           db.accessrequest.accessor_id, db.accessrequest.dataset_id,
-                                           db.accessrequest.title, 
-                                           db.keyword.thesaurus, db.keyword.keyword],
-                                 user_signature=False,maxtextlength =200)
-        return dict(grid=grid)
-    
+  
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest',  'errata_and_addenda',
+                                                        'checklist','deed'],
+                               fields = [db.project.title,db.project.id,
+                                         db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                                         db.datatable.entityname,
+                                         db.attributelist.name, db.attributelist.definition,
+                                         db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                         db.checklist.checked_by, db.checklist.check_date, 
+                                         db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                         db.deed.data_owner],
+                                         orderby = dict(project=db.project.id, dataset=db.dataset.title),
+                               user_signature=False,maxtextlength =200)
+      return dict(grid=grid)
+#+end_src  
+*** COMMENT deprecated manageproj-code
+#+name:deprecated manageproj
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:deprecated manageproj####
+
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
+                               fields = [db.project.title,
+                                         db.dataset.title, db.dataset.creator,
+                                         db.datatable.entityname,
+                                         db.attributelist.name, db.attributelist.definition,
+                                         db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.keyword.thesaurus, db.keyword.keyword],
+                               user_signature=False,maxtextlength =200)
+      return dict(grid=grid)
+  
+#+end_src
+
+*** Form to manage all datasets
+#+name:manage datasets
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+
+def manage_datasets():
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'datatable', 'attributelist','accessrequest', 'errata_and_addenda', 
+                                                       'checklist','deed'],
+                             fields = [db.project.title,
+                                       db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                                       db.datatable.entityname,
+                                       db.attributelist.name, db.attributelist.definition,
+                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.title, 
+                                       db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                       db.checklist.checked_by, db.checklist.check_date, 
+                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                       db.deed.data_owner],
+                             user_signature=False,maxtextlength =200)
+    return dict(grid=grid)
+
 #+end_src
 
 *** finesse the interface
@@ -662,9 +823,12 @@ def register_accessor():
   <h4>{{=T('Instructions')}}</h4>
   <ol>
     <li>{{=T('You are using the data inventory')}}</li>
-    <li>{{=XML(T('The main tool for managing projects is at %s',
+    <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of packages) is at %s',
              A('%(application)s/forms/manage_projects/'%request,
              _href=URL('forms','manage_projects'))))}}</li>
+    <li>{{=XML(T('The main tool for managing datasets (packages) is at %s',
+             A('%(application)s/forms/manage_datasets/'%request,
+             _href=URL('forms','manage_datasets'))))}}</li>
   </ol>
   {{elif 'content' in globals():}}
   {{=content}}

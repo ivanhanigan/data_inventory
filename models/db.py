@@ -88,33 +88,32 @@ use_janrain(auth, filename='private/janrain.key')
 db.define_table(
     'project',
     Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-Field('personnel','string', comment='This is the data owner, and a compulsory field'),
+    Field('personnel','string', comment='This is the data owner, and a compulsory field'),
     Field('abstract', 'text')
     )
-    
 #### ONE (project) TO MANY (dataset)
+ 
+ db.define_table(
+     'dataset',
+     Field('project_id',db.project),
+     Field('ltern_id','integer'),
+     Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+     Field('contact','string', comment = 'Compulsory'),
+     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
+     Field('abstract','string'),
+     Field('intellectualrights','string'),
+     Field('pubdate','date'),
+     Field('geographicdescription','string'),
+     Field('boundingcoordinates','string'),
+     Field('temporalcoverage','string'),
+     Field('metadataprovider','string'),
+-    Field('tern_contract_type','string'),
+     format = '%(title)s'
+     )
 
-db.define_table(
-    'dataset',
-    Field('project_id',db.project),
-    Field('ltern_id','integer'),
-    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('contact','string', comment = 'Compulsory'),    
-    Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-    Field('abstract','string'),
-    Field('intellectualrights','string'),
-    Field('pubdate','date'),
-    Field('geographicdescription','string'),
-    Field('boundingcoordinates','string'),
-    Field('temporalcoverage','string'),
-    Field('metadataprovider','string'),
-    Field('tern_contract_type','string'),
-    format = '%(title)s'
-    )
-
-db.dataset.contact.requires = [IS_EMAIL()]
-  
-# db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
+ db.dataset.contact.requires = [IS_EMAIL()]
+   
+ # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (datatables)
 
 db.define_table(
@@ -159,7 +158,6 @@ db.define_table(
     Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
     Field('keyword', 'string')
     )
-
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',
@@ -238,7 +236,6 @@ Field('reporting_checklist_passed','boolean')
     
 db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
 db.checklist.check_date.requires = IS_NOT_EMPTY()
-    
 #### ONE (deed) TO one (dataset)
 db.define_table(
     'deed',
@@ -247,9 +244,7 @@ db.define_table(
     Field('special_permissions', 'string')
     )
     
-db.deed.data_owner.requires = IS_NOT_EMPTY()    
-
-
+db.deed.data_owner.requires = IS_NOT_EMPTY()
 #### ONE (errata_and_addenda) TO one (dataset)
 db.define_table(
     'errata_and_addenda',
@@ -262,4 +257,4 @@ Field('addenda','text')
     )
     
 db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
-db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()    
+db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()

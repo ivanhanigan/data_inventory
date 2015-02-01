@@ -56,7 +56,6 @@ def manage_projects():
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=False,maxtextlength =200)
     return dict(grid=grid)
-
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'datatable', 'attributelist','accessrequest', 'errata_and_addenda', 
                                                        'checklist','deed'],
