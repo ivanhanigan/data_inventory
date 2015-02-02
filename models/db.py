@@ -88,7 +88,7 @@ use_janrain(auth, filename='private/janrain.key')
 db.define_table(
     'project',
     Field('title', 'string', comment=
-    A('The EML Project module places the data into its larger research context. Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='title', scheme=True, host=True)))
+    A('The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='title', scheme=True, host=True)))
     ),
     Field('personnel','string', comment=
     A('Compulsory. A project must have at least one originator. This is assumed to be the data owner unless role is specified.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
@@ -253,10 +253,12 @@ db.define_table(
     'deed',
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string'),
-    Field('special_permissions', 'string')
+    Field('special_permissions', 'string'),
+    Field('licence_code', 'string')
     )
     
-db.deed.data_owner.requires = IS_NOT_EMPTY()
+db.deed.data_owner.requires = IS_NOT_EMPTY()    
+db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
 #### ONE (errata_and_addenda) TO one (dataset)
 db.define_table(
     'errata_and_addenda',
