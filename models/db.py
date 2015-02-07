@@ -87,10 +87,10 @@ use_janrain(auth, filename='private/janrain.key')
 
 db.define_table(
     'project',
-    Field('title', 'string', comment=
-    A('The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='title', scheme=True, host=True)))
+    Field('title', 'string', comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]. %s',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
     ),
-    Field('personnel','string', comment=
+Field('personnel','string', comment=
     A('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
     ),
     Field('abstract', 'text', comment = 
