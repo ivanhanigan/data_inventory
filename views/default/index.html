@@ -14,6 +14,9 @@
   <li>{{=XML(T('The main tool for managing datasets (packages) is at %s',
            A('%(application)s/forms/manage_datasets/'%request,
            _href=URL('forms','manage_datasets'))))}}</li>
+  <li>{{=XML(T('The technical documentation for this application is at %s',
+           A('this link',
+           _href=URL('static','index.html'))))}}</li>  
 </ol>
 {{elif 'content' in globals():}}
 {{=content}}

@@ -5,16 +5,17 @@
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 #+LATEX: \tableofcontents
 -----
-*** COMMENT publish-code
+
+* COMMENT publish-code
 #+name:publish
-#+begin_src sh :session *shell* :tangle no :exports none :eval yes
+#+begin_src sh :session *shell* :tangle no :exports none :reports none :eval yes
 #### name:publish####
-mv data_inventory.html index.html
+mv index.html static/index.html
 #+end_src
 
 #+RESULTS: publish
 
-* todo list
+* COMMENT todo list
 > drv <- dbDriver("SQLite")
 > tfile <- tempfile()
 > con <- dbConnect(drv, dbname = "~/pitch.sqlite")
@@ -182,10 +183,10 @@ A web2py app to help manage research data
   python ./web2py.py -S data_inventory
 #+end_src
 
-** Set up database tables
-*** relational model
+* Set up database tables
+** relational model
 - The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
-*** defaults for models/db.py
+** defaults for models/db.py
 - the database tables are set up in the models/db.py file that comes with default settings
 - The first bit to change is the db reference from SQLite to postgres
 - also note that "#if request.is\_local else []" will allow using as a server
@@ -280,8 +281,8 @@ A web2py app to help manage research data
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-*** define our tables
-**** project
+** define our tables
+** project
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### projects
@@ -305,7 +306,7 @@ A web2py app to help manage research data
   
   db.project.personnel.requires = IS_NOT_EMPTY()
 #+end_src
-**** COMMENT dataset-setup-code
+*** COMMENT dataset-setup-code
 #+name:dataset-setup
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:dataset-setup####
@@ -341,7 +342,7 @@ A web2py app to help manage research data
   cat(psql)
 #+end_src
 
-**** dataset
+*** dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   #### ONE (project) TO MANY (dataset)
@@ -370,7 +371,7 @@ A web2py app to help manage research data
      
 #+end_src
 
-**** old dataset
+*** old dataset
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
   
   #### ONE (project) TO MANY (dataset)
@@ -392,7 +393,7 @@ A web2py app to help manage research data
   db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 
 #+end_src
-**** datatable
+*** datatable
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
   #### ONE (dataset) TO MANY (datatables)
@@ -404,7 +405,7 @@ A web2py app to help manage research data
       Field('entitydescription', 'text')
       )
 #+end_src
-**** attribute
+*** attribute
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### ONE (datatable) TO MANY (attributes/variables)
@@ -416,7 +417,7 @@ A web2py app to help manage research data
       Field('definition', 'string')
       )
 #+end_src
-**** accessor
+*** accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### accessors
@@ -432,7 +433,7 @@ A web2py app to help manage research data
   db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
   
 #+end_src
-**** access
+*** access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (datasets) TO MANY (accessors)
@@ -446,7 +447,7 @@ A web2py app to help manage research data
       )
     
 #+end_src
-**** keywords
+*** keywords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (keywords) TO one (dataset)
@@ -459,7 +460,7 @@ A web2py app to help manage research data
       )
     
 #+end_src
-**** checklists
+*** checklists
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (checklist) TO one (dataset)
@@ -543,7 +544,7 @@ db.checklist.check_date.requires = IS_NOT_EMPTY()
   
 #+end_src
 
-**** deeds
+*** deeds
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
 #### ONE (deed) TO one (dataset)
@@ -560,7 +561,7 @@ db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
 
 #+end_src
 
-**** errata and addenda
+*** errata and addenda
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (errata_and_addenda) TO one (dataset)
@@ -577,7 +578,7 @@ Field('addenda','text')
 db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
 db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
-*** Defaults for controllers/default.py
+** Defaults for controllers/default.py
 - Following the example in the documentation 
 
 #+name:controllers/default.py
@@ -660,7 +661,7 @@ db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()
       return dict(form=crud())
 
 #+end_src
-*** Top Menu And Register Accessors
+** Top Menu And Register Accessors
 - From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
 - The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
 #+name:top menu and register a person
@@ -685,7 +686,7 @@ def register_accessor():
 
 #+end_src
 
-*** Access a dataset
+** Access a dataset
 - Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
 
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
@@ -716,7 +717,7 @@ def register_accessor():
   
   
 #+end_src
-*** COMMENT Access a dataset
+** COMMENT Access a dataset
 - Example 32 is a rather sophisticated buy form. It checks that the buyer and the product are in the database and updates the corresponding record or inserts a new purchase. It also does a JOIN to list all purchases. 
 # controllers/forms.py
 #+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
@@ -750,7 +751,7 @@ def register_accessor():
       return dict(form=form, records=records)
   
 #+end_src
-*** Register access view
+** Register access view
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/views/forms/access_dataset.html :exports reports :eval no :padline no
   
   {{extend 'layout.html'}}
@@ -763,7 +764,7 @@ def register_accessor():
   
 #+end_src
 
-*** Main form ties it all together
+** Main form ties it all together
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
@@ -783,7 +784,7 @@ def register_accessor():
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
 #+end_src  
-*** COMMENT deprecated manageproj-code
+** COMMENT deprecated manageproj-code
 #+name:deprecated manageproj
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:deprecated manageproj####
@@ -802,7 +803,7 @@ def register_accessor():
   
 #+end_src
 
-*** Form to manage all datasets
+** Form to manage all datasets
 #+name:manage datasets
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
@@ -825,7 +826,7 @@ def register_accessor():
   
 #+end_src
 
-*** finesse the interface
+** finesse the interface
 - the following makes a home page
 - also go to static/css/web2py.css and change line 33/34 text width to about 800px
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
@@ -844,6 +845,9 @@ def register_accessor():
     <li>{{=XML(T('The main tool for managing datasets (packages) is at %s',
              A('%(application)s/forms/manage_datasets/'%request,
              _href=URL('forms','manage_datasets'))))}}</li>
+    <li>{{=XML(T('The technical documentation for this application is at %s',
+             A('this link',
+             _href=URL('static','index.html'))))}}</li>  
   </ol>
   {{elif 'content' in globals():}}
   {{=content}}
