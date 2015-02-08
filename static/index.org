@@ -1,4 +1,4 @@
-#+TITLE:data inventory 
+#+TITLE:Data Inventory 
 #+AUTHOR: Ivan Hanigan
 #+email: ivan.hanigan@anu.edu.au
 #+LaTeX_CLASS: article
@@ -6,14 +6,6 @@
 #+LATEX: \tableofcontents
 -----
 
-* COMMENT publish-code
-#+name:publish
-#+begin_src sh :session *shell* :tangle no :exports none :reports none :eval yes
-#### name:publish####
-mv index.html static/index.html
-#+end_src
-
-#+RESULTS: publish
 
 * COMMENT todo list
 > drv <- dbDriver("SQLite")
@@ -163,7 +155,7 @@ A web2py app to help manage research data
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
-* Design the database and interface
+* Design the database 
 ** Create a new database
 - create a new postgres database using the following  code
 #+name:create.db
@@ -183,7 +175,6 @@ A web2py app to help manage research data
   python ./web2py.py -S data_inventory
 #+end_src
 
-* Set up database tables
 ** relational model
 - The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
 ** defaults for models/db.py
@@ -281,37 +272,82 @@ A web2py app to help manage research data
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-** define our tables
-** COMMENT project
+* Define our tables
+The following sections show the definitions LTERN used to create the data inventory
+** Project Information and Data Owners
+- The EML Project module is used to place the dataset that is being documented into its larger research context.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html][EML online]]
+- The KNB says this is for 'Research context information for resources': The eml-project module describes the research context in which the dataset was created, including descriptions of over-all motivations and goals, funding, personnel, description of the study area etc. This is also the module to describe the design of the project: the scientific questions being asked, the architecture of the design, etc. 
+- Morpho says: this metadata element is to recognise that data may be collected as part of a larger research program  (umbrella research project).  For example a large NSF grant may provide funds for several investigators to collect data at various locations.
+- The new KNB metacat skin uses the title "Parent Project Information".
+- Please also note the [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#relatedProject]['relatedProject']] tag which LTERN is not currently using.  This 'is a recursive link to another project. This allows projects to be nested under one another for the case where one project spawns another.'
+
+*** COMMENT project code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### projects
   
   db.define_table(
       'project',
-      Field('title', 'string', comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]. %s',
+#+end_src
+** eml/dataset/project/title
+LTERN's suggested structure is either:
+- the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
+- a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
+
+*** COMMENT project/title/code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('title', 'string',
+  comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  ),
+#+end_src
+** eml/dataset/project/personnel
+In EML the Data Owner is able to be shown at various points on the xpath.  
+LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel][EML online]]
+
+*** COMMENT personnel-code
+# cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('personnel','string', 
+  comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+  ),
+#+end_src
+** eml/dataset/project/abstract
+The following information is used to create the LTERN Data Portal record for each Data Package:
+Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
+We use the informative abstract method. The eml/dataset/project/abstract should be a descriptive of the umbrella project, not the dataset.
+- Briefly outline the relevant project or study including the Plot Network name and describe the contents of the data package. 
+- Include geographic location, the primary objectives of the study, what data was collected (species or phenomena), the year range the data was collected in, and collection frequency if applicable.
+- Describe methodology techniques or approaches only to the degree necessary for comprehension – don’t go into any detail.
+- Cite references and/or links to any publications that are related to the data package.
+- Single paragraph. 200-250 words.
+- Use active voice and past tense.
+- Use short complete sentences.
+- Express terms in both their abbreviated and spelled out form for search retrieval purposes.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#abstract][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#abstract][EML online]]
+*** COMMENT abstract-code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('abstract', 'text',
+      comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
       ),
 #+end_src
-** eml/title
-- eml-2.1.1/docs/eml-2.1.1/eml-project.html
-- The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]
-- [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML definition]]
-** COMMENT personnel-code
+** eml/dataset/project/studyAreaDescription
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML online]]
+*** COMMENT comment studydesc
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('personnel','string', comment=
-      A('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
-      ),
-      Field('abstract', 'text', comment = 
-      A('A descriptive abstract.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='abstract', scheme=True, host=True)))
-      ),
-      Field('studyAreaDescription','string', comment=
-      A('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='studyAreaDescription', scheme=True, host=True)))
-      ), 
-  
+      Field('studyAreaDescription','string', 
+      comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+      ) 
       )
   
-  db.project.personnel.requires = IS_NOT_EMPTY()
+      db.project.personnel.requires = IS_NOT_EMPTY()
 #+end_src
 ** COMMENT dataset-setup-code
 #+name:dataset-setup
@@ -349,7 +385,7 @@ A web2py app to help manage research data
   cat(psql)
 #+end_src
 
-** dataset
+** COMMENT dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   #### ONE (project) TO MANY (dataset)
@@ -378,7 +414,7 @@ A web2py app to help manage research data
      
 #+end_src
 
-** old dataset
+** COMMENT old dataset
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
   
   #### ONE (project) TO MANY (dataset)
@@ -400,7 +436,7 @@ A web2py app to help manage research data
   db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 
 #+end_src
-** datatable
+** COMMENT datatable
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
   #### ONE (dataset) TO MANY (datatables)
@@ -412,7 +448,7 @@ A web2py app to help manage research data
       Field('entitydescription', 'text')
       )
 #+end_src
-** attribute
+** COMMENT attribute
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### ONE (datatable) TO MANY (attributes/variables)
@@ -424,7 +460,7 @@ A web2py app to help manage research data
       Field('definition', 'string')
       )
 #+end_src
-** accessor
+** COMMENT accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### accessors
@@ -440,7 +476,7 @@ A web2py app to help manage research data
   db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
   
 #+end_src
-** access
+** COMMENT access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (datasets) TO MANY (accessors)
@@ -454,7 +490,7 @@ A web2py app to help manage research data
       )
     
 #+end_src
-** keywords
+** COMMENT keywords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (keywords) TO one (dataset)
@@ -467,7 +503,24 @@ A web2py app to help manage research data
       )
     
 #+end_src
-** checklists
+
+** COMMENT deeds
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+    
+#### ONE (deed) TO one (dataset)
+db.define_table(
+    'deed',
+    Field('dataset_id',db.dataset),
+    Field('data_owner', 'string'),
+    Field('special_permissions', 'string'),
+    Field('licence_code', 'string')
+    )
+    
+db.deed.data_owner.requires = IS_NOT_EMPTY()    
+db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
+
+#+end_src
+** COMMENT checklists
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (checklist) TO one (dataset)
@@ -551,24 +604,7 @@ db.checklist.check_date.requires = IS_NOT_EMPTY()
   
 #+end_src
 
-** deeds
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-    
-#### ONE (deed) TO one (dataset)
-db.define_table(
-    'deed',
-    Field('dataset_id',db.dataset),
-    Field('data_owner', 'string'),
-    Field('special_permissions', 'string'),
-    Field('licence_code', 'string')
-    )
-    
-db.deed.data_owner.requires = IS_NOT_EMPTY()    
-db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
-
-#+end_src
-
-** errata and addenda
+** COMMENT errata and addenda
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (errata_and_addenda) TO one (dataset)
@@ -585,6 +621,7 @@ Field('addenda','text')
 db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
 db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
+* Design User Interface
 ** Defaults for controllers/default.py
 - Following the example in the documentation 
 
@@ -676,8 +713,8 @@ db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
                  ['Register Accessor', False, URL('register_accessor')],
-                 ['Access Dataset', False, URL('access_dataset')]]
-
+                 ['Access Dataset', False, URL('access_dataset')],
+                 ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 def register_accessor():
     # create an insert form from the table
     form = SQLFORM(db.accessor).process()

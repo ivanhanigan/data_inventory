@@ -2,8 +2,8 @@
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
                  ['Register Accessor', False, URL('register_accessor')],
-                 ['Access Dataset', False, URL('access_dataset')]]
-
+                 ['Access Dataset', False, URL('access_dataset')],
+                 ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 def register_accessor():
     # create an insert form from the table
     form = SQLFORM(db.accessor).process()

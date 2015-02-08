@@ -3,11 +3,11 @@
                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>data inventory </title>
+<title>Data Inventory </title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<meta name="title" content="data inventory "/>
+<meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-02-08T14:04+1100"/>
+<meta name="generated" content="2015-02-08T17:27+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -115,11 +115,10 @@ for the JavaScript code in this tag.
 </div>
 
 <div id="content">
-<h1 class="title">data inventory </h1>
+<h1 class="title">Data Inventory </h1>
 
 
 <hr/>
-
 
 
 
@@ -148,35 +147,32 @@ for the JavaScript code in this tag.
 <li><a href="#sec-3-2">3.2 the web2py database example</a></li>
 </ul>
 </li>
-<li><a href="#sec-4">4 Design the database and interface</a>
+<li><a href="#sec-4">4 Design the database</a>
 <ul>
 <li><a href="#sec-4-1">4.1 Create a new database</a></li>
 <li><a href="#sec-4-2">4.2 Create a new web2py application</a></li>
+<li><a href="#sec-4-3">4.3 relational model</a></li>
+<li><a href="#sec-4-4">4.4 defaults for models/db.py</a></li>
 </ul>
 </li>
-<li><a href="#sec-5">5 Set up database tables</a>
+<li><a href="#sec-5">5 Define our tables</a>
 <ul>
-<li><a href="#sec-5-1">5.1 relational model</a></li>
-<li><a href="#sec-5-2">5.2 defaults for models/db.py</a></li>
-<li><a href="#sec-5-3">5.3 define our tables</a></li>
-<li><a href="#sec-5-4">5.4 eml/title</a></li>
-<li><a href="#sec-5-5">5.5 dataset</a></li>
-<li><a href="#sec-5-6">5.6 old dataset</a></li>
-<li><a href="#sec-5-7">5.7 datatable</a></li>
-<li><a href="#sec-5-8">5.8 attribute</a></li>
-<li><a href="#sec-5-9">5.9 accessor</a></li>
-<li><a href="#sec-5-10">5.10 access</a></li>
-<li><a href="#sec-5-11">5.11 keywords</a></li>
-<li><a href="#sec-5-12">5.12 checklists</a></li>
-<li><a href="#sec-5-13">5.13 deeds</a></li>
-<li><a href="#sec-5-14">5.14 errata and addenda</a></li>
-<li><a href="#sec-5-15">5.15 Defaults for controllers/default.py</a></li>
-<li><a href="#sec-5-16">5.16 Top Menu And Register Accessors</a></li>
-<li><a href="#sec-5-17">5.17 Access a dataset</a></li>
-<li><a href="#sec-5-18">5.18 Register access view</a></li>
-<li><a href="#sec-5-19">5.19 Main form ties it all together</a></li>
-<li><a href="#sec-5-20">5.20 Form to manage all datasets</a></li>
-<li><a href="#sec-5-21">5.21 finesse the interface</a></li>
+<li><a href="#sec-5-1">5.1 Project Information and Data Owners</a></li>
+<li><a href="#sec-5-2">5.2 eml/dataset/project/title</a></li>
+<li><a href="#sec-5-3">5.3 eml/dataset/project/personnel</a></li>
+<li><a href="#sec-5-4">5.4 eml/dataset/project/abstract</a></li>
+<li><a href="#sec-5-5">5.5 eml/dataset/project/studyAreaDescription</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 Design User Interface</a>
+<ul>
+<li><a href="#sec-6-1">6.1 Defaults for controllers/default.py</a></li>
+<li><a href="#sec-6-2">6.2 Top Menu And Register Accessors</a></li>
+<li><a href="#sec-6-3">6.3 Access a dataset</a></li>
+<li><a href="#sec-6-4">6.4 Register access view</a></li>
+<li><a href="#sec-6-5">6.5 Main form ties it all together</a></li>
+<li><a href="#sec-6-6">6.6 Form to manage all datasets</a></li>
+<li><a href="#sec-6-7">6.7 finesse the interface</a></li>
 </ul>
 </li>
 </ul>
@@ -417,7 +413,7 @@ for the JavaScript code in this tag.
 </div>
 
 <div id="outline-container-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Design the database and interface</h2>
+<h2 id="sec-4"><span class="section-number-2">4</span> Design the database</h2>
 <div class="outline-text-2" id="text-4">
 
 
@@ -466,20 +462,12 @@ python ./web2py.py -S data_inventory
 
 
 </div>
-</div>
 
 </div>
 
-<div id="outline-container-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Set up database tables</h2>
-<div class="outline-text-2" id="text-5">
-
-
-</div>
-
-<div id="outline-container-5-1" class="outline-3">
-<h3 id="sec-5-1"><span class="section-number-3">5.1</span> relational model</h3>
-<div class="outline-text-3" id="text-5-1">
+<div id="outline-container-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> relational model</h3>
+<div class="outline-text-3" id="text-4-3">
 
 <ul>
 <li>The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
@@ -490,9 +478,9 @@ python ./web2py.py -S data_inventory
 
 </div>
 
-<div id="outline-container-5-2" class="outline-3">
-<h3 id="sec-5-2"><span class="section-number-3">5.2</span> defaults for models/db.py</h3>
-<div class="outline-text-3" id="text-5-2">
+<div id="outline-container-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> defaults for models/db.py</h3>
+<div class="outline-text-3" id="text-4-4">
 
 <ul>
 <li>the database tables are set up in the models/db.py file that comes with default settings
@@ -510,12 +498,74 @@ python ./web2py.py -S data_inventory
 
 
 </div>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Define our tables</h2>
+<div class="outline-text-2" id="text-5">
+
+<p>The following sections show the definitions LTERN used to create the data inventory
+</p>
+</div>
+
+<div id="outline-container-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Project Information and Data Owners</h3>
+<div class="outline-text-3" id="text-5-1">
+
+<ul>
+<li>The EML Project module is used to place the dataset that is being documented into its larger research context.
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html">EML online</a>
+</li>
+<li>The KNB says this is for 'Research context information for resources': The eml-project module describes the research context in which the dataset was created, including descriptions of over-all motivations and goals, funding, personnel, description of the study area etc. This is also the module to describe the design of the project: the scientific questions being asked, the architecture of the design, etc. 
+</li>
+<li>Morpho says: this metadata element is to recognise that data may be collected as part of a larger research program  (umbrella research project).  For example a large NSF grant may provide funds for several investigators to collect data at various locations.
+</li>
+<li>The new KNB metacat skin uses the title "Parent Project Information".
+</li>
+<li>Please also note the <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#relatedProject">'relatedProject'</a> tag which LTERN is not currently using.  This 'is a recursive link to another project. This allows projects to be nested under one another for the case where one project spawns another.'
+</li>
+</ul>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> eml/dataset/project/title</h3>
+<div class="outline-text-3" id="text-5-2">
+
+<p>LTERN's suggested structure is either:
+</p><ul>
+<li>the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
+</li>
+<li>a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title">EML online</a>
+</li>
+</ul>
+
+
+
+</div>
 
 </div>
 
 <div id="outline-container-5-3" class="outline-3">
-<h3 id="sec-5-3"><span class="section-number-3">5.3</span> define our tables</h3>
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> eml/dataset/project/personnel</h3>
 <div class="outline-text-3" id="text-5-3">
+
+<p>In EML the Data Owner is able to be shown at various points on the xpath.  
+LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
+</p><ul>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel">EML online</a>
+</li>
+</ul>
+
 
 
 </div>
@@ -523,19 +573,32 @@ python ./web2py.py -S data_inventory
 </div>
 
 <div id="outline-container-5-4" class="outline-3">
-<h3 id="sec-5-4"><span class="section-number-3">5.4</span> eml/title</h3>
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> eml/dataset/project/abstract</h3>
 <div class="outline-text-3" id="text-5-4">
 
-<ul>
-<li>eml-2.1.1/docs/eml-2.1.1/eml-project.html
+<p>The following information is used to create the LTERN Data Portal record for each Data Package:
+Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
+We use the informative abstract method. The eml/dataset/project/abstract should be a descriptive of the umbrella project, not the dataset.
+</p><ul>
+<li>Briefly outline the relevant project or study including the Plot Network name and describe the contents of the data package. 
 </li>
-<li>The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]
+<li>Include geographic location, the primary objectives of the study, what data was collected (species or phenomena), the year range the data was collected in, and collection frequency if applicable.
 </li>
-<li><a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title">EML definition</a>
+<li>Describe methodology techniques or approaches only to the degree necessary for comprehension – don’t go into any detail.
+</li>
+<li>Cite references and/or links to any publications that are related to the data package.
+</li>
+<li>Single paragraph. 200-250 words.
+</li>
+<li>Use active voice and past tense.
+</li>
+<li>Use short complete sentences.
+</li>
+<li>Express terms in both their abbreviated and spelled out form for search retrieval purposes.
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#abstract">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#abstract">EML online</a>
 </li>
 </ul>
-
-
 
 
 </div>
@@ -543,337 +606,45 @@ python ./web2py.py -S data_inventory
 </div>
 
 <div id="outline-container-5-5" class="outline-3">
-<h3 id="sec-5-5"><span class="section-number-3">5.5</span> dataset</h3>
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> eml/dataset/project/studyAreaDescription</h3>
 <div class="outline-text-3" id="text-5-5">
 
+<ul>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML online</a>
+</li>
+</ul>
 
 
 
 
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (project) TO MANY (dataset)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'dataset',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('project_id',db.project),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('ltern_id','integer'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('title','string', comment='Suggested structure is: </span><span style="color: #859900; font-weight: bold;">[umbrella project]</span><span style="color: #268bd2; font-weight: bold;"> </span><span style="color: #b58900;">[data type]</span><span style="color: #268bd2; font-weight: bold;"> </span><span style="color: #859900; font-weight: bold;">[geographic coverage]</span><span style="color: #268bd2; font-weight: bold;"> </span><span style="color: #b58900;">[temporal coverage]</span><span style="color: #268bd2; font-weight: bold;">'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('contact','string', comment = 'Compulsory'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('creator','string', comment='The name of the person, organization, or position who created the data'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('abstract','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('intellectualrights','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('pubdate','date'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('geographicdescription','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('boundingcoordinates','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('temporalcoverage','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('metadataprovider','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('tern_contract_type','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    format = '%(title)s'</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-
-db.dataset.contact.requires = [IS_EMAIL()]
-  
-<span style="color: #268bd2; font-weight: bold;">#</span> <span style="color: #268bd2; font-weight: bold;">db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]</span>
-   
-</pre>
 
 
+
+
+
+
+
+
+
+
+
+
+
+</div>
 </div>
 
 </div>
 
-<div id="outline-container-5-6" class="outline-3">
-<h3 id="sec-5-6"><span class="section-number-3">5.6</span> old dataset</h3>
-<div class="outline-text-3" id="text-5-6">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (project) TO MANY (dataset)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'dataset',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('project_id',db.project),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('title','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('creator', 'string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('contact','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('intellectualrights','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('pubdate','date'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('geographicdescription','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('temporalcoverage','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('metadataprovider','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    format = '%(title)s'</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-
-db.dataset.metadataprovider.requires = [IS<span style="color: #268bd2; font-style: italic;">_EMAIL(), IS_</span>NOT<span style="color: #268bd2; font-style: italic;">_IN_</span>DB(db, 'dataset.metadataprovider')]
-
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-7" class="outline-3">
-<h3 id="sec-5-7"><span class="section-number-3">5.7</span> datatable</h3>
-<div class="outline-text-3" id="text-5-7">
-
-
-
-
-<pre class="src src-markdown">  
-<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (dataset) TO MANY (datatables)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'datatable',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('dataset_id',db.dataset),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('entityname','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('entitydescription', 'text')</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-8" class="outline-3">
-<h3 id="sec-5-8"><span class="section-number-3">5.8</span> attribute</h3>
-<div class="outline-text-3" id="text-5-8">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (datatable) TO MANY (attributes/variables)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'attributelist',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('datatable_id',db.datatable),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('name','string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('definition', 'string')</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-9" class="outline-3">
-<h3 id="sec-5-9"><span class="section-number-3">5.9</span> accessor</h3>
-<div class="outline-text-3" id="text-5-9">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">accessors</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'accessor',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('name'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('email'),</span>
-<span style="color: #268bd2; font-weight: bold;">    format = '%(email)s'</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-
-db.accessor.name.requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()
-db.accessor.email.requires = [IS<span style="color: #268bd2; font-style: italic;">_EMAIL(), IS_</span>NOT<span style="color: #268bd2; font-style: italic;">_IN_</span>DB(db, 'accessor.email')]
-
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-10" class="outline-3">
-<h3 id="sec-5-10"><span class="section-number-3">5.10</span> access</h3>
-<div class="outline-text-3" id="text-5-10">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">MANY (datasets) TO MANY (accessors)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'accessrequest',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('dataset_id',db.dataset),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('accessor_id',db.accessor),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('title', 'string'),</span>
-<span style="color: #268bd2; font-weight: bold;">    format = '%(title)s %(accessor_id)s -&gt; %(dataset_id)s'</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-<span style="color: #268bd2; font-weight: bold;">  </span>
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-11" class="outline-3">
-<h3 id="sec-5-11"><span class="section-number-3">5.11</span> keywords</h3>
-<div class="outline-text-3" id="text-5-11">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">MANY (keywords) TO one (dataset)</span>
-
-db.define_table(
-<span style="color: #268bd2; font-weight: bold;">    'keyword',</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('dataset_id',db.dataset),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('thesaurus', 'string', comment = 'source of authoritative definitions'),</span>
-<span style="color: #268bd2; font-weight: bold;">    Field('keyword', 'string')</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-<span style="color: #268bd2; font-weight: bold;">  </span>
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-12" class="outline-3">
-<h3 id="sec-5-12"><span class="section-number-3">5.12</span> checklists</h3>
-<div class="outline-text-3" id="text-5-12">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (checklist) TO one (dataset)</span>
-db.define<span style="color: #268bd2; font-style: italic;">_table(</span>
-<span style="color: #268bd2; font-style: italic;">    'checklist',</span>
-<span style="color: #268bd2; font-style: italic;">    Field('dataset_</span>id',db.dataset),
-Field('checked<span style="color: #268bd2; font-style: italic;">_by','string'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('check_</span>date','date'),
-Field('notes<span style="color: #268bd2; font-style: italic;">_comments','text'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('data_</span>package<span style="color: #268bd2; font-style: italic;">_title_</span>check','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_set_</span>citation<span style="color: #268bd2; font-style: italic;">_check','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('data_</span>package<span style="color: #268bd2; font-style: italic;">_owner_</span>check','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_package_</span>owner<span style="color: #268bd2; font-style: italic;">_check_</span>individual<span style="color: #268bd2; font-style: italic;">_name','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('data_</span>package<span style="color: #268bd2; font-style: italic;">_owner_</span>check<span style="color: #268bd2; font-style: italic;">_position_</span>role','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_package_</span>owner<span style="color: #268bd2; font-style: italic;">_check_</span>organization','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_package_</span>owner<span style="color: #268bd2; font-style: italic;">_check_</span>address','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_package_</span>owner<span style="color: #268bd2; font-style: italic;">_check_</span>phone','boolean'),
-Field('data<span style="color: #268bd2; font-style: italic;">_package_</span>owner<span style="color: #268bd2; font-style: italic;">_check_</span>email<span style="color: #268bd2; font-style: italic;">_address','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('associated_</span>parties','boolean'),
-Field('associated<span style="color: #268bd2; font-style: italic;">_parties_</span>individual<span style="color: #268bd2; font-style: italic;">_name','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('associated_</span>parties<span style="color: #268bd2; font-style: italic;">_position','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('associated_</span>parties<span style="color: #268bd2; font-style: italic;">_organization','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('associated_</span>parties<span style="color: #268bd2; font-style: italic;">_physical_</span>address','boolean'),
-Field('associated<span style="color: #268bd2; font-style: italic;">_parties_</span>phone','boolean'),
-Field('associated<span style="color: #268bd2; font-style: italic;">_parties_</span>email<span style="color: #268bd2; font-style: italic;">_address','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('abstract','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('keywords_</span>and<span style="color: #268bd2; font-style: italic;">_subject_</span>categories','boolean'),
-Field('gcmd<span style="color: #268bd2; font-style: italic;">_science_</span>keywords','boolean'),
-Field('anzsrc<span style="color: #268bd2; font-style: italic;">_for_</span>codes','boolean'),
-Field('ltern<span style="color: #268bd2; font-style: italic;">_monitoring_</span>themes','boolean'),
-Field('keywords<span style="color: #268bd2; font-style: italic;">_free_</span>text','boolean'),
-Field('geographic<span style="color: #268bd2; font-style: italic;">_coverage','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('geographic_</span>description','boolean'),
-Field('bounding<span style="color: #268bd2; font-style: italic;">_coordinates','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('temporal_</span>coverage','boolean'),
-Field('contacts<span style="color: #268bd2; font-style: italic;">_individual_</span>names','boolean'),
-Field('contacts<span style="color: #268bd2; font-style: italic;">_positions','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('contacts_</span>organizations','boolean'),
-Field('contacts<span style="color: #268bd2; font-style: italic;">_addresses','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('contacts_</span>phone','boolean'),
-Field('contacts<span style="color: #268bd2; font-style: italic;">_email_</span>addresses','boolean'),
-Field('methods<span style="color: #268bd2; font-style: italic;">_and_</span>sampling<span style="color: #268bd2; font-style: italic;">_information','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('method_</span>step<span style="color: #268bd2; font-style: italic;">_titles','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('method_</span>step<span style="color: #268bd2; font-style: italic;">_description','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('instrumentation_</span>details','boolean'),
-Field('sampling<span style="color: #268bd2; font-style: italic;">_area_</span>and<span style="color: #268bd2; font-style: italic;">_frequency','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('sampling_</span>description','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>title','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>funding<span style="color: #268bd2; font-style: italic;">_sources','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('research_</span>project<span style="color: #268bd2; font-style: italic;">_personnel_</span>information','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>individual<span style="color: #268bd2; font-style: italic;">_name','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('research_</span>project<span style="color: #268bd2; font-style: italic;">_position_</span>role','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>organization','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>address','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>phone','boolean'),
-Field('research<span style="color: #268bd2; font-style: italic;">_project_</span>email<span style="color: #268bd2; font-style: italic;">_address','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('research_</span>project<span style="color: #268bd2; font-style: italic;">_role','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('additional_</span>metadata','boolean'),
-
-Field('access_control','boolean'),
-
-Field('usage<span style="color: #268bd2; font-style: italic;">_rights','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('special_</span>conditions','boolean'),
-Field('datatable<span style="color: #268bd2; font-style: italic;">_metadata','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('homepage_</span>content','boolean'),
-Field('eml<span style="color: #268bd2; font-style: italic;">_homepage_</span>links','boolean'),
-Field('can<span style="color: #268bd2; font-style: italic;">_the_</span>plot<span style="color: #268bd2; font-style: italic;">_network_</span>or<span style="color: #268bd2; font-style: italic;">_data_</span>package<span style="color: #268bd2; font-style: italic;">_be_</span>filtered<span style="color: #268bd2; font-style: italic;">_in_</span>the<span style="color: #268bd2; font-style: italic;">_search_</span>bar<span style="color: #268bd2; font-style: italic;">_of_</span>the<span style="color: #268bd2; font-style: italic;">_portal','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('draft_</span>publication<span style="color: #268bd2; font-style: italic;">_checklist_</span>passed','boolean'),
-Field('metacat<span style="color: #268bd2; font-style: italic;">_publication_</span>checklist<span style="color: #268bd2; font-style: italic;">_check_</span>public<span style="color: #268bd2; font-style: italic;">_or_</span>mediated<span style="color: #268bd2; font-style: italic;">_access','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('metacat_</span>publication<span style="color: #268bd2; font-style: italic;">_checklist_</span>add<span style="color: #268bd2; font-style: italic;">_publication_</span>date<span style="color: #268bd2; font-style: italic;">_to_</span>data<span style="color: #268bd2; font-style: italic;">_inventory','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('metacat_</span>publication<span style="color: #268bd2; font-style: italic;">_checklist_</span>passed','boolean'),
-Field('reporting<span style="color: #268bd2; font-style: italic;">_checklist_</span>licenced','boolean'),
-Field('reporting<span style="color: #268bd2; font-style: italic;">_checklist_</span>described<span style="color: #268bd2; font-style: italic;">_with_</span>metadata<span style="color: #268bd2; font-style: italic;">_','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('reporting_</span>checklist<span style="color: #268bd2; font-style: italic;">_doi_</span>minted','boolean'),
-Field('reporting<span style="color: #268bd2; font-style: italic;">_checklist_</span>metadata<span style="color: #268bd2; font-style: italic;">_feed_</span>to<span style="color: #268bd2; font-style: italic;">_tddp_</span>and<span style="color: #268bd2; font-style: italic;">_rda','boolean'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('reporting_</span>checklist<span style="color: #268bd2; font-style: italic;">_passed','boolean')</span>
-<span style="color: #268bd2; font-style: italic;">    )</span>
-<span style="color: #268bd2; font-style: italic;">    </span>
-<span style="color: #268bd2; font-style: italic;">db.checklist.checked_</span>by.requires = IS<span style="color: #268bd2; font-style: italic;">_IN_</span>SET(['Claire', 'Karl'])
-db.checklist.check<span style="color: #268bd2; font-style: italic;">_date.requires = IS_</span>NOT_EMPTY()
-  
-</pre>
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Design User Interface</h2>
+<div class="outline-text-2" id="text-6">
 
 
 </div>
 
-</div>
-
-<div id="outline-container-5-13" class="outline-3">
-<h3 id="sec-5-13"><span class="section-number-3">5.13</span> deeds</h3>
-<div class="outline-text-3" id="text-5-13">
-
-
-
-
-<pre class="src src-markdown">    
-<span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (deed) TO one (dataset)</span>
-db.define<span style="color: #268bd2; font-style: italic;">_table(</span>
-<span style="color: #268bd2; font-style: italic;">    'deed',</span>
-<span style="color: #268bd2; font-style: italic;">    Field('dataset_</span>id',db.dataset),
-    Field('data<span style="color: #268bd2; font-style: italic;">_owner', 'string'),</span>
-<span style="color: #268bd2; font-style: italic;">    Field('special_</span>permissions', 'string'),
-    Field('licence<span style="color: #268bd2; font-style: italic;">_code', 'string')</span>
-<span style="color: #268bd2; font-style: italic;">    )</span>
-<span style="color: #268bd2; font-style: italic;">    </span>
-<span style="color: #268bd2; font-style: italic;">db.deed.data_</span>owner.requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()  <span style="color: #268bd2; font-weight: bold; text-decoration: underline;">  </span>
-db.deed.licence<span style="color: #268bd2; font-style: italic;">_code.requires = IS_</span>IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])  <span style="color: #268bd2; font-weight: bold; text-decoration: underline;">  </span>
-
-</pre>
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-14" class="outline-3">
-<h3 id="sec-5-14"><span class="section-number-3">5.14</span> errata and addenda</h3>
-<div class="outline-text-3" id="text-5-14">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">####</span> <span style="color: #268bd2; font-weight: bold;">ONE (errata_and_addenda) TO one (dataset)</span>
-db.define<span style="color: #268bd2; font-style: italic;">_table(</span>
-<span style="color: #268bd2; font-style: italic;">    'errata_</span>and<span style="color: #268bd2; font-style: italic;">_addenda',</span>
-<span style="color: #268bd2; font-style: italic;">    Field('dataset_</span>id',db.dataset),
-Field('logged<span style="color: #268bd2; font-style: italic;">_by','string'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('date_</span>logged','date'),
-Field('date<span style="color: #268bd2; font-style: italic;">_actioned','date'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('errata','text'),</span>
-<span style="color: #268bd2; font-style: italic;">Field('addenda','text')</span>
-<span style="color: #268bd2; font-style: italic;">    )</span>
-<span style="color: #268bd2; font-style: italic;">    </span>
-<span style="color: #268bd2; font-style: italic;">db.errata_</span>and<span style="color: #268bd2; font-style: italic;">_addenda.logged_</span>by.requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()
-db.errata<span style="color: #268bd2; font-style: italic;">_and_</span>addenda.date<span style="color: #268bd2; font-style: italic;">_logged.requires = IS_</span>NOT_EMPTY()  <span style="color: #268bd2; font-weight: bold; text-decoration: underline;">  </span>
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-15" class="outline-3">
-<h3 id="sec-5-15"><span class="section-number-3">5.15</span> Defaults for controllers/default.py</h3>
-<div class="outline-text-3" id="text-5-15">
+<div id="outline-container-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Defaults for controllers/default.py</h3>
+<div class="outline-text-3" id="text-6-1">
 
 <ul>
 <li>Following the example in the documentation 
@@ -886,9 +657,9 @@ db.errata<span style="color: #268bd2; font-style: italic;">_and_</span>addenda.d
 
 </div>
 
-<div id="outline-container-5-16" class="outline-3">
-<h3 id="sec-5-16"><span class="section-number-3">5.16</span> Top Menu And Register Accessors</h3>
-<div class="outline-text-3" id="text-5-16">
+<div id="outline-container-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Top Menu And Register Accessors</h3>
+<div class="outline-text-3" id="text-6-2">
 
 <ul>
 <li>From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
@@ -903,8 +674,8 @@ db.errata<span style="color: #268bd2; font-style: italic;">_and_</span>addenda.d
 <pre class="src src-R">response.menu = [[<span style="color: #2aa198;">'Manage Projects'</span>, False, URL(<span style="color: #2aa198;">'manage_projects'</span>)],
                  [<span style="color: #2aa198;">'Manage Datasets'</span>, False, URL(<span style="color: #2aa198;">'manage_datasets'</span>)],
                  [<span style="color: #2aa198;">'Register Accessor'</span>, False, URL(<span style="color: #2aa198;">'register_accessor'</span>)],
-                 [<span style="color: #2aa198;">'Access Dataset'</span>, False, URL(<span style="color: #2aa198;">'access_dataset'</span>)]]
-
+                 [<span style="color: #2aa198;">'Access Dataset'</span>, False, URL(<span style="color: #2aa198;">'access_dataset'</span>)],
+                 [<span style="color: #2aa198;">'Documentation'</span>, False, XML(URL(<span style="color: #2aa198;">'static'</span>,<span style="color: #2aa198;">'index.html'</span>, scheme=True, host=True))]]
 def register_accessor():
     <span style="color: #586e75;"># </span><span style="color: #586e75;">create an insert form from the table</span>
     form = SQLFORM(db.accessor).process()
@@ -925,9 +696,9 @@ def register_accessor():
 
 </div>
 
-<div id="outline-container-5-17" class="outline-3">
-<h3 id="sec-5-17"><span class="section-number-3">5.17</span> Access a dataset</h3>
-<div class="outline-text-3" id="text-5-17">
+<div id="outline-container-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Access a dataset</h3>
+<div class="outline-text-3" id="text-6-3">
 
 <ul>
 <li>Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
@@ -971,9 +742,9 @@ def register_accessor():
 
 </div>
 
-<div id="outline-container-5-18" class="outline-3">
-<h3 id="sec-5-18"><span class="section-number-3">5.18</span> Register access view</h3>
-<div class="outline-text-3" id="text-5-18">
+<div id="outline-container-6-4" class="outline-3">
+<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Register access view</h3>
+<div class="outline-text-3" id="text-6-4">
 
 
 
@@ -993,9 +764,9 @@ def register_accessor():
 
 </div>
 
-<div id="outline-container-5-19" class="outline-3">
-<h3 id="sec-5-19"><span class="section-number-3">5.19</span> Main form ties it all together</h3>
-<div class="outline-text-3" id="text-5-19">
+<div id="outline-container-6-5" class="outline-3">
+<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Main form ties it all together</h3>
+<div class="outline-text-3" id="text-6-5">
 
 
 
@@ -1024,9 +795,9 @@ def register_accessor():
 
 </div>
 
-<div id="outline-container-5-20" class="outline-3">
-<h3 id="sec-5-20"><span class="section-number-3">5.20</span> Form to manage all datasets</h3>
-<div class="outline-text-3" id="text-5-20">
+<div id="outline-container-6-6" class="outline-3">
+<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage all datasets</h3>
+<div class="outline-text-3" id="text-6-6">
 
 
 
@@ -1055,9 +826,9 @@ def register_accessor():
 
 </div>
 
-<div id="outline-container-5-21" class="outline-3">
-<h3 id="sec-5-21"><span class="section-number-3">5.21</span> finesse the interface</h3>
-<div class="outline-text-3" id="text-5-21">
+<div id="outline-container-6-7" class="outline-3">
+<h3 id="sec-6-7"><span class="section-number-3">6.7</span> finesse the interface</h3>
+<div class="outline-text-3" id="text-6-7">
 
 <ul>
 <li>the following makes a home page

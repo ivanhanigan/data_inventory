@@ -87,21 +87,24 @@ use_janrain(auth, filename='private/janrain.key')
 
 db.define_table(
     'project',
-    Field('title', 'string', comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]. %s',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
-    ),
-Field('personnel','string', comment=
-    A('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
-    ),
-    Field('abstract', 'text', comment = 
-    A('A descriptive abstract.', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='abstract', scheme=True, host=True)))
-    ),
-    Field('studyAreaDescription','string', comment=
-    A('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location', _href=XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='studyAreaDescription', scheme=True, host=True)))
-    ), 
-
-    )
-
+Field('title', 'string',
+comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+),
+Field('personnel','string', 
+comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+),
+Field('abstract', 'text',
+comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
+),
+Field('studyAreaDescription','string', 
+comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+) 
+)
+  
 db.project.personnel.requires = IS_NOT_EMPTY()
 #### ONE (project) TO MANY (dataset)
 
@@ -170,6 +173,17 @@ db.define_table(
     Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
     Field('keyword', 'string')
     )
+#### ONE (deed) TO one (dataset)
+db.define_table(
+    'deed',
+    Field('dataset_id',db.dataset),
+    Field('data_owner', 'string'),
+    Field('special_permissions', 'string'),
+    Field('licence_code', 'string')
+    )
+    
+db.deed.data_owner.requires = IS_NOT_EMPTY()    
+db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',
@@ -248,17 +262,6 @@ Field('reporting_checklist_passed','boolean')
     
 db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
 db.checklist.check_date.requires = IS_NOT_EMPTY()
-#### ONE (deed) TO one (dataset)
-db.define_table(
-    'deed',
-    Field('dataset_id',db.dataset),
-    Field('data_owner', 'string'),
-    Field('special_permissions', 'string'),
-    Field('licence_code', 'string')
-    )
-    
-db.deed.data_owner.requires = IS_NOT_EMPTY()    
-db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
 #### ONE (errata_and_addenda) TO one (dataset)
 db.define_table(
     'errata_and_addenda',
