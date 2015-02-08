@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="data inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-02-07T11:20+1100"/>
+<meta name="generated" content="2015-02-08T14:04+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -159,7 +159,7 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5-1">5.1 relational model</a></li>
 <li><a href="#sec-5-2">5.2 defaults for models/db.py</a></li>
 <li><a href="#sec-5-3">5.3 define our tables</a></li>
-<li><a href="#sec-5-4">5.4 title</a></li>
+<li><a href="#sec-5-4">5.4 eml/title</a></li>
 <li><a href="#sec-5-5">5.5 dataset</a></li>
 <li><a href="#sec-5-6">5.6 old dataset</a></li>
 <li><a href="#sec-5-7">5.7 datatable</a></li>
@@ -218,33 +218,33 @@ for the JavaScript code in this tag.
 
 
 
-<pre class="src src-R">    &lt;eml&gt;
-        &lt;dataset&gt;
-<span style="color: #93a1a1;">#            </span><span style="color: #93a1a1;">&lt;title&gt;</span>
-<span style="color: #93a1a1;">#            </span><span style="color: #93a1a1;">&lt;creator&gt; </span>
-<span style="color: #93a1a1;">#            </span><span style="color: #93a1a1;">&lt;contact&gt; </span>
-            &lt;project&gt; 
-                &lt;title&gt; 
-                &lt;personnel&gt;
-                &lt;role&gt;
-                &lt;abstract&gt;
-                &lt;funding&gt;
-                &lt;studyAreaDescription&gt;
-                &lt;designDescription&gt;
-<span style="color: #93a1a1;">#            </span><span style="color: #93a1a1;">&lt;publisher&gt;</span>
-            &lt;pubDate&gt;
-            &lt;keywords&gt;
-            &lt;abstract&gt; 
-<span style="color: #93a1a1;">#            </span><span style="color: #93a1a1;">&lt;intellectualRights&gt;</span>
-            &lt;methods&gt; 
-            &lt;coverage&gt;
-            &lt;dataTable&gt;
-                &lt;entityName&gt;
-                &lt;entityDescription&gt;                
-                &lt;physical&gt;
-                &lt;attributeList&gt;
-        &lt;additionalMetadata&gt;
-            &lt;additionalLinks&gt;
+<pre class="src src-R">&lt;eml&gt;
+    &lt;dataset&gt;
+        &lt;title&gt;
+        &lt;creator&gt; 
+        &lt;contact&gt; 
+        &lt;project&gt; 
+            &lt;title&gt; 
+            &lt;personnel&gt;
+            &lt;role&gt;
+            &lt;abstract&gt;
+            &lt;funding&gt;
+            &lt;studyAreaDescription&gt;
+            &lt;designDescription&gt;
+        &lt;publisher&gt;
+        &lt;pubDate&gt;
+        &lt;keywords&gt;
+        &lt;abstract&gt; 
+        &lt;intellectualRights&gt;
+        &lt;methods&gt; 
+        &lt;coverage&gt;
+        &lt;dataTable&gt;
+            &lt;entityName&gt;
+            &lt;entityDescription&gt;                
+            &lt;physical&gt;
+            &lt;attributeList&gt;
+    &lt;additionalMetadata&gt;
+        &lt;additionalLinks&gt;
   
 </pre>
 
@@ -387,7 +387,7 @@ for the JavaScript code in this tag.
 
 
 
-<pre class="src src-sh"><span style="color: #93a1a1;">#### </span><span style="color: #93a1a1;">Code:</span>
+<pre class="src src-sh"><span style="color: #586e75;">#### </span><span style="color: #586e75;">Code:</span>
     python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 </pre>
 
@@ -523,7 +523,7 @@ python ./web2py.py -S data_inventory
 </div>
 
 <div id="outline-container-5-4" class="outline-3">
-<h3 id="sec-5-4"><span class="section-number-3">5.4</span> title</h3>
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> eml/title</h3>
 <div class="outline-text-3" id="text-5-4">
 
 <ul>
@@ -906,14 +906,14 @@ db.errata<span style="color: #268bd2; font-style: italic;">_and_</span>addenda.d
                  [<span style="color: #2aa198;">'Access Dataset'</span>, False, URL(<span style="color: #2aa198;">'access_dataset'</span>)]]
 
 def register_accessor():
-    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">create an insert form from the table</span>
+    <span style="color: #586e75;"># </span><span style="color: #586e75;">create an insert form from the table</span>
     form = SQLFORM(db.accessor).process()
 
-    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">if form correct perform the insert</span>
+    <span style="color: #586e75;"># </span><span style="color: #586e75;">if form correct perform the insert</span>
     <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
         response.flash = <span style="color: #2aa198;">'new record inserted'</span>
 
-    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">and get a list of all persons</span>
+    <span style="color: #586e75;"># </span><span style="color: #586e75;">and get a list of all persons</span>
     records = SQLTABLE(db().select(db.accessor.ALL),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
 
     <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)
@@ -945,7 +945,7 @@ def register_accessor():
         Field(<span style="color: #2aa198;">'title'</span>,<span style="color: #2aa198;">'string'</span>,requires=IS_NOT_EMPTY())).process()
     
     <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
-        <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">get previous access for same dataset</span>
+        <span style="color: #586e75;"># </span><span style="color: #586e75;">get previous access for same dataset</span>
         access = db((db.accessrequest.accessor_id == form.vars.accessor_id)&amp;
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
@@ -958,7 +958,7 @@ def register_accessor():
         response.flash = <span style="color: #2aa198;">'invalid values in form!'</span>
 
     
-    <span style="color: #93a1a1;"># </span><span style="color: #93a1a1;">now get a list of all purchases</span>
+    <span style="color: #586e75;"># </span><span style="color: #586e75;">now get a list of all purchases</span>
     accessing = (db.accessor.id==db.accessrequest.accessor_id)&amp;(db.dataset.id==db.accessrequest.dataset_id)
     records = SQLTABLE(db(accessing).select(),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
     <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)

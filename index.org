@@ -69,9 +69,9 @@ A web2py app to help manage research data
 #+begin_src R :session *R* :tangle no :exports reports :eval no
     <eml>
         <dataset>
-#            <title>
-#            <creator> 
-#            <contact> 
+            <title>
+            <creator> 
+            <contact> 
             <project> 
                 <title> 
                 <personnel>
@@ -80,11 +80,11 @@ A web2py app to help manage research data
                 <funding>
                 <studyAreaDescription>
                 <designDescription>
-#            <publisher>
+            <publisher>
             <pubDate>
             <keywords>
             <abstract> 
-#            <intellectualRights>
+            <intellectualRights>
             <methods> 
             <coverage>
             <dataTable>
@@ -293,7 +293,7 @@ A web2py app to help manage research data
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
       ),
 #+end_src
-** title
+** eml/title
 - eml-2.1.1/docs/eml-2.1.1/eml-project.html
 - The EML Project module places the data into its larger research context. Suggested structure is: [geographic coverage] [data type]
 - [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML definition]]
