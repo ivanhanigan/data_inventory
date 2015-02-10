@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-02-08T17:27+1100"/>
+<meta name="generated" content="2015-02-10T14:50+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -130,14 +130,15 @@ for the JavaScript code in this tag.
 <div id="text-table-of-contents">
 <ul>
 <li><a href="#sec-1">1 Introduction</a></li>
-<li><a href="#sec-2">2 EML</a>
+<li><a href="#sec-2">2 The Ecological Metadata Language (EML)</a>
 <ul>
-<li><a href="#sec-2-1">2.1 The parts of an EML document</a>
+<li><a href="#sec-2-1">2.1 XML</a></li>
+<li><a href="#sec-2-2">2.2 The parts of an EML document</a>
 <ul>
-<li><a href="#sec-2-1-1">2.1.1 Datasets</a></li>
-<li><a href="#sec-2-1-2">2.1.2 Projects</a></li>
-<li><a href="#sec-2-1-3">2.1.3 Datatables</a></li>
-<li><a href="#sec-2-1-4">2.1.4 Attributes</a></li>
+<li><a href="#sec-2-2-1">2.2.1 Datasets</a></li>
+<li><a href="#sec-2-2-2">2.2.2 Projects</a></li>
+<li><a href="#sec-2-2-3">2.2.3 Data Entity</a></li>
+<li><a href="#sec-2-2-4">2.2.4 Attributes</a></li>
 </ul></li>
 </ul>
 </li>
@@ -162,6 +163,7 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5-3">5.3 eml/dataset/project/personnel</a></li>
 <li><a href="#sec-5-4">5.4 eml/dataset/project/abstract</a></li>
 <li><a href="#sec-5-5">5.5 eml/dataset/project/studyAreaDescription</a></li>
+<li><a href="#sec-5-6">5.6 Dataset</a></li>
 </ul>
 </li>
 <li><a href="#sec-6">6 Design User Interface</a>
@@ -197,19 +199,21 @@ for the JavaScript code in this tag.
 </div>
 
 <div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> EML</h2>
+<h2 id="sec-2"><span class="section-number-2">2</span> The Ecological Metadata Language (EML)</h2>
 <div class="outline-text-2" id="text-2">
 
-<ul>
-<li>the schema is defined at xxx
-</li>
-<li>We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
-</li>
-<li>the schematic below shows the structure of a minimally adequate EML XML document (closing tags omitted)
-</li>
-<li>We added some things like metadataProvider, but this is optional
-</li>
-</ul>
+<p>The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (<a href="https://knb.ecoinformatics.org/#tools/eml">https://knb.ecoinformatics.org/#tools/eml</a>).  KNB is a subproject of  Ecoinformatics.org (<a href="http://ecoinformatics.org/">http://ecoinformatics.org/</a>).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
+</p>
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> XML</h3>
+<div class="outline-text-3" id="text-2-1">
+
+<p>A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
+</p>
 
 
 
@@ -221,12 +225,13 @@ for the JavaScript code in this tag.
         &lt;contact&gt; 
         &lt;project&gt; 
             &lt;title&gt; 
-            &lt;personnel&gt;
-            &lt;role&gt;
+            &lt;personnel role = <span style="color: #2aa198;">"Data Owner"</span>&gt;
             &lt;abstract&gt;
             &lt;funding&gt;
             &lt;studyAreaDescription&gt;
             &lt;designDescription&gt;
+            &lt;relatedProject&gt;
+        &lt;associatedParty&gt;
         &lt;publisher&gt;
         &lt;pubDate&gt;
         &lt;keywords&gt;
@@ -244,84 +249,89 @@ for the JavaScript code in this tag.
   
 </pre>
 
+</div>
 
 </div>
 
-<div id="outline-container-2-1" class="outline-3">
-<h3 id="sec-2-1"><span class="section-number-3">2.1</span> The parts of an EML document</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> The parts of an EML document</h3>
+<div class="outline-text-3" id="text-2-2">
 
-<ul>
-<li>In EML, the term dataset is applied to a document which may contain
+<p>In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
   abstract and keywords as well as one or more data entities, such as
   datatables, that provide more specific research details.
-</li>
-<li>The information is at the level of a particular data collection or
+</p>
+<p>
+The information is at the level of a particular data collection or
   study, however there is also a level above this at the "project"
   level where research studies can be grouped together.
-</li>
-<li>[TODO] Remember that, “In EML, the term dataset refers to one or more data
-  entities.” There is no generally accepted practice on what to
+</p>
+<p>
+In EML, the term dataset refers to one or more data
+  entities.  However, there is no generally accepted practice on what to
   include in an EML-dataset document. Some people will choose to have
   a one-to-one correspondence between an EML document and a data
   entity and a single physical file. Others will document several data
   entities in one dataset document. 
-</li>
-<li>Below is a brief description of the way we interpret the EML parts
-</li>
-</ul>
-
-
+</p>
+<p>
+ Below is a brief description of the way we interpret the components of an EML dataset
+</p>
 
 </div>
 
-<div id="outline-container-2-1-1" class="outline-4">
-<h4 id="sec-2-1-1"><span class="section-number-4">2.1.1</span> Datasets</h4>
-<div class="outline-text-4" id="text-2-1-1">
+<div id="outline-container-2-2-1" class="outline-4">
+<h4 id="sec-2-2-1"><span class="section-number-4">2.2.1</span> Datasets</h4>
+<div class="outline-text-4" id="text-2-2-1">
 
-<ul>
-<li>Dataset is the top level of the EML.  The miminum necessary to
-  proeduce a valid EML document is &lt;title&gt;, &lt;creator&gt;, &lt;contract&gt;.
-  But one can't tell very much  with just a title and a name.  
-</li>
-<li>Our aim is to create an EML document that contains enough
-  information about the data and research to make funding agencies
-  happy and give other ecologists something to work with
-</li>
-</ul>
+<p>Dataset is the top level of the EML.  The miminum necessary to
+produce a valid EML document is &lt;title&gt;, &lt;creator&gt;, &lt;contract&gt;. But
+one can't tell very much with just a title and a name.  Our aim is to
+create an EML document that contains enough information about the data
+and research to make funding agencies happy and give other ecologists
+something to work with.
+</p>
+<p>
+For more information about the general EML descriptions see:
+<a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html</a>
+</p>
+<p>
+For more detailed information about the EML-dataset module see: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html</a>
+</p></div>
 
+</div>
+
+<div id="outline-container-2-2-2" class="outline-4">
+<h4 id="sec-2-2-2"><span class="section-number-4">2.2.2</span> Projects</h4>
+<div class="outline-text-4" id="text-2-2-2">
+
+<p>The project module is optional, but in many cases highly desirable as
+this provides an overall description of the larger-scale project or
+research context with which that dataset is associated.  For example
+it might be an entire Longterm Ecological Research Network (LTER)
+site, or an individual project at an LTER site.
+</p>
+<p>
+For more information about the EML-dataset module see:
+<a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html</a>
+</p>
 </div>
 
 </div>
 
-<div id="outline-container-2-1-2" class="outline-4">
-<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> Projects</h4>
-<div class="outline-text-4" id="text-2-1-2">
+<div id="outline-container-2-2-3" class="outline-4">
+<h4 id="sec-2-2-3"><span class="section-number-4">2.2.3</span> Data Entity</h4>
+<div class="outline-text-4" id="text-2-2-3">
 
-<ul>
-<li>The optional &lt;project&gt; module provides an overall description of the
-  larger-scale project or research context with which that dataset is
-  associated.  For  example it might be an Longterm Ecological Research Network (LTER) site.
-</li>
-</ul>
-
-</div>
-
-</div>
-
-<div id="outline-container-2-1-3" class="outline-4">
-<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> Datatables</h4>
-<div class="outline-text-4" id="text-2-1-3">
-
-<ul>
-<li>As stated earlier, a dataset consists of one or more data entities,
-  and the most common data entity is a &lt;dataTable&gt;. A data table is
-  something that looks like a matrix with rows for observations and
-  columns for variables
-</li>
-<li>[TODO] In addition to datatables, people using database applications may
-  also produce a &lt;view&gt; from a database management system or a
+<p>As stated earlier, a dataset consists of one or more data entities,
+and the most common data entity is a &lt;dataTable&gt;. A data table is
+something that looks like a matrix with rows for observations and
+columns for variables
+</p>
+<p>
+In addition to datatables, people using database applications may also
+  produce a &lt;view&gt; from a database management system or a
   &lt;storedProcedure&gt; that results in data output. People using GIS
   (geographical information system) applications generate both
   &lt;spatialVector&gt;, also referred to as boundary or shape files, and
@@ -332,28 +342,25 @@ for the JavaScript code in this tag.
   the previously defined data entity structures. A non-geo-referenced
   photograph is an &lt;otherEntity&gt;, e.g., a photograph of two different
   types of butterflies.
-</li>
-</ul>
-
-
-
+</p>
+<p>
+For more information about types of EML-entities see: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115</a>
+</p>
 </div>
 
 </div>
 
-<div id="outline-container-2-1-4" class="outline-4">
-<h4 id="sec-2-1-4"><span class="section-number-4">2.1.4</span> Attributes</h4>
-<div class="outline-text-4" id="text-2-1-4">
+<div id="outline-container-2-2-4" class="outline-4">
+<h4 id="sec-2-2-4"><span class="section-number-4">2.2.4</span> Attributes</h4>
+<div class="outline-text-4" id="text-2-2-4">
 
-<ul>
-<li>An attribute or as it is sometime referred to, variable, in this
+<p>An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
-</li>
-<li>This is where Morpho and other EML tools come into their own.  Our
-  database solution might be useful as an initial stage of data
-  documentation, to be further refined using specialised EML tools
-</li>
-</ul>
+</p>
+<p>
+For more information about the EML dataTable type (especially its attributes) see:
+<a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attributeList">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attributeList</a>
+</p>
 
 
 </div>
@@ -616,6 +623,14 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+
+</div>
+
+</div>
+
+<div id="outline-container-5-6" class="outline-3">
+<h3 id="sec-5-6"><span class="section-number-3">5.6</span> Dataset</h3>
+<div class="outline-text-3" id="text-5-6">
 
 
 

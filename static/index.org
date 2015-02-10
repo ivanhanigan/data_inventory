@@ -53,11 +53,16 @@ A web2py app to help manage research data
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
 - The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
 - This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
-* EML
-- the schema is defined at xxx
+* The Ecological Metadata Language (EML)
+The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
+** COMMENT snip
 - We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
-- the schematic below shows the structure of a minimally adequate EML XML document (closing tags omitted)
 - We added some things like metadataProvider, but this is optional
+
+** XML 
+A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
+
+
 #+begin_src R :session *R* :tangle no :exports reports :eval no
     <eml>
         <dataset>
@@ -66,12 +71,13 @@ A web2py app to help manage research data
             <contact> 
             <project> 
                 <title> 
-                <personnel>
-                <role>
+                <personnel role = "Data Owner">
                 <abstract>
                 <funding>
                 <studyAreaDescription>
                 <designDescription>
+                <relatedProject>
+            <associatedParty>
             <publisher>
             <pubDate>
             <keywords>
@@ -89,39 +95,54 @@ A web2py app to help manage research data
   
 #+end_src
 ** The parts of an EML document 
-- In EML, the term dataset is applied to a document which may contain
+In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
   abstract and keywords as well as one or more data entities, such as
   datatables, that provide more specific research details.
-- The information is at the level of a particular data collection or
+
+The information is at the level of a particular data collection or
   study, however there is also a level above this at the "project"
   level where research studies can be grouped together.
-- [TODO] Remember that, “In EML, the term dataset refers to one or more data
-  entities.” There is no generally accepted practice on what to
+
+In EML, the term dataset refers to one or more data
+  entities.  However, there is no generally accepted practice on what to
   include in an EML-dataset document. Some people will choose to have
   a one-to-one correspondence between an EML document and a data
   entity and a single physical file. Others will document several data
   entities in one dataset document. 
-- Below is a brief description of the way we interpret the EML parts
+
+ Below is a brief description of the way we interpret the components of an EML dataset
 
 *** Datasets
-- Dataset is the top level of the EML.  The miminum necessary to
-  proeduce a valid EML document is <title>, <creator>, <contract>.
-  But one can't tell very much  with just a title and a name.  
-- Our aim is to create an EML document that contains enough
-  information about the data and research to make funding agencies
-  happy and give other ecologists something to work with
+Dataset is the top level of the EML.  The miminum necessary to
+produce a valid EML document is <title>, <creator>, <contract>. But
+one can't tell very much with just a title and a name.  Our aim is to
+create an EML document that contains enough information about the data
+and research to make funding agencies happy and give other ecologists
+something to work with.
+
+For more information about the general EML descriptions see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html
+
+For more detailed information about the EML-dataset module see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html
 *** Projects
-- The optional <project> module provides an overall description of the
-  larger-scale project or research context with which that dataset is
-  associated.  For  example it might be an Longterm Ecological Research Network (LTER) site.
-*** Datatables  
-- As stated earlier, a dataset consists of one or more data entities,
-  and the most common data entity is a <dataTable>. A data table is
-  something that looks like a matrix with rows for observations and
-  columns for variables
-- [TODO] In addition to datatables, people using database applications may
-  also produce a <view> from a database management system or a
+The project module is optional, but in many cases highly desirable as
+this provides an overall description of the larger-scale project or
+research context with which that dataset is associated.  For example
+it might be an entire Longterm Ecological Research Network (LTER)
+site, or an individual project at an LTER site.
+
+For more information about the EML-dataset module see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html
+
+*** Data Entity
+As stated earlier, a dataset consists of one or more data entities,
+and the most common data entity is a <dataTable>. A data table is
+something that looks like a matrix with rows for observations and
+columns for variables
+
+In addition to datatables, people using database applications may also
+  produce a <view> from a database management system or a
   <storedProcedure> that results in data output. People using GIS
   (geographical information system) applications generate both
   <spatialVector>, also referred to as boundary or shape files, and
@@ -133,11 +154,17 @@ A web2py app to help manage research data
   photograph is an <otherEntity>, e.g., a photograph of two different
   types of butterflies.
 
+For more information about types of EML-entities see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 
 *** Attributes
-- An attribute or as it is sometime referred to, variable, in this
+An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
-- This is where Morpho and other EML tools come into their own.  Our
+
+For more information about the EML dataTable type (especially its attributes) see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attributeList
+
+** COMMENT snip 
+This is where Morpho and other EML tools come into their own.  Our
   database solution might be useful as an initial stage of data
   documentation, to be further refined using specialised EML tools
 
@@ -385,6 +412,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   cat(psql)
 #+end_src
 
+** Dataset 
 ** COMMENT dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -436,7 +464,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 
 #+end_src
-** COMMENT datatable
+** COMMENT Data Entity
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
   #### ONE (dataset) TO MANY (datatables)
