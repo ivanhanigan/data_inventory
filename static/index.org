@@ -43,7 +43,7 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 
 ** COMMENT README.md-code
 #+name:README.md
-#+begin_src R :session *R* :tangle README.md :exports none :eval no
+#+begin_src R :session *R* :tangle ./README.md :exports none :eval no
 #### Data Inventory
 
 A web2py app to help manage research data
@@ -71,7 +71,8 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <contact> 
             <project> 
                 <title> 
-                <personnel role = "Data Owner">
+                <personnel>
+                    <role>
                 <abstract>
                 <funding>
                 <studyAreaDescription>
@@ -85,11 +86,11 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <intellectualRights>
             <methods> 
             <coverage>
-            <dataTable>
+            <dataTableerrors>
                 <entityName>
                 <entityDescription>                
                 <physical>
-                <attributeList>
+                <attribute>
         <additionalMetadata>
             <additionalLinks>
   
@@ -161,7 +162,7 @@ An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
 
 For more information about the EML dataTable type (especially its attributes) see:
-https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attributeList
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute
 
 ** COMMENT snip 
 This is where Morpho and other EML tools come into their own.  Our
@@ -465,26 +466,28 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 #+end_src
 ** COMMENT Data Entity
-https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#numberOfRecords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
-  #### ONE (dataset) TO MANY (datatables)
+  #### ONE (dataset) TO MANY (entity)
   
   db.define_table(
-      'datatable',
+      'entity',
       Field('dataset_id',db.dataset),
       Field('entityname','string'),
-      Field('entitydescription', 'text')
+      Field('entitydescription', 'text'),
+      Field('numberOfRecords', 'integer')
       )
 #+end_src
 ** COMMENT attribute
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### ONE (datatable) TO MANY (attributes/variables)
+  #### ONE (entity) TO MANY (attributes/variables)
   
   db.define_table(
-      'attributelist',
-      Field('datatable_id',db.datatable),
+      'attribute',
+      Field('entity_id',db.entity),
       Field('name','string'),
       Field('definition', 'string')
       )
@@ -613,7 +616,7 @@ Field('access_control','boolean'),
 
 Field('usage_rights','boolean'),
 Field('special_conditions','boolean'),
-Field('datatable_metadata','boolean'),
+Field('entity_metadata','boolean'),
 Field('homepage_content','boolean'),
 Field('eml_homepage_links','boolean'),
 Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
@@ -633,22 +636,22 @@ db.checklist.check_date.requires = IS_NOT_EMPTY()
   
 #+end_src
 
-** COMMENT errata and addenda
+** COMMENT errors and addenda
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
-#### ONE (errata_and_addenda) TO one (dataset)
+#### ONE (errors) TO one (dataset)
 db.define_table(
-    'errata_and_addenda',
+    'error',
     Field('dataset_id',db.dataset),
 Field('logged_by','string'),
 Field('date_logged','date'),
 Field('date_actioned','date'),
-Field('errata','text'),
+Field('error','text'),
 Field('addenda','text')
     )
     
-db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
-db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()    
+db.error.logged_by.requires = IS_NOT_EMPTY()
+db.error.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
 * Design User Interface
 ** Defaults for controllers/default.py
@@ -841,15 +844,15 @@ def register_accessor():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest',  'errata_and_addenda',
-                                                        'checklist','deed'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','deed', 'attribute','accessrequest', 
+                                                        'checklist', 'error'],
                                fields = [db.project.title,db.project.id,
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
-                                         db.datatable.entityname,
-                                         db.attributelist.name, db.attributelist.definition,
+                                         db.entity.entityname,
+                                         db.attribute.name, db.attribute.definition,
                                          db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
-                                         db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                         db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
                                          db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                          db.deed.data_owner],
@@ -863,11 +866,11 @@ def register_accessor():
   #### name:deprecated manageproj####
 
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'attribute','accessrequest', 'keyword'],
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
-                                         db.datatable.entityname,
-                                         db.attributelist.name, db.attributelist.definition,
+                                         db.entity.entityname,
+                                         db.attribute.name, db.attribute.definition,
                                          db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.thesaurus, db.keyword.keyword],
@@ -881,15 +884,15 @@ def register_accessor():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'datatable', 'attributelist','accessrequest', 'errata_and_addenda', 
-                                                         'checklist','deed'],
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','deed', 'attribute','accessrequest', 
+                                                         'checklist',  'error'],
                                fields = [db.dataset.project_id,
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
-                                         db.datatable.entityname,
-                                         db.attributelist.name, db.attributelist.definition,
+                                         db.entity.entityname,
+                                         db.attribute.name, db.attribute.definition,
                                          db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
-                                         db.errata_and_addenda.logged_by, db.errata_and_addenda.date_logged,
+                                         db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
                                          db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
                                          db.deed.data_owner],

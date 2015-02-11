@@ -129,19 +129,20 @@ db.define_table(
 db.dataset.contact.requires = [IS_EMAIL()]
   
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
-#### ONE (dataset) TO MANY (datatables)
+#### ONE (dataset) TO MANY (entity)
 
 db.define_table(
-    'datatable',
+    'entity',
     Field('dataset_id',db.dataset),
     Field('entityname','string'),
-    Field('entitydescription', 'text')
+    Field('entitydescription', 'text'),
+    Field('numberOfRecords', 'integer')
     )
-#### ONE (datatable) TO MANY (attributes/variables)
+#### ONE (entity) TO MANY (attributes/variables)
 
 db.define_table(
-    'attributelist',
-    Field('datatable_id',db.datatable),
+    'attribute',
+    Field('entity_id',db.entity),
     Field('name','string'),
     Field('definition', 'string')
     )
@@ -245,7 +246,7 @@ Field('access_control','boolean'),
 
 Field('usage_rights','boolean'),
 Field('special_conditions','boolean'),
-Field('datatable_metadata','boolean'),
+Field('entity_metadata','boolean'),
 Field('homepage_content','boolean'),
 Field('eml_homepage_links','boolean'),
 Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
@@ -262,16 +263,16 @@ Field('reporting_checklist_passed','boolean')
     
 db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
 db.checklist.check_date.requires = IS_NOT_EMPTY()
-#### ONE (errata_and_addenda) TO one (dataset)
+#### ONE (errors) TO one (dataset)
 db.define_table(
-    'errata_and_addenda',
+    'error',
     Field('dataset_id',db.dataset),
 Field('logged_by','string'),
 Field('date_logged','date'),
 Field('date_actioned','date'),
-Field('errata','text'),
+Field('error','text'),
 Field('addenda','text')
     )
     
-db.errata_and_addenda.logged_by.requires = IS_NOT_EMPTY()
-db.errata_and_addenda.date_logged.requires = IS_NOT_EMPTY()
+db.error.logged_by.requires = IS_NOT_EMPTY()
+db.error.date_logged.requires = IS_NOT_EMPTY()
