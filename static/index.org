@@ -501,14 +501,29 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       'accessor',
       Field('name'),
       Field('email'),
-      format = '%(email)s'
+      Field('title', 'string'),
+      Field('description', 'text'),
+      format = '%(name)s'
       )
-  
+  #       format = '%(email)s'
   db.accessor.name.requires = IS_NOT_EMPTY()
   db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
   
 #+end_src
-** COMMENT access
+** COMMENT access groups
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  
+  #### MANY (accessors) TO MANY (accessgroup members)
+  
+  db.define_table(
+      'accessgroup',
+      Field('accessor_id',db.accessor),
+      Field('name'),
+      Field('email'),
+      )
+       
+#+end_src
+** COMMENT access request
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (datasets) TO MANY (accessors)
@@ -900,6 +915,36 @@ def register_accessor():
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
   
+#+end_src
+
+** Form to manage all access groups
+*** COMMENT manage access groups
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_accessgroups():
+      grid = SQLFORM.smartgrid(db.accessor,linked_tables=['accessgroup'],
+                               fields = [db.accessor.name, db.accessor.email,
+                                         db.accessgroup.name, db.accessgroup.email],
+                                         orderby = dict(accessor=[db.accessor.name]),
+                               user_signature=True,maxtextlength =200)
+      return dict(grid=grid)
+  
+#+end_src
+
+*** COMMENT summarise-access-code
+#+name:summarise-access
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:summarise-access####
+select foo.*, t3.*
+from (
+SELECT t1.*, t2.title
+  FROM accessrequest t1
+  join dataset t2
+  on t1.dataset_id = t2.id
+  ) foo
+  join accessor t3
+  on foo.accessor_id = t3.id
+
 #+end_src
 
 ** finesse the interface

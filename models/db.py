@@ -152,11 +152,21 @@ db.define_table(
     'accessor',
     Field('name'),
     Field('email'),
-    format = '%(email)s'
+    Field('title', 'string'),
+    Field('description', 'text'),
+    format = '%(name)s'
     )
-
+#       format = '%(email)s'
 db.accessor.name.requires = IS_NOT_EMPTY()
 db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+#### MANY (accessors) TO MANY (accessgroup members)
+
+db.define_table(
+    'accessgroup',
+    Field('accessor_id',db.accessor),
+    Field('name'),
+    Field('email'),
+    )
 #### MANY (datasets) TO MANY (accessors)
 
 db.define_table(

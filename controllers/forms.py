@@ -72,3 +72,10 @@ def manage_datasets():
                                        orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
+def manage_accessgroups():
+    grid = SQLFORM.smartgrid(db.accessor,linked_tables=['accessgroup'],
+                             fields = [db.accessor.name, db.accessor.email,
+                                       db.accessgroup.name, db.accessgroup.email],
+                                       orderby = dict(accessor=[db.accessor.name]),
+                             user_signature=True,maxtextlength =200)
+    return dict(grid=grid)
