@@ -127,7 +127,8 @@ db.define_table(
     )
 
 db.dataset.contact.requires = [IS_EMAIL()]
-  
+
+    
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
 

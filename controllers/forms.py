@@ -1,6 +1,7 @@
 
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
+                 ['Manage Access Groups', False, URL('manage_accessgroups')],
                  ['Register Accessor', False, URL('register_accessor')],
                  ['Access Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
@@ -18,16 +19,16 @@ def register_accessor():
     return dict(form=form, records=records)
 def access_dataset():
     form = SQLFORM.factory(
-        Field('accessor_id',requires=IS_IN_DB(db,db.accessor.id,'%(email)s')),
+        Field('accessgroup_id',requires=IS_IN_DB(db,db.accessor.id,'%(name)s')),
         Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
         Field('title','string',requires=IS_NOT_EMPTY())).process()
     
     if form.accepted:
         # get previous access for same dataset
-        access = db((db.accessrequest.accessor_id == form.vars.accessor_id)&
+        access = db((db.accessrequest.accessgroup_id == form.vars.accessgroup_id)&
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
-        db.accessrequest.insert(accessor_id=form.vars.accessor_id,
+        db.accessrequest.insert(accessgroup_id=form.vars.accessgroup_id,
                          dataset_id=form.vars.dataset_id,
                          title=form.vars.title)
 
@@ -37,7 +38,7 @@ def access_dataset():
 
     
     # now get a list of all purchases
-    accessing = (db.accessor.id==db.accessrequest.accessor_id)&(db.dataset.id==db.accessrequest.dataset_id)
+    accessing = (db.accessor.id==db.accessrequest.accessgroup_id)&(db.dataset.id==db.accessrequest.dataset_id)
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
@@ -63,7 +64,7 @@ def manage_datasets():
                                        db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                        db.entity.entityname,
                                        db.attribute.name, db.attribute.definition,
-                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.accessgroup_id, db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.error.logged_by, db.error.date_logged,
                                        db.checklist.checked_by, db.checklist.check_date, 
