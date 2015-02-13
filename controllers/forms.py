@@ -74,8 +74,12 @@ def manage_datasets():
     return dict(grid=grid)
 def manage_accessgroups():
     grid = SQLFORM.smartgrid(db.accessgroup,linked_tables=['accessor'],
-                             fields = [db.accessgroup.name, db.accessgroup.email,
+                             fields = [
+                                       db.accessgroup.name,
+                                       db.accessgroup.email,
                                        db.accessor.name, db.accessor.email],
                                        orderby = dict(accessgroup=[db.accessgroup.name]),
                              user_signature=True,maxtextlength =200)
+
     return dict(grid=grid)
+    # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]

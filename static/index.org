@@ -492,7 +492,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('definition', 'string')
       )
 #+end_src
-** COMMENT accessor
+** COMMENT access group
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### accessgroups
@@ -510,7 +510,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   # db.accessgroup.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessgroup.email')]
   
 #+end_src
-** COMMENT access groups
+** COMMENT accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (accessors) TO MANY (accessgroup members)
@@ -521,8 +521,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('name'),
       Field('email'),
       )
-  db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
-       
+  db.accessor.email.requires = [IS_EMAIL()]
+  # , IS_NOT_IN_DB(db, 'accessor.email')]
+         
 #+end_src
 ** COMMENT access request
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -536,7 +537,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('title', 'string'),
       format = '%(title)s %(accessgroup_id)s -> %(dataset_id)s'
       )
-    
+
 #+end_src
 ** COMMENT keywords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -924,12 +925,15 @@ def register_accessor():
   
   def manage_accessgroups():
       grid = SQLFORM.smartgrid(db.accessgroup,linked_tables=['accessor'],
-                               fields = [db.accessgroup.name, db.accessgroup.email,
+                               fields = [
+                                         db.accessgroup.name,
+                                         db.accessgroup.email,
                                          db.accessor.name, db.accessor.email],
                                          orderby = dict(accessgroup=[db.accessgroup.name]),
                                user_signature=True,maxtextlength =200)
+
       return dict(grid=grid)
-  
+      # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]  
 #+end_src
 
 *** COMMENT summarise-access-code

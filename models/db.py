@@ -167,7 +167,8 @@ db.define_table(
     Field('name'),
     Field('email'),
     )
-db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+db.accessor.email.requires = [IS_EMAIL()]
+# , IS_NOT_IN_DB(db, 'accessor.email')]
 #### MANY (datasets) TO MANY (accessors)
 
 db.define_table(
