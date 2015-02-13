@@ -493,13 +493,15 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('definition', 'string')
       )
 #+end_src
-** COMMENT access group
+** COMMENT access 
+An optional access tree at this location controls access to the entire metadata document. If this access element is omitted from the document, then the package submitter should be given full access to the package but all other users should be denied all access. 
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### accessgroups
+  #### accesss
   
   db.define_table(
-      'accessgroup',
+      'access',
       Field('name'),
       Field('email'),
       Field('title', 'string'),
@@ -507,18 +509,18 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       format = '%(name)s'
       )
   #       format = '%(email)s'
-  db.accessgroup.name.requires = IS_NOT_EMPTY()
-  # db.accessgroup.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessgroup.email')]
+  db.access.name.requires = IS_NOT_EMPTY()
+  # db.access.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'access.email')]
   
 #+end_src
 ** COMMENT accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### MANY (accessors) TO MANY (accessgroup members)
+  #### MANY (accessors) TO MANY (access members)
   
   db.define_table(
       'accessor',
-      Field('accessgroup_id',db.accessgroup),
+      Field('access_id',db.access),
       Field('name'),
       Field('email'),
       )
@@ -534,9 +536,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   db.define_table(
       'accessrequest',
       Field('dataset_id',db.dataset),
-      Field('accessgroup_id',db.accessgroup),
+      Field('access_id',db.access),
       Field('title', 'string'),
-      format = '%(title)s %(accessgroup_id)s -> %(dataset_id)s'
+      format = '%(title)s %(access_id)s -> %(dataset_id)s'
       )
 
 #+end_src
@@ -763,19 +765,19 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
                  ['Manage Access Groups', False, URL('manage_accessgroups')],
-                 ['Register Accessor', False, URL('register_accessor')],
+                 ['Register Access', False, URL('register_access')],
                  ['Access Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
-def register_accessor():
+def register_access():
     # create an insert form from the table
-    form = SQLFORM(db.accessor).process()
+    form = SQLFORM(db.access).process()
 
     # if form correct perform the insert
     if form.accepted:
         response.flash = 'new record inserted'
 
     # and get a list of all persons
-    records = SQLTABLE(db().select(db.accessor.ALL),headers='fieldname:capitalize')
+    records = SQLTABLE(db().select(db.access.ALL),headers='fieldname:capitalize')
 
     return dict(form=form, records=records)
 
@@ -787,16 +789,16 @@ def register_accessor():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('accessgroup_id',requires=IS_IN_DB(db,db.accessor.id,'%(name)s')),
+          Field('access_id',requires=IS_IN_DB(db,db.access.id,'%(name)s')),
           Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
           Field('title','string',requires=IS_NOT_EMPTY())).process()
       
       if form.accepted:
           # get previous access for same dataset
-          access = db((db.accessrequest.accessgroup_id == form.vars.accessgroup_id)&
+          access = db((db.accessrequest.access_id == form.vars.access_id)&
               (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
   
-          db.accessrequest.insert(accessgroup_id=form.vars.accessgroup_id,
+          db.accessrequest.insert(access_id=form.vars.access_id,
                            dataset_id=form.vars.dataset_id,
                            title=form.vars.title)
   
@@ -806,13 +808,13 @@ def register_accessor():
   
       
       # now get a list of all purchases
-      accessing = (db.accessor.id==db.accessrequest.accessgroup_id)&(db.dataset.id==db.accessrequest.dataset_id)
+      accessing = (db.accessor.id==db.accessrequest.access_id)&(db.dataset.id==db.accessrequest.dataset_id)
       records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
       return dict(form=form, records=records)
   
   
 #+end_src
-** COMMENT Access a dataset
+** COMMENT DEPRECATED Access a dataset
 - Example 32 is a rather sophisticated buy form. It checks that the buyer and the product are in the database and updates the corresponding record or inserts a new purchase. It also does a JOIN to list all purchases. 
 # controllers/forms.py
 #+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
@@ -859,7 +861,7 @@ def register_accessor():
   
 #+end_src
 
-** Main form ties it all together
+** Main form ties it all together (manage projects)
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
@@ -869,7 +871,8 @@ def register_accessor():
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                          db.entity.entityname,
                                          db.attribute.name, db.attribute.definition,
-                                         db.accessrequest.accessgroup_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.access_id, 
+                                         db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
@@ -909,7 +912,7 @@ def register_accessor():
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                          db.entity.entityname,
                                          db.attribute.name, db.attribute.definition,
-                                         db.accessrequest.accessgroup_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.access_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
@@ -926,12 +929,12 @@ def register_accessor():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_accessgroups():
-      grid = SQLFORM.smartgrid(db.accessgroup,linked_tables=['accessor'],
+      grid = SQLFORM.smartgrid(db.access,linked_tables=['accessor'],
                                fields = [
-                                         db.accessgroup.name,
-                                         db.accessgroup.email,
+                                         db.access.name,
+                                         db.access.email,
                                          db.accessor.name, db.accessor.email],
-                                         orderby = dict(accessgroup=[db.accessgroup.name]),
+                                         orderby = dict(access=[db.access.name]),
                                user_signature=True,maxtextlength =200)
 
       return dict(grid=grid)
