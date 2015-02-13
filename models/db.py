@@ -146,10 +146,10 @@ db.define_table(
     Field('name','string'),
     Field('definition', 'string')
     )
-#### accessors
+#### accessgroups
 
 db.define_table(
-    'accessor',
+    'accessgroup',
     Field('name'),
     Field('email'),
     Field('title', 'string'),
@@ -157,24 +157,25 @@ db.define_table(
     format = '%(name)s'
     )
 #       format = '%(email)s'
-db.accessor.name.requires = IS_NOT_EMPTY()
-db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+db.accessgroup.name.requires = IS_NOT_EMPTY()
+# db.accessgroup.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessgroup.email')]
 #### MANY (accessors) TO MANY (accessgroup members)
 
 db.define_table(
-    'accessgroup',
-    Field('accessor_id',db.accessor),
+    'accessor',
+    Field('accessgroup_id',db.accessgroup),
     Field('name'),
     Field('email'),
     )
+db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
 #### MANY (datasets) TO MANY (accessors)
 
 db.define_table(
     'accessrequest',
     Field('dataset_id',db.dataset),
-    Field('accessor_id',db.accessor),
+    Field('accessgroup_id',db.accessgroup),
     Field('title', 'string'),
-    format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
+    format = '%(title)s %(accessgroup_id)s -> %(dataset_id)s'
     )
 #### MANY (keywords) TO one (dataset)
 

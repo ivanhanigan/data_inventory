@@ -495,10 +495,10 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 ** COMMENT accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### accessors
+  #### accessgroups
   
   db.define_table(
-      'accessor',
+      'accessgroup',
       Field('name'),
       Field('email'),
       Field('title', 'string'),
@@ -506,8 +506,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       format = '%(name)s'
       )
   #       format = '%(email)s'
-  db.accessor.name.requires = IS_NOT_EMPTY()
-  db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+  db.accessgroup.name.requires = IS_NOT_EMPTY()
+  # db.accessgroup.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessgroup.email')]
   
 #+end_src
 ** COMMENT access groups
@@ -516,11 +516,12 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   #### MANY (accessors) TO MANY (accessgroup members)
   
   db.define_table(
-      'accessgroup',
-      Field('accessor_id',db.accessor),
+      'accessor',
+      Field('accessgroup_id',db.accessgroup),
       Field('name'),
       Field('email'),
       )
+  db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
        
 #+end_src
 ** COMMENT access request
@@ -531,9 +532,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   db.define_table(
       'accessrequest',
       Field('dataset_id',db.dataset),
-      Field('accessor_id',db.accessor),
+      Field('accessgroup_id',db.accessgroup),
       Field('title', 'string'),
-      format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
+      format = '%(title)s %(accessgroup_id)s -> %(dataset_id)s'
       )
     
 #+end_src
@@ -865,7 +866,7 @@ def register_accessor():
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                          db.entity.entityname,
                                          db.attribute.name, db.attribute.definition,
-                                         db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.accessgroup_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
@@ -922,10 +923,10 @@ def register_accessor():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_accessgroups():
-      grid = SQLFORM.smartgrid(db.accessor,linked_tables=['accessgroup'],
-                               fields = [db.accessor.name, db.accessor.email,
-                                         db.accessgroup.name, db.accessgroup.email],
-                                         orderby = dict(accessor=[db.accessor.name]),
+      grid = SQLFORM.smartgrid(db.accessgroup,linked_tables=['accessor'],
+                               fields = [db.accessgroup.name, db.accessgroup.email,
+                                         db.accessor.name, db.accessor.email],
+                                         orderby = dict(accessgroup=[db.accessgroup.name]),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
   

@@ -47,7 +47,7 @@ def manage_projects():
                                        db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                        db.entity.entityname,
                                        db.attribute.name, db.attribute.definition,
-                                       db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.accessgroup_id, db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.error.logged_by, db.error.date_logged,
                                        db.checklist.checked_by, db.checklist.check_date, 
@@ -73,9 +73,9 @@ def manage_datasets():
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_accessgroups():
-    grid = SQLFORM.smartgrid(db.accessor,linked_tables=['accessgroup'],
-                             fields = [db.accessor.name, db.accessor.email,
-                                       db.accessgroup.name, db.accessgroup.email],
-                                       orderby = dict(accessor=[db.accessor.name]),
+    grid = SQLFORM.smartgrid(db.accessgroup,linked_tables=['accessor'],
+                             fields = [db.accessgroup.name, db.accessgroup.email,
+                                       db.accessor.name, db.accessor.email],
+                                       orderby = dict(accessgroup=[db.accessgroup.name]),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
