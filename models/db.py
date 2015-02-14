@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -113,7 +113,7 @@ db.define_table(
     Field('project_id',db.project),
     Field('ltern_id','integer'),
     Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('contact','string', comment = 'Compulsory'),
+    Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
     Field('abstract','string'),
     Field('intellectualrights','string'),
@@ -142,15 +142,15 @@ db.define_table(
 #### ONE (entity) TO MANY (attributes/variables)
 
 db.define_table(
-    'attribute',
+    'attr',
     Field('entity_id',db.entity),
     Field('name','string'),
     Field('definition', 'string')
     )
-#### accesss
+#### accessdatasets
 
 db.define_table(
-    'access',
+    'accessdataset',
     Field('name'),
     Field('email'),
     Field('title', 'string'),
@@ -158,13 +158,13 @@ db.define_table(
     format = '%(name)s'
     )
 #       format = '%(email)s'
-db.access.name.requires = IS_NOT_EMPTY()
-# db.access.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'access.email')]
-#### MANY (accessors) TO MANY (access members)
+db.accessdataset.name.requires = IS_NOT_EMPTY()
+# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+#### MANY (accessors) TO MANY (accessdataset members)
 
 db.define_table(
     'accessor',
-    Field('access_id',db.access),
+    Field('accessdataset_id',db.accessdataset),
     Field('name'),
     Field('email'),
     )
@@ -175,9 +175,9 @@ db.accessor.email.requires = [IS_EMAIL()]
 db.define_table(
     'accessrequest',
     Field('dataset_id',db.dataset),
-    Field('access_id',db.access),
+    Field('accessdataset_id',db.accessdataset),
     Field('title', 'string'),
-    format = '%(title)s %(access_id)s -> %(dataset_id)s'
+    format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
     )
 #### MANY (keywords) TO one (dataset)
 

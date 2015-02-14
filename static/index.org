@@ -227,8 +227,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -424,7 +424,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('project_id',db.project),
       Field('ltern_id','integer'),
       Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-      Field('contact','string', comment = 'Compulsory'),
+      Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
       Field('creator','string', comment='The name of the person, organization, or position who created the data'),
       Field('abstract','string'),
       Field('intellectualrights','string'),
@@ -481,27 +481,27 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('numberOfRecords', 'integer')
       )
 #+end_src
-** COMMENT attribute
+** COMMENT attr
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### ONE (entity) TO MANY (attributes/variables)
   
   db.define_table(
-      'attribute',
+      'attr',
       Field('entity_id',db.entity),
       Field('name','string'),
       Field('definition', 'string')
       )
 #+end_src
-** COMMENT access 
+** COMMENT accessdataset 
 An optional access tree at this location controls access to the entire metadata document. If this access element is omitted from the document, then the package submitter should be given full access to the package but all other users should be denied all access. 
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### accesss
+  #### accessdatasets
   
   db.define_table(
-      'access',
+      'accessdataset',
       Field('name'),
       Field('email'),
       Field('title', 'string'),
@@ -509,18 +509,18 @@ https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#acce
       format = '%(name)s'
       )
   #       format = '%(email)s'
-  db.access.name.requires = IS_NOT_EMPTY()
-  # db.access.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'access.email')]
+  db.accessdataset.name.requires = IS_NOT_EMPTY()
+  # db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
   
 #+end_src
 ** COMMENT accessor
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### MANY (accessors) TO MANY (access members)
+  #### MANY (accessors) TO MANY (accessdataset members)
   
   db.define_table(
       'accessor',
-      Field('access_id',db.access),
+      Field('accessdataset_id',db.accessdataset),
       Field('name'),
       Field('email'),
       )
@@ -536,9 +536,9 @@ https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#acce
   db.define_table(
       'accessrequest',
       Field('dataset_id',db.dataset),
-      Field('access_id',db.access),
+      Field('accessdataset_id',db.accessdataset),
       Field('title', 'string'),
-      format = '%(title)s %(access_id)s -> %(dataset_id)s'
+      format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
       )
 
 #+end_src
@@ -764,20 +764,21 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
-                 ['Manage Access Groups', False, URL('manage_accessgroups')],
-                 ['Register Access', False, URL('register_access')],
+                 ['Manage Accessors or Groups', False, URL('manage_accessgroups')],
+                 ['Register Accessor or Group', False, URL('register_accessor_or_group')],
                  ['Access Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
-def register_access():
+
+def register_accessor_or_group():
     # create an insert form from the table
-    form = SQLFORM(db.access).process()
+    form = SQLFORM(db.accessdataset).process()
 
     # if form correct perform the insert
     if form.accepted:
         response.flash = 'new record inserted'
 
     # and get a list of all persons
-    records = SQLTABLE(db().select(db.access.ALL),headers='fieldname:capitalize')
+    records = SQLTABLE(db().select(db.accessdataset.ALL),headers='fieldname:capitalize')
 
     return dict(form=form, records=records)
 
@@ -789,16 +790,16 @@ def register_access():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('access_id',requires=IS_IN_DB(db,db.access.id,'%(name)s')),
+          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
           Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
           Field('title','string',requires=IS_NOT_EMPTY())).process()
       
       if form.accepted:
           # get previous access for same dataset
-          access = db((db.accessrequest.access_id == form.vars.access_id)&
+          access = db((db.accessrequest.accessdataset_id == form.vars.accessdataset_id)&
               (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
   
-          db.accessrequest.insert(access_id=form.vars.access_id,
+          db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
                            dataset_id=form.vars.dataset_id,
                            title=form.vars.title)
   
@@ -808,7 +809,7 @@ def register_access():
   
       
       # now get a list of all purchases
-      accessing = (db.accessor.id==db.accessrequest.access_id)&(db.dataset.id==db.accessrequest.dataset_id)
+      accessing = (db.accessor.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
       records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
       return dict(form=form, records=records)
   
@@ -865,13 +866,13 @@ def register_access():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','deed', 'attribute','accessrequest', 
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','deed', 'attr','accessrequest', 
                                                         'checklist', 'error'],
                                fields = [db.project.title,db.project.id,
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                          db.entity.entityname,
-                                         db.attribute.name, db.attribute.definition,
-                                         db.accessrequest.access_id, 
+                                         db.attr.name, db.attr.definition,
+                                         db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.error.logged_by, db.error.date_logged,
@@ -888,11 +889,11 @@ def register_access():
   #### name:deprecated manageproj####
 
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'attribute','accessrequest', 'keyword'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'attr','accessrequest', 'keyword'],
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
                                          db.entity.entityname,
-                                         db.attribute.name, db.attribute.definition,
+                                         db.attr.name, db.attr.definition,
                                          db.accessrequest.accessor_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.thesaurus, db.keyword.keyword],
@@ -906,13 +907,13 @@ def register_access():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','deed', 'attribute','accessrequest', 
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','deed', 'attr','accessrequest', 
                                                          'checklist',  'error'],
                                fields = [db.dataset.project_id,
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
                                          db.entity.entityname,
-                                         db.attribute.name, db.attribute.definition,
-                                         db.accessrequest.access_id, db.accessrequest.dataset_id,
+                                         db.attr.name, db.attr.definition,
+                                         db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
@@ -929,12 +930,12 @@ def register_access():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_accessgroups():
-      grid = SQLFORM.smartgrid(db.access,linked_tables=['accessor'],
+      grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
                                fields = [
-                                         db.access.name,
-                                         db.access.email,
+                                         db.accessdataset.name,
+                                         db.accessdataset.email,
                                          db.accessor.name, db.accessor.email],
-                                         orderby = dict(access=[db.access.name]),
+                                         orderby = dict(accessdataset=[db.accessdataset.name]),
                                user_signature=True,maxtextlength =200)
 
       return dict(grid=grid)
@@ -1293,10 +1294,10 @@ SELECT t1.*, t2.title
       Field('creator', 'string')
       )
   
-  #### ONE (dataset) TO MANY (attributes/variables)
+  #### ONE (dataset) TO MANY (attr/variables)
   
   db.define_table(
-      'attribute',
+      'attr',
       Field('dataset_id',db.dataset),
       Field('name','string'),
       Field('definition', 'string')
@@ -1404,10 +1405,10 @@ SELECT t1.*, t2.title
   
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attr'],
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
-                                         db.attribute.name, db.attribute.definition],
+                                         db.attr.name, db.attr.definition],
                                user_signature=True)
       return dict(grid=grid)
   
