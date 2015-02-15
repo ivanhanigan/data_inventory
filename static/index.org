@@ -227,8 +227,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+      ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -764,10 +764,16 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
-                 ['Manage Accessors or Groups', False, URL('manage_accessgroups')],
-                 ['Register Accessor or Group', False, URL('register_accessor_or_group')],
+                 ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
                  ['Access Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
+#+end_src
+** COMMENT Deprecated registor accessor or group-code
+#+name:registor accessor or group
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:registor accessor or group####
+# from response.menu                 ['Register Accessor or Group', False, URL('register_accessor_or_group')],
+
 
 def register_accessor_or_group():
     # create an insert form from the table
@@ -925,11 +931,11 @@ def register_accessor_or_group():
   
 #+end_src
 
-** Form to manage all access groups
+** Form to manage accessors or groups
 *** COMMENT manage access groups
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
-  def manage_accessgroups():
+  def manage_accessors_or_groups():
       grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
                                fields = [
                                          db.accessdataset.name,
@@ -1412,4 +1418,47 @@ SELECT t1.*, t2.title
                                user_signature=True)
       return dict(grid=grid)
   
+#+end_src
+** COMMENT floating tooltips-code
+#+name:floating tooltips
+#+begin_src R :session *R* :tangle no :exports none :eval no
+
+#### name:floating tooltips####
+# if we want floating tooltips
+# http://www.web2pyslices.com/slice/show/1418/auto-tooltip-in-forms
+You will need a jquery plugin to show the tip so you may google for it and pick one. Or you can use this http://jquery.bassistance.de/tooltip/jquery.tooltip.zip See it what it looks like here http://jquery.bassistance.de/tooltip/demo/
+
+Extract jquery.tooltip.min.js and jquery.tooltip.css to static folder. Edit web2py_ajax.html and include the call for these files. Something like this:
+
+....
+# to views/web2py_ajax.html
+<script type="text/javascript"><!--
+    // These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).
+    var w2p_ajax_confirm_message = "{{=T('Are you sure you want to delete this object?')}}";
+    var w2p_ajax_disable_with_message = "{{=T('Working...')}}";
+    var w2p_ajax_date_format = "{{=T('%Y-%m-%d')}}";
+    var w2p_ajax_datetime_format = "{{=T('%Y-%m-%d %H:%M:%S')}}";
+    var ajax_error_500 = '{{=T.M('An error occured, please [[reload %s]] the page') % URL(args=request.args, vars=request.get_vars) }}'
+    //--></script>
+{{
+response.files.insert(0,URL('static','js/jquery.js'))
+response.files.insert(1,URL('static','css/calendar.css'))
+response.files.insert(2,URL('static','js/calendar.js'))
+response.files.insert(3,URL('static','js/web2py.js'))
+response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.min.js'))
+response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.css'))
+response.include_meta()
+response.include_files()
+}}
+
+<script type="text/javascript">
+       $(function() {
+               $(".w2p_fw").each(function (){                    //iterates over all form widgets
+                       $(this).attr('title',$(this).next().html());      // set title for the widget taken from the comment column
+                       $(this).next().html('');                             // clear the comment
+                       $(this).tooltip();                                    // create the tooltip with title attribute set
+               });
+       });
+</script>
+
 #+end_src

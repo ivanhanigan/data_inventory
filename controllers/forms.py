@@ -1,23 +1,9 @@
 
 response.menu = [['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
-                 ['Manage Accessors or Groups', False, URL('manage_accessgroups')],
-                 ['Register Accessor or Group', False, URL('register_accessor_or_group')],
+                 ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
                  ['Access Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
-
-def register_accessor_or_group():
-    # create an insert form from the table
-    form = SQLFORM(db.accessdataset).process()
-
-    # if form correct perform the insert
-    if form.accepted:
-        response.flash = 'new record inserted'
-
-    # and get a list of all persons
-    records = SQLTABLE(db().select(db.accessdataset.ALL),headers='fieldname:capitalize')
-
-    return dict(form=form, records=records)
 def access_dataset():
     form = SQLFORM.factory(
         Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
@@ -75,7 +61,7 @@ def manage_datasets():
                                        orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
-def manage_accessgroups():
+def manage_accessors_or_groups():
     grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
                              fields = [
                                        db.accessdataset.name,
