@@ -1,8 +1,9 @@
 
-response.menu = [['Manage Projects', False, URL('manage_projects')],
+response.menu = [['Inventory Home', False, URL('data_inventory','default','index')],
+                 ['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
                  ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
-                 ['Access Dataset', False, URL('access_dataset')],
+                 ['Set Access to a Dataset', False, URL('access_dataset')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 def access_dataset():
     form = SQLFORM.factory(
@@ -29,10 +30,13 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','deed', 'attr','accessrequest', 
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','intellectualright', 'attr','accessrequest', 
                                                       'checklist', 'error'],
                              fields = [db.project.title,db.project.id,
-                                       db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                                       db.dataset.shortname,
+                                       db.dataset.id,
+                                       db.dataset.additionalinfo,
+                                       db.dataset.alternateidentifier,
                                        db.entity.entityname,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, 
@@ -41,12 +45,12 @@ def manage_projects():
                                        db.error.logged_by, db.error.date_logged,
                                        db.checklist.checked_by, db.checklist.check_date, 
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.deed.data_owner],
+                                       db.intellectualright.data_owner],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','deed', 'attr','accessrequest', 
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
                                                        'checklist',  'error'],
                              fields = [db.dataset.project_id,
                                        db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
@@ -57,7 +61,7 @@ def manage_datasets():
                                        db.error.logged_by, db.error.date_logged,
                                        db.checklist.checked_by, db.checklist.check_date, 
                                        db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.deed.data_owner],
+                                       db.intellectualright.data_owner],
                                        orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)

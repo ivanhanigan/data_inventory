@@ -12,7 +12,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -111,18 +111,29 @@ db.project.personnel.requires = IS_NOT_EMPTY()
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-    Field('ltern_id','integer'),
-    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('keyword','string',
+    comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
     Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-    Field('abstract','string'),
-    Field('intellectualrights','string'),
+    Field('alternateidentifier','string',
+    comment = XML(T('Additional identifier that is used to label this dataset. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+    ),
+    Field('abstract','text'),
     Field('pubdate','date'),
     Field('geographicdescription','string'),
     Field('boundingcoordinates','string'),
     Field('temporalcoverage','string'),
     Field('metadataprovider','string'),
-    Field('tern_contract_type','string'),
+    Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
     format = '%(title)s'
     )
 
@@ -187,17 +198,17 @@ db.define_table(
     Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
     Field('keyword', 'string')
     )
-#### ONE (deed) TO one (dataset)
+#### ONE (intellectualright) TO one (dataset)
 db.define_table(
-    'deed',
+    'intellectualright',
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string'),
     Field('special_permissions', 'string'),
     Field('licence_code', 'string')
     )
     
-db.deed.data_owner.requires = IS_NOT_EMPTY()    
-db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
+db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',

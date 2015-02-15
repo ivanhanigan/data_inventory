@@ -83,7 +83,7 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <pubDate>
             <keywords>
             <abstract> 
-            <intellectualRights>
+            <intellectualright>
             <methods> 
             <coverage>
             <dataTableerrors>
@@ -228,7 +228,7 @@ This is where Morpho and other EML tools come into their own.  Our
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_2")
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -422,23 +422,34 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   db.define_table(
       'dataset',
       Field('project_id',db.project),
-      Field('ltern_id','integer'),
-      Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+      Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('keyword','string',
+      comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
       Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
       Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-      Field('abstract','string'),
-      Field('intellectualrights','string'),
+      Field('alternateidentifier','string',
+      comment = XML(T('Additional identifier that is used to label this dataset. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+      ),
+      Field('abstract','text'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('boundingcoordinates','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
-      Field('tern_contract_type','string'),
+      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
       format = '%(title)s'
       )
   
   db.dataset.contact.requires = [IS_EMAIL()]
-
+  
       
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
      
@@ -455,7 +466,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('title','string'),
       Field('creator', 'string'),
       Field('contact','string'),
-      Field('intellectualrights','string'),
+      Field('intellectualright','string'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('temporalcoverage','string'),
@@ -556,20 +567,20 @@ https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#acce
     
 #+end_src
 
-** COMMENT deeds
+** COMMENT intellectualright
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
-#### ONE (deed) TO one (dataset)
+#### ONE (intellectualright) TO one (dataset)
 db.define_table(
-    'deed',
+    'intellectualright',
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string'),
     Field('special_permissions', 'string'),
     Field('licence_code', 'string')
     )
     
-db.deed.data_owner.requires = IS_NOT_EMPTY()    
-db.deed.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
+db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
 
 #+end_src
 ** COMMENT checklists
@@ -757,16 +768,17 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
       return dict(form=crud())
 
 #+end_src
-** Top Menu And Register Accessors
+** Top Menu 
 - From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
 - The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
 #+name:top menu and register a person
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no
-response.menu = [['Manage Projects', False, URL('manage_projects')],
-                 ['Manage Datasets', False, URL('manage_datasets')],
-                 ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
-                 ['Access Dataset', False, URL('access_dataset')],
-                 ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
+  response.menu = [['Inventory Home', False, URL('data_inventory','default','index')],
+                   ['Manage Projects', False, URL('manage_projects')],
+                   ['Manage Datasets', False, URL('manage_datasets')],
+                   ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
+                   ['Set Access to a Dataset', False, URL('access_dataset')],
+                   ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 #+end_src
 ** COMMENT Deprecated registor accessor or group-code
 #+name:registor accessor or group
@@ -872,10 +884,13 @@ def register_accessor_or_group():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','deed', 'attr','accessrequest', 
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','intellectualright', 'attr','accessrequest', 
                                                         'checklist', 'error'],
                                fields = [db.project.title,db.project.id,
-                                         db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                                         db.dataset.shortname,
+                                         db.dataset.id,
+                                         db.dataset.additionalinfo,
+                                         db.dataset.alternateidentifier,
                                          db.entity.entityname,
                                          db.attr.name, db.attr.definition,
                                          db.accessrequest.accessdataset_id, 
@@ -884,7 +899,7 @@ def register_accessor_or_group():
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
                                          db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                         db.deed.data_owner],
+                                         db.intellectualright.data_owner],
                                          orderby = dict(project=db.project.id, dataset=db.dataset.title),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
@@ -913,7 +928,7 @@ def register_accessor_or_group():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','deed', 'attr','accessrequest', 
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
                                                          'checklist',  'error'],
                                fields = [db.dataset.project_id,
                                          db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
@@ -924,7 +939,7 @@ def register_accessor_or_group():
                                          db.error.logged_by, db.error.date_logged,
                                          db.checklist.checked_by, db.checklist.check_date, 
                                          db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                         db.deed.data_owner],
+                                         db.intellectualright.data_owner],
                                          orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
@@ -977,15 +992,18 @@ SELECT t1.*, t2.title
   <h4>{{=T('Instructions')}}</h4>
   <ol>
     <li>{{=T('You are using the data inventory')}}</li>
-    <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of packages) is at %s',
+    <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
              A('%(application)s/forms/manage_projects/'%request,
              _href=URL('forms','manage_projects'))))}}</li>
-    <li>{{=XML(T('The main tool for managing datasets (packages) is at %s',
+    <li>{{=XML(T('The main tool for managing datasets is at %s',
              A('%(application)s/forms/manage_datasets/'%request,
              _href=URL('forms','manage_datasets'))))}}</li>
     <li>{{=XML(T('The technical documentation for this application is at %s',
              A('this link',
-             _href=URL('static','index.html'))))}}</li>  
+             _href=URL('static','index.html'))))}}</li>
+    <li>{{=XML(T('The links to other apps is at %s',
+             A('this link',
+             _href=URL('audio','default','index'))))}}</li>
   </ol>
   {{elif 'content' in globals():}}
   {{=content}}
@@ -998,6 +1016,13 @@ SELECT t1.*, t2.title
        _style='margin-top: 1em;')}}
   {{end}}
   
+#+end_src
+
+* COMMENT load using sql.r-code
+#+name:load using sql.r
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:load using sql.r####
+
 #+end_src
 
 * COMMENT migrate DDI R Code
@@ -1114,7 +1139,7 @@ SELECT t1.*, t2.title
     
   sql <- sprintf(
      "INSERT INTO dataset(
-              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              id, project_id, title, creator, contact, metadataprovider, intellectualright, 
               pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
               abstract)
       VALUES (?, ?, ?, ?, ?, ?, ?, 
@@ -1130,7 +1155,7 @@ SELECT t1.*, t2.title
   #  i <- 1
   sql <- sprintf(
   "INSERT INTO dataset(
-              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              id, project_id, title, creator, contact, metadataprovider, intellectualright, 
               pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
               abstract)
       VALUES (?, ?, ?, ?, ?, ?, ?, 
@@ -1265,8 +1290,8 @@ SELECT t1.*, t2.title
       Field('tern_type','text'),
       Field('data_interview_status','text'),
       Field('data_interview_date','date'),
-      Field('deed_status','text'),
-      Field('deed_status_date','date'),
+      Field('intellectualright_status','text'),
+      Field('intellectualright_status_date','date'),
       Field('licence_code','text'),
       Field('access_restrictions','text'),
       Field('estimate_timeframe_data_ready_by_plot','date'),

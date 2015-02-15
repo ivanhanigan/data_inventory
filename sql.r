@@ -6,7 +6,7 @@
 #character(0)
 require(swishdbtools)
 get_passwordTable()
-con <- connect2postgres2("data_inventory_ltern_dev_2")
+con <- connect2postgres2("data_inventory_ltern_dev_3")
 pgListTables(con, "public")
 
 dbGetQuery(con, "select * from project")
@@ -25,10 +25,11 @@ order by broad_group_ordered
 proj
 
 proj$abstract <- ""
+proj$studyareadescription <- ""
 # dbWriteTable(con, name = "project", value = proj, append = T)
 
-for(i in 2:12){
- # i = 1
+for(i in c(1:3,5:12)){
+  #i = 4
   pl <- proj[i,"title"]
   print(pl)
 
@@ -37,9 +38,21 @@ for(i in 2:12){
 dsts <- dbGetQuery(ch,
 #cat(
 paste("
-  SELECT ltern.plot_network_code.pn_code_broad_group, ltern.data_package.refid, ltern.data_package.data_package_title AS title, ltern.data_package.contact_name AS contact, ltern.data_package.principal_investigator AS creator,
+  SELECT ltern.plot_network_code.pn_code_broad_group,
+ltern.data_package.refid,
+ltern.data_package.data_package,
+ltern.data_package.data_package_title AS title,
+ltern.data_package.data_package_type,
+ltern.data_package.contact_name AS contact,
+ltern.data_package.principal_investigator AS creator,
 '' AS abstract,
-ltern.data_package.licence_code_package AS intellectualrights, '' AS pubdate, ltern.data_package.spatial_resolution AS geographicdescription, ltern.data_package.geographic_description AS boundingcoordinates, ltern.data_package.temporal_coverage AS temporalcoverage, '' AS metadataprovider, ltern.data_package.contract_type as tern_contract_type
+ltern.data_package.licence_code_package AS intellectualrights,
+'' AS pubdate,
+ltern.data_package.spatial_resolution AS geographicdescription, ltern.data_package.geographic_description AS boundingcoordinates,
+ltern.data_package.temporal_coverage AS temporalcoverage,
+'' AS metadataprovider,
+ltern.data_package.contract_type as additionalinfo,
+ltern.data_package.ltern_publ_url
 FROM ltern.data_package INNER JOIN ltern.plot_network_code
 ON ltern.data_package.plot_network_study_name = ltern.plot_network_code.plot_network_study_name
 WHERE ltern.plot_network_code.pn_code_broad_group = '",pl,"'
@@ -52,17 +65,17 @@ order by ltern.data_package.data_package_title
 #head(dsts)
 #t(dsts[1,])
 #table(dsts$tern_contract_type)
-
+dsts  <- dsts[which(dsts$refid == 105),]
 dbWriteTable(con, name = paste("dataset",i,sep=""), value = dsts, append = F)
 
 dbSendQuery(con,
             #cat(
 paste("
-insert into dataset (project_id, ltern_id, title, contact, creator, abstract, intellectualrights,  geographicdescription, boundingcoordinates, temporalcoverage, metadataprovider, tern_contract_type)
-select ",i,", refid, title, contact, creator, abstract, intellectualrights,  geographicdescription, boundingcoordinates, temporalcoverage, metadataprovider, tern_contract_type
+insert into dataset (project_id, id, shortname, title, keyword, contact, creator, abstract,   geographicdescription, boundingcoordinates, temporalcoverage, metadataprovider, additionalinfo, alternateidentifier)
+select ",i,", refid, data_package, title, data_package_type, contact, creator, abstract,   geographicdescription, boundingcoordinates, temporalcoverage, metadataprovider, additionalinfo, ltern_publ_url
 from dataset",i,sep ="")
 )
-
+dbRemoveTable(con, name = paste("dataset",i,sep=""))
 
 }
 
