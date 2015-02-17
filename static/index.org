@@ -372,7 +372,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('studyAreaDescription','string', 
       comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
-      ) 
+      ),
+      format = '%(title)s' 
       )
   
       db.project.personnel.requires = IS_NOT_EMPTY()
@@ -445,7 +446,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
-      format = '%(title)s'
+      format = '%(shortname)s'
       )
   
   db.dataset.contact.requires = [IS_EMAIL()]
@@ -489,7 +490,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('dataset_id',db.dataset),
       Field('entityname','string'),
       Field('entitydescription', 'text'),
-      Field('numberOfRecords', 'integer')
+      Field('numberOfRecords', 'integer'),
+      format = '%(entityname)s'
       )
 #+end_src
 ** COMMENT attr
@@ -827,7 +829,7 @@ def register_accessor_or_group():
   
       
       # now get a list of all purchases
-      accessing = (db.accessor.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
+      accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
       records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
       return dict(form=form, records=records)
   
@@ -930,8 +932,8 @@ def register_accessor_or_group():
   def manage_datasets():
       grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
                                                          'checklist',  'error'],
-                               fields = [db.dataset.project_id,
-                                         db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                               fields = [db.dataset.project_id, db.dataset.shortname,
+                                         db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
                                          db.entity.entityname,
                                          db.attr.name, db.attr.definition,
                                          db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,

@@ -26,7 +26,7 @@ def access_dataset():
 
     
     # now get a list of all purchases
-    accessing = (db.accessor.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
+    accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
@@ -52,8 +52,8 @@ def manage_projects():
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
                                                        'checklist',  'error'],
-                             fields = [db.dataset.project_id,
-                                       db.dataset.title, db.dataset.ltern_id,db.dataset.tern_contract_type,
+                             fields = [db.dataset.project_id, db.dataset.shortname,
+                                       db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
                                        db.entity.entityname,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,

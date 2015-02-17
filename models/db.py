@@ -102,7 +102,8 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, h
 Field('studyAreaDescription','string', 
 comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
 A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
-) 
+),
+format = '%(title)s' 
 )
   
 db.project.personnel.requires = IS_NOT_EMPTY()
@@ -134,7 +135,7 @@ db.define_table(
     Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
-    format = '%(title)s'
+    format = '%(shortname)s'
     )
 
 db.dataset.contact.requires = [IS_EMAIL()]
@@ -148,7 +149,8 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('entityname','string'),
     Field('entitydescription', 'text'),
-    Field('numberOfRecords', 'integer')
+    Field('numberOfRecords', 'integer'),
+    format = '%(entityname)s'
     )
 #### ONE (entity) TO MANY (attributes/variables)
 
