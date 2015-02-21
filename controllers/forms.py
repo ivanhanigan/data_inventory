@@ -76,3 +76,17 @@ def manage_accessors_or_groups():
 
     return dict(grid=grid)
     # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]
+def manage_crosswalk():
+    grid = SQLFORM.smartgrid(db.crosswalk,
+                             fields = [db.crosswalk.transfer2new,   
+                                       db.crosswalk.eml_node,
+                                       db.crosswalk.datinv,
+                                       db.crosswalk.ltern_name,
+                                       db.crosswalk.portal_ddf_qaf,
+                                       db.crosswalk.help_comment,
+                                       db.crosswalk.aekos_shared
+                                       ],
+                                       orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),
+                             user_signature=True,maxtextlength =200)
+
+    return dict(grid=grid)

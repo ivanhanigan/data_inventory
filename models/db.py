@@ -302,3 +302,31 @@ Field('addenda','text')
     
 db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
+db.define_table(
+    'crosswalk',
+    Field('transfer2new','string'),
+    Field('eml_module','string'),
+    Field('eml_table','string'),
+    Field('eml_node','string'),
+    Field('eml_desc','text'),
+    Field('eml_standard_link','string'),
+    Field('eml_local_link','string'),
+    Field('morpho','string'),
+    Field('ltern_table','string'),
+    Field('ltern_name','string'),
+    Field('datinv','string'),
+    Field('portal_ddf_qaf','string'),
+    Field('help_comment','string'),
+    Field('ltern_desc','text'),
+    Field('aekos_shared','string'),
+    Field('aekos_desc','text'),
+    Field('ddi_module','string'),
+    Field('ddi_node','string'),
+    Field('asn','string'),
+    Field('tern','string'),
+    Field('ala','string'),
+    Field('psql_type','string'),
+    Field('w2p_code','string'),
+    Field('constraint_text','string'),
+    Field('lter_manual_page','string')
+    )
