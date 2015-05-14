@@ -83,7 +83,7 @@ def manage_crosswalk():
                                        db.crosswalk.datinv,
                                        db.crosswalk.ltern_name,
                                        db.crosswalk.portal_ddf_qaf,
-                                       db.crosswalk.help_comment,
+                                       db.crosswalk.ddi_node,
                                        db.crosswalk.aekos_shared
                                        ],
                                        orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),

@@ -227,8 +227,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
+      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -1506,7 +1506,16 @@ response.include_files()
     lcu(names(dat))
     , collapse = "','string'),\n", sep = "")
   )
-  dbWriteTable(ch, "crosswalk", dat, append = T)
+  # dbWriteTable(ch, "crosswalk", dat, append = T)
+  
+  
+  
+  
+  # backups
+  dir("../emldb")
+  dat <- dbReadTable(ch, "crosswalk")
+  str(dat)
+  write.table(dat, file.path("../emldb", "crosswalk-2015-02-22.csv"), sep = ",", row.names = F)
 #+end_src  
 ** COMMENT crosswlak-code
 #+name:crosswlak 
@@ -1554,7 +1563,7 @@ response.include_files()
                                          db.crosswalk.datinv,
                                          db.crosswalk.ltern_name,
                                          db.crosswalk.portal_ddf_qaf,
-                                         db.crosswalk.help_comment,
+                                         db.crosswalk.ddi_node,
                                          db.crosswalk.aekos_shared
                                          ],
                                          orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),
@@ -1579,4 +1588,43 @@ SELECT t1.*, t2.title
   on foo.accessor_id = t3.id
 
 #+end_src
+
+* backups
+** COMMENT backup-code
+#+name:backup
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  require(swishdbtools)
+  ch <- connect2postgres2("data_inventory_hanigan_dev")  
+  tbls <- pgListTables(ch, "public")
+  tbls$no <- 1:nrow(tbls)
+  tbls
+  tbls <- tbls[,1]
+  tbls <- tbls[c(1:4,11:18)]
+  for(tbl_i in tbls){
+  #  tbl_i = tbls[1]
+  dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))
+  #  str(dat)
+  write.csv(dat,
+            file.path("~/Dropbox/data/data_inventory_hanigan/backups",
+                      paste("backup-",tbl_i,"-",
+                            gsub(":", "-", gsub(" ", "-", Sys.time()))
+                            , ".csv", sep = ""))
+            , row.names = F, na = ''
+            )
+  }
+#+end_src
+
+#+RESULTS: backup
+
+
+** COMMENT pgdump-local
+#+name:pgdump
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  cat(sprintf('
+  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory/hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev
+  ',gsub(":","-",gsub(" ","-",Sys.time()))))
+    
+#+end_src
+
+#+RESULTS: pgdump
 
