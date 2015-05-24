@@ -228,7 +228,7 @@ This is where Morpho and other EML tools come into their own.  Our
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -318,34 +318,34 @@ The following sections show the definitions LTERN used to create the data invent
   db.define_table(
       'project',
 #+end_src
-** eml/dataset/project/title
+*** eml/dataset/project/title
 LTERN's suggested structure is either:
 - the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
 - a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
 
-*** COMMENT project/title/code
+**** COMMENT project/title/code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('title', 'string',
   comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
   ),
 #+end_src
-** eml/dataset/project/personnel
+*** eml/dataset/project/personnel
 In EML the Data Owner is able to be shown at various points on the xpath.  
 LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel][EML online]]
 
-*** COMMENT personnel-code
+**** COMMENT personnel-code
 # cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel','string', 
   comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
 #+end_src
-** eml/dataset/project/abstract
+*** eml/dataset/project/abstract
 The following information is used to create the LTERN Data Portal record for each Data Package:
 Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
 We use the informative abstract method. The eml/dataset/project/abstract should be a descriptive of the umbrella project, not the dataset.
@@ -358,27 +358,27 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 - Use short complete sentences.
 - Express terms in both their abbreviated and spelled out form for search retrieval purposes.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#abstract][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#abstract][EML online]]
-*** COMMENT abstract-code
+**** COMMENT abstract-code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('abstract', 'text',
       comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
       ),
 #+end_src
-** eml/dataset/project/studyAreaDescription
+*** eml/dataset/project/studyAreaDescription
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML online]]
-*** COMMENT comment studydesc
+**** COMMENT comment studydesc
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('studyAreaDescription','string', 
       comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
-      A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
       format = '%(title)s' 
       )
   
       db.project.personnel.requires = IS_NOT_EMPTY()
 #+end_src
-** COMMENT dataset-setup-code
+*** COMMENT dataset-setup-code
 #+name:dataset-setup
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:dataset-setup####
@@ -415,7 +415,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+end_src
 
 ** Dataset 
-** COMMENT dataset
+*** COMMENT dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   #### ONE (project) TO MANY (dataset)
@@ -456,7 +456,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
      
 #+end_src
 
-** COMMENT old dataset
+*** COMMENT old dataset
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
   
   #### ONE (project) TO MANY (dataset)
@@ -478,20 +478,42 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
   db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 
 #+end_src
-** COMMENT Data Entity
+** Data Entity (dataTable)
+- The entity level is for data files, tables, shapefiles, photos etc.  
+- I also use this for folders
 - https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 - https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#numberOfRecords
+**** COMMENT entity code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
   #### ONE (dataset) TO MANY (entity)
   
   db.define_table(
       'entity',
+#+end_src
+*** eml/dataset/entity/id
+**** COMMENT entity code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('dataset_id',db.dataset),
       Field('entityname','string'),
       Field('entitydescription', 'text'),
+#+end_src
+*** eml/dataset/entity/name
+*** eml/dataset/entity/description
+*** eml/dataset/entity/physical/distribution
+- The PhysicalDistribution contains the information required for retrieving the resource.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution][EML online]]
+**** COMMENT entity code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('physical_distribution', 'string',
+comment= XML(T('Information required for retrieving the resource. %s',    
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+  ),
+#+end_src
+*** COMMENT eml/dataset/entity fin
+**** COMMENT entity code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('numberOfRecords', 'integer'),
-      Field('physical_distribution', 'string'),    
       format = '%(entityname)s'
       )
 #+end_src

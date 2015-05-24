@@ -5,3 +5,4 @@ sessions/**
 *˜
 *.pyc
 .Rproj.user
+static/eml-2.1.1/**

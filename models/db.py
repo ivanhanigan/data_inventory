@@ -12,7 +12,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -89,19 +89,19 @@ db.define_table(
     'project',
 Field('title', 'string',
 comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
 ),
 Field('personnel','string', 
 comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('abstract', 'text',
 comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
 ),
 Field('studyAreaDescription','string', 
 comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
-A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
 ),
 format = '%(title)s' 
 )
@@ -146,13 +146,16 @@ db.dataset.contact.requires = [IS_EMAIL()]
 
 db.define_table(
     'entity',
-    Field('dataset_id',db.dataset),
-    Field('entityname','string'),
-    Field('entitydescription', 'text'),
-    Field('numberOfRecords', 'integer'),
-    Field('physical_distribution', 'string'),    
-    format = '%(entityname)s'
-    )
+Field('dataset_id',db.dataset),
+Field('entityname','string'),
+Field('entitydescription', 'text'),
+Field('physical_distribution', 'string',
+comment= XML(T('Information required for retrieving the resource. %s',    
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+  ),
+Field('numberOfRecords', 'integer'),
+format = '%(entityname)s'
+)
 #### ONE (entity) TO MANY (attributes/variables)
 
 db.define_table(
