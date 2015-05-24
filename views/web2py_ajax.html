@@ -11,18 +11,6 @@ response.files.insert(0,URL('static','js/jquery.js'))
 response.files.insert(1,URL('static','css/calendar.css'))
 response.files.insert(2,URL('static','js/calendar.js'))
 response.files.insert(3,URL('static','js/web2py.js'))
-response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.min.js'))
-response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.css'))
 response.include_meta()
 response.include_files()
 }}
-
-#<script type="text/javascript">
-#       $(function() {
-#               $(".w2p_fw").each(function (){                    //iterates over all form widgets
-#                       $(this).attr('title',$(this).next().html());      // set title for the widget taken from the comment column
-#                       $(this).next().html('');                             // clear the comment
-#                       $(this).tooltip();                                    // create the tooltip with title attribute set
-#               });
-#       });
-#</script>

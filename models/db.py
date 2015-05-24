@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    ## db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
+    ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -87,66 +87,111 @@ use_janrain(auth, filename='private/janrain.key')
 
 db.define_table(
     'project',
-    Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('personnel','string'),
-    Field('abstract', 'text')
-    )
+Field('title', 'string',
+comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+),
+Field('personnel','string', 
+comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+),
+Field('abstract', 'text',
+comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
+),
+Field('studyAreaDescription','string', 
+comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+),
+format = '%(title)s' 
+)
+  
+db.project.personnel.requires = IS_NOT_EMPTY()
 #### ONE (project) TO MANY (dataset)
 
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-    Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('contact','string', comment = 'Compulsory'),    
+    Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('keyword','string',
+    comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-    Field('abstract','string'),
-    Field('intellectualrights','string'),
+    Field('alternateidentifier','string',
+    comment = XML(T('Additional identifier that is used to label this dataset. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+    ),
+    Field('abstract','text'),
     Field('pubdate','date'),
     Field('geographicdescription','string'),
     Field('boundingcoordinates','string'),
     Field('temporalcoverage','string'),
     Field('metadataprovider','string'),
-    format = '%(title)s'
+    Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    format = '%(shortname)s'
     )
 
 db.dataset.contact.requires = [IS_EMAIL()]
-  
+
+    
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
-#### ONE (dataset) TO MANY (datatables)
+#### ONE (dataset) TO MANY (entity)
 
 db.define_table(
-    'datatable',
+    'entity',
     Field('dataset_id',db.dataset),
-    Field('entityname','string', comment='Data entity, type or kind: eg SpeciesAbundance1996'),    
-    Field('entitydescription', 'text')
+    Field('entityname','string'),
+    Field('entitydescription', 'text'),
+    Field('numberOfRecords', 'integer'),
+    Field('physical_distribution', 'string'),    
+    format = '%(entityname)s'
     )
-#### ONE (datatable) TO MANY (attributes/variables)
+#### ONE (entity) TO MANY (attributes/variables)
 
 db.define_table(
-    'attributelist',
-    Field('datatable_id',db.datatable),
+    'attr',
+    Field('entity_id',db.entity),
     Field('name','string'),
     Field('definition', 'string')
     )
-#### accessors
+#### accessdatasets
+
+db.define_table(
+    'accessdataset',
+    Field('name'),
+    Field('email'),
+    Field('title', 'string'),
+    Field('description', 'text'),
+    format = '%(name)s'
+    )
+#       format = '%(email)s'
+db.accessdataset.name.requires = IS_NOT_EMPTY()
+# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+#### MANY (accessors) TO MANY (accessdataset members)
 
 db.define_table(
     'accessor',
+    Field('accessdataset_id',db.accessdataset),
     Field('name'),
     Field('email'),
-    format = '%(email)s'
     )
-
-db.accessor.name.requires = IS_NOT_EMPTY()
-db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
+db.accessor.email.requires = [IS_EMAIL()]
+# , IS_NOT_IN_DB(db, 'accessor.email')]
 #### MANY (datasets) TO MANY (accessors)
 
 db.define_table(
     'accessrequest',
     Field('dataset_id',db.dataset),
-    Field('accessor_id',db.accessor),
+    Field('accessdataset_id',db.accessdataset),
     Field('title', 'string'),
-    format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
+    format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
     )
 #### MANY (keywords) TO one (dataset)
 
@@ -155,4 +200,134 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
     Field('keyword', 'string')
+    )
+#### ONE (intellectualright) TO one (dataset)
+db.define_table(
+    'intellectualright',
+    Field('dataset_id',db.dataset),
+    Field('data_owner', 'string'),
+    Field('special_permissions', 'string'),
+    Field('licence_code', 'string')
+    )
+    
+db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
+#### ONE (checklist) TO one (dataset)
+db.define_table(
+    'checklist',
+    Field('dataset_id',db.dataset),
+Field('checked_by','string'),
+Field('check_date','date'),
+Field('notes_comments','text'),
+Field('data_package_title_check','boolean'),
+Field('data_set_citation_check','boolean'),
+Field('data_package_owner_check','boolean'),
+Field('data_package_owner_check_individual_name','boolean'),
+Field('data_package_owner_check_position_role','boolean'),
+Field('data_package_owner_check_organization','boolean'),
+Field('data_package_owner_check_address','boolean'),
+Field('data_package_owner_check_phone','boolean'),
+Field('data_package_owner_check_email_address','boolean'),
+Field('associated_parties','boolean'),
+Field('associated_parties_individual_name','boolean'),
+Field('associated_parties_position','boolean'),
+Field('associated_parties_organization','boolean'),
+Field('associated_parties_physical_address','boolean'),
+Field('associated_parties_phone','boolean'),
+Field('associated_parties_email_address','boolean'),
+Field('abstract','boolean'),
+Field('keywords_and_subject_categories','boolean'),
+Field('gcmd_science_keywords','boolean'),
+Field('anzsrc_for_codes','boolean'),
+Field('ltern_monitoring_themes','boolean'),
+Field('keywords_free_text','boolean'),
+Field('geographic_coverage','boolean'),
+Field('geographic_description','boolean'),
+Field('bounding_coordinates','boolean'),
+Field('temporal_coverage','boolean'),
+Field('contacts_individual_names','boolean'),
+Field('contacts_positions','boolean'),
+Field('contacts_organizations','boolean'),
+Field('contacts_addresses','boolean'),
+Field('contacts_phone','boolean'),
+Field('contacts_email_addresses','boolean'),
+Field('methods_and_sampling_information','boolean'),
+Field('method_step_titles','boolean'),
+Field('method_step_description','boolean'),
+Field('instrumentation_details','boolean'),
+Field('sampling_area_and_frequency','boolean'),
+Field('sampling_description','boolean'),
+Field('research_project_title','boolean'),
+Field('research_project_funding_sources','boolean'),
+Field('research_project_personnel_information','boolean'),
+Field('research_project_individual_name','boolean'),
+Field('research_project_position_role','boolean'),
+Field('research_project_organization','boolean'),
+Field('research_project_address','boolean'),
+Field('research_project_phone','boolean'),
+Field('research_project_email_address','boolean'),
+Field('research_project_role','boolean'),
+Field('additional_metadata','boolean'),
+
+Field('access_control','boolean'),
+
+Field('usage_rights','boolean'),
+Field('special_conditions','boolean'),
+Field('entity_metadata','boolean'),
+Field('homepage_content','boolean'),
+Field('eml_homepage_links','boolean'),
+Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
+Field('draft_publication_checklist_passed','boolean'),
+Field('metacat_publication_checklist_check_public_or_mediated_access','boolean'),
+Field('metacat_publication_checklist_add_publication_date_to_data_inventory','boolean'),
+Field('metacat_publication_checklist_passed','boolean'),
+Field('reporting_checklist_licenced','boolean'),
+Field('reporting_checklist_described_with_metadata_','boolean'),
+Field('reporting_checklist_doi_minted','boolean'),
+Field('reporting_checklist_metadata_feed_to_tddp_and_rda','boolean'),
+Field('reporting_checklist_passed','boolean')
+    )
+    
+db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
+db.checklist.check_date.requires = IS_NOT_EMPTY()
+#### ONE (errors) TO one (dataset)
+db.define_table(
+    'error',
+    Field('dataset_id',db.dataset),
+Field('logged_by','string'),
+Field('date_logged','date'),
+Field('date_actioned','date'),
+Field('error','text'),
+Field('addenda','text')
+    )
+    
+db.error.logged_by.requires = IS_NOT_EMPTY()
+db.error.date_logged.requires = IS_NOT_EMPTY()
+db.define_table(
+    'crosswalk',
+    Field('transfer2new','string'),
+    Field('eml_module','string'),
+    Field('eml_table','string'),
+    Field('eml_node','string'),
+    Field('eml_desc','text'),
+    Field('eml_standard_link','string'),
+    Field('eml_local_link','string'),
+    Field('morpho','string'),
+    Field('ltern_table','string'),
+    Field('ltern_name','string'),
+    Field('datinv','string'),
+    Field('portal_ddf_qaf','string'),
+    Field('help_comment','string'),
+    Field('ltern_desc','text'),
+    Field('aekos_shared','string'),
+    Field('aekos_desc','text'),
+    Field('ddi_module','string'),
+    Field('ddi_node','string'),
+    Field('asn','string'),
+    Field('tern','string'),
+    Field('ala','string'),
+    Field('psql_type','string'),
+    Field('w2p_code','string'),
+    Field('constraint_text','string'),
+    Field('lter_manual_page','string')
     )

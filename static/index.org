@@ -1,20 +1,13 @@
-#+TITLE:data inventory 
+#+TITLE:Data Inventory 
 #+AUTHOR: Ivan Hanigan
 #+email: ivan.hanigan@anu.edu.au
 #+LaTeX_CLASS: article
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 #+LATEX: \tableofcontents
 -----
-*** COMMENT publish-code
-#+name:publish
-#+begin_src sh :session *shell* :tangle no :exports none :eval yes
-#### name:publish####
-mv data_inventory.html index.html
-#+end_src
 
-#+RESULTS: publish
 
-* todo list
+* COMMENT todo list
 > drv <- dbDriver("SQLite")
 > tfile <- tempfile()
 > con <- dbConnect(drv, dbname = "~/pitch.sqlite")
@@ -50,7 +43,7 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 
 ** COMMENT README.md-code
 #+name:README.md
-#+begin_src R :session *R* :tangle README.md :exports none :eval no
+#+begin_src R :session *R* :tangle ./README.md :exports none :eval no
 #### Data Inventory
 
 A web2py app to help manage research data
@@ -60,75 +53,97 @@ A web2py app to help manage research data
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
 - The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
 - This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
-* EML
-- the schema is defined at xxx
+* The Ecological Metadata Language (EML)
+The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
+** COMMENT snip
 - We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
-- the schematic below shows the structure of a minimally adequate EML XML document (closing tags omitted)
 - We added some things like metadataProvider, but this is optional
+
+** XML 
+A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
+
+
 #+begin_src R :session *R* :tangle no :exports reports :eval no
     <eml>
         <dataset>
-#            <title>
-#            <creator> 
-#            <contact> 
+            <title>
+            <creator> 
+            <contact> 
             <project> 
                 <title> 
                 <personnel>
-                <role>
+                    <role>
                 <abstract>
                 <funding>
                 <studyAreaDescription>
                 <designDescription>
-#            <publisher>
+                <relatedProject>
+            <associatedParty>
+            <publisher>
             <pubDate>
             <keywords>
             <abstract> 
-#            <intellectualRights>
+            <intellectualright>
             <methods> 
             <coverage>
-            <dataTable>
+            <dataTableerrors>
                 <entityName>
                 <entityDescription>                
                 <physical>
-                <attributeList>
+                <attribute>
         <additionalMetadata>
             <additionalLinks>
   
 #+end_src
 ** The parts of an EML document 
-- In EML, the term dataset is applied to a document which may contain
+In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
   abstract and keywords as well as one or more data entities, such as
   datatables, that provide more specific research details.
-- The information is at the level of a particular data collection or
+
+The information is at the level of a particular data collection or
   study, however there is also a level above this at the "project"
   level where research studies can be grouped together.
-- [TODO] Remember that, “In EML, the term dataset refers to one or more data
-  entities.” There is no generally accepted practice on what to
+
+In EML, the term dataset refers to one or more data
+  entities.  However, there is no generally accepted practice on what to
   include in an EML-dataset document. Some people will choose to have
   a one-to-one correspondence between an EML document and a data
   entity and a single physical file. Others will document several data
   entities in one dataset document. 
-- Below is a brief description of the way we interpret the EML parts
+
+ Below is a brief description of the way we interpret the components of an EML dataset
 
 *** Datasets
-- Dataset is the top level of the EML.  The miminum necessary to
-  proeduce a valid EML document is <title>, <creator>, <contract>.
-  But one can't tell very much  with just a title and a name.  
-- Our aim is to create an EML document that contains enough
-  information about the data and research to make funding agencies
-  happy and give other ecologists something to work with
+Dataset is the top level of the EML.  The miminum necessary to
+produce a valid EML document is <title>, <creator>, <contract>. But
+one can't tell very much with just a title and a name.  Our aim is to
+create an EML document that contains enough information about the data
+and research to make funding agencies happy and give other ecologists
+something to work with.
+
+For more information about the general EML descriptions see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html
+
+For more detailed information about the EML-dataset module see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html
 *** Projects
-- The optional <project> module provides an overall description of the
-  larger-scale project or research context with which that dataset is
-  associated.  For  example it might be an Longterm Ecological Research Network (LTER) site.
-*** Datatables  
-- As stated earlier, a dataset consists of one or more data entities,
-  and the most common data entity is a <dataTable>. A data table is
-  something that looks like a matrix with rows for observations and
-  columns for variables
-- [TODO] In addition to datatables, people using database applications may
-  also produce a <view> from a database management system or a
+The project module is optional, but in many cases highly desirable as
+this provides an overall description of the larger-scale project or
+research context with which that dataset is associated.  For example
+it might be an entire Longterm Ecological Research Network (LTER)
+site, or an individual project at an LTER site.
+
+For more information about the EML-dataset module see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html
+
+*** Data Entity
+As stated earlier, a dataset consists of one or more data entities,
+and the most common data entity is a <dataTable>. A data table is
+something that looks like a matrix with rows for observations and
+columns for variables
+
+In addition to datatables, people using database applications may also
+  produce a <view> from a database management system or a
   <storedProcedure> that results in data output. People using GIS
   (geographical information system) applications generate both
   <spatialVector>, also referred to as boundary or shape files, and
@@ -140,11 +155,17 @@ A web2py app to help manage research data
   photograph is an <otherEntity>, e.g., a photograph of two different
   types of butterflies.
 
+For more information about types of EML-entities see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 
 *** Attributes
-- An attribute or as it is sometime referred to, variable, in this
+An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
-- This is where Morpho and other EML tools come into their own.  Our
+
+For more information about the EML dataTable type (especially its attributes) see:
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute
+
+** COMMENT snip 
+This is where Morpho and other EML tools come into their own.  Our
   database solution might be useful as an initial stage of data
   documentation, to be further refined using specialised EML tools
 
@@ -162,7 +183,7 @@ A web2py app to help manage research data
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
-* Design the database and interface
+* Design the database 
 ** Create a new database
 - create a new postgres database using the following  code
 #+name:create.db
@@ -182,17 +203,16 @@ A web2py app to help manage research data
   python ./web2py.py -S data_inventory
 #+end_src
 
-** Set up database tables
-*** relational model
+** relational model
 - The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
-*** defaults for models/db.py
+** defaults for models/db.py
 - the database tables are set up in the models/db.py file that comes with default settings
 - The first bit to change is the db reference from SQLite to postgres
 - also note that "#if request.is\_local else []" will allow using as a server
 - Then add new table definitions down the bottom.  
 - Here we added projects, datasets, datatables and attributes.
 
-
+# DISABLED DURING POSTGRES DEV 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports none :eval no :padline no
   # -*- coding: utf-8 -*-
   
@@ -207,8 +227,8 @@ A web2py app to help manage research data
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ## db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory2")
+      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_ltern_dev_3")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -280,22 +300,87 @@ A web2py app to help manage research data
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-*** define our tables
-**** project
+* Define our tables
+The following sections show the definitions LTERN used to create the data inventory
+** Project Information and Data Owners
+- The EML Project module is used to place the dataset that is being documented into its larger research context.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html][EML online]]
+- The KNB says this is for 'Research context information for resources': The eml-project module describes the research context in which the dataset was created, including descriptions of over-all motivations and goals, funding, personnel, description of the study area etc. This is also the module to describe the design of the project: the scientific questions being asked, the architecture of the design, etc. 
+- Morpho says: this metadata element is to recognise that data may be collected as part of a larger research program  (umbrella research project).  For example a large NSF grant may provide funds for several investigators to collect data at various locations.
+- The new KNB metacat skin uses the title "Parent Project Information".
+- Please also note the [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#relatedProject]['relatedProject']] tag which LTERN is not currently using.  This 'is a recursive link to another project. This allows projects to be nested under one another for the case where one project spawns another.'
+
+*** COMMENT project code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### projects
   
   db.define_table(
       'project',
-      Field('title', 'string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-      Field('personnel','string'),
-      Field('abstract', 'text')
-      )
 #+end_src
-**** COMMENT dataset-setup-code
+** eml/dataset/project/title
+LTERN's suggested structure is either:
+- the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
+- a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
+
+*** COMMENT project/title/code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('title', 'string',
+  comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  ),
+#+end_src
+** eml/dataset/project/personnel
+In EML the Data Owner is able to be shown at various points on the xpath.  
+LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel][EML online]]
+
+*** COMMENT personnel-code
+# cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('personnel','string', 
+  comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3', scheme=True, host=True)))))
+  ),
+#+end_src
+** eml/dataset/project/abstract
+The following information is used to create the LTERN Data Portal record for each Data Package:
+Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
+We use the informative abstract method. The eml/dataset/project/abstract should be a descriptive of the umbrella project, not the dataset.
+- Briefly outline the relevant project or study including the Plot Network name and describe the contents of the data package. 
+- Include geographic location, the primary objectives of the study, what data was collected (species or phenomena), the year range the data was collected in, and collection frequency if applicable.
+- Describe methodology techniques or approaches only to the degree necessary for comprehension – don’t go into any detail.
+- Cite references and/or links to any publications that are related to the data package.
+- Single paragraph. 200-250 words.
+- Use active voice and past tense.
+- Use short complete sentences.
+- Express terms in both their abbreviated and spelled out form for search retrieval purposes.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#abstract][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#abstract][EML online]]
+*** COMMENT abstract-code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('abstract', 'text',
+      comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-4', scheme=True, host=True)))))
+      ),
+#+end_src
+** eml/dataset/project/studyAreaDescription
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML online]]
+*** COMMENT comment studydesc
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('studyAreaDescription','string', 
+      comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-5', scheme=True, host=True)))))
+      ),
+      format = '%(title)s' 
+      )
+  
+      db.project.personnel.requires = IS_NOT_EMPTY()
+#+end_src
+** COMMENT dataset-setup-code
 #+name:dataset-setup
-#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:dataset-setup####
   
   library(gdata)
@@ -329,35 +414,49 @@ A web2py app to help manage research data
   cat(psql)
 #+end_src
 
-**** dataset
+** Dataset 
+** COMMENT dataset
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-  
   #### ONE (project) TO MANY (dataset)
   
   db.define_table(
       'dataset',
       Field('project_id',db.project),
-      Field('title','string', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+      Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('keyword','string',
+      comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+      Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
       Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-      Field('abstract','string'),
-      Field('intellectualrights','string'),
-      Field('contact','string'),
+      Field('alternateidentifier','string',
+      comment = XML(T('Additional identifier that is used to label this dataset. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+      ),
+      Field('abstract','text'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('boundingcoordinates','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
-      format = '%(title)s'
+      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+      format = '%(shortname)s'
       )
-
+  
   db.dataset.contact.requires = [IS_EMAIL()]
-    
+  
+      
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
-    
+     
 #+end_src
 
-**** old dataset
+** COMMENT old dataset
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
   
   #### ONE (project) TO MANY (dataset)
@@ -368,7 +467,7 @@ A web2py app to help manage research data
       Field('title','string'),
       Field('creator', 'string'),
       Field('contact','string'),
-      Field('intellectualrights','string'),
+      Field('intellectualright','string'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('temporalcoverage','string'),
@@ -379,47 +478,71 @@ A web2py app to help manage research data
   db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 
 #+end_src
-**** datatable
+** COMMENT Data Entity
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#numberOfRecords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
-  #### ONE (dataset) TO MANY (datatables)
+  #### ONE (dataset) TO MANY (entity)
   
   db.define_table(
-      'datatable',
+      'entity',
       Field('dataset_id',db.dataset),
       Field('entityname','string'),
-      Field('entitydescription', 'text')
+      Field('entitydescription', 'text'),
+      Field('numberOfRecords', 'integer'),
+      Field('physical_distribution', 'string'),    
+      format = '%(entityname)s'
       )
 #+end_src
-**** attribute
+** COMMENT attr
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### ONE (datatable) TO MANY (attributes/variables)
+  #### ONE (entity) TO MANY (attributes/variables)
   
   db.define_table(
-      'attributelist',
-      Field('datatable_id',db.datatable),
+      'attr',
+      Field('entity_id',db.entity),
       Field('name','string'),
       Field('definition', 'string')
       )
 #+end_src
-**** accessor
+** COMMENT accessdataset 
+An optional access tree at this location controls access to the entire metadata document. If this access element is omitted from the document, then the package submitter should be given full access to the package but all other users should be denied all access. 
+https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### accessors
+  #### accessdatasets
+  
+  db.define_table(
+      'accessdataset',
+      Field('name'),
+      Field('email'),
+      Field('title', 'string'),
+      Field('description', 'text'),
+      format = '%(name)s'
+      )
+  #       format = '%(email)s'
+  db.accessdataset.name.requires = IS_NOT_EMPTY()
+  # db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+  
+#+end_src
+** COMMENT accessor
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  
+  #### MANY (accessors) TO MANY (accessdataset members)
   
   db.define_table(
       'accessor',
+      Field('accessdataset_id',db.accessdataset),
       Field('name'),
       Field('email'),
-      format = '%(email)s'
       )
-  
-  db.accessor.name.requires = IS_NOT_EMPTY()
-  db.accessor.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessor.email')]
-  
+  db.accessor.email.requires = [IS_EMAIL()]
+  # , IS_NOT_IN_DB(db, 'accessor.email')]
+         
 #+end_src
-**** access
+** COMMENT access request
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (datasets) TO MANY (accessors)
@@ -427,13 +550,13 @@ A web2py app to help manage research data
   db.define_table(
       'accessrequest',
       Field('dataset_id',db.dataset),
-      Field('accessor_id',db.accessor),
+      Field('accessdataset_id',db.accessdataset),
       Field('title', 'string'),
-      format = '%(title)s %(accessor_id)s -> %(dataset_id)s'
+      format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
       )
-    
+
 #+end_src
-**** keywords
+** COMMENT keywords
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
   #### MANY (keywords) TO one (dataset)
@@ -447,7 +570,125 @@ A web2py app to help manage research data
     
 #+end_src
 
-*** Defaults for controllers/default.py
+** COMMENT intellectualright
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+    
+#### ONE (intellectualright) TO one (dataset)
+db.define_table(
+    'intellectualright',
+    Field('dataset_id',db.dataset),
+    Field('data_owner', 'string'),
+    Field('special_permissions', 'string'),
+    Field('licence_code', 'string')
+    )
+    
+db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
+
+#+end_src
+** COMMENT checklists
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
+#### ONE (checklist) TO one (dataset)
+db.define_table(
+    'checklist',
+    Field('dataset_id',db.dataset),
+Field('checked_by','string'),
+Field('check_date','date'),
+Field('notes_comments','text'),
+Field('data_package_title_check','boolean'),
+Field('data_set_citation_check','boolean'),
+Field('data_package_owner_check','boolean'),
+Field('data_package_owner_check_individual_name','boolean'),
+Field('data_package_owner_check_position_role','boolean'),
+Field('data_package_owner_check_organization','boolean'),
+Field('data_package_owner_check_address','boolean'),
+Field('data_package_owner_check_phone','boolean'),
+Field('data_package_owner_check_email_address','boolean'),
+Field('associated_parties','boolean'),
+Field('associated_parties_individual_name','boolean'),
+Field('associated_parties_position','boolean'),
+Field('associated_parties_organization','boolean'),
+Field('associated_parties_physical_address','boolean'),
+Field('associated_parties_phone','boolean'),
+Field('associated_parties_email_address','boolean'),
+Field('abstract','boolean'),
+Field('keywords_and_subject_categories','boolean'),
+Field('gcmd_science_keywords','boolean'),
+Field('anzsrc_for_codes','boolean'),
+Field('ltern_monitoring_themes','boolean'),
+Field('keywords_free_text','boolean'),
+Field('geographic_coverage','boolean'),
+Field('geographic_description','boolean'),
+Field('bounding_coordinates','boolean'),
+Field('temporal_coverage','boolean'),
+Field('contacts_individual_names','boolean'),
+Field('contacts_positions','boolean'),
+Field('contacts_organizations','boolean'),
+Field('contacts_addresses','boolean'),
+Field('contacts_phone','boolean'),
+Field('contacts_email_addresses','boolean'),
+Field('methods_and_sampling_information','boolean'),
+Field('method_step_titles','boolean'),
+Field('method_step_description','boolean'),
+Field('instrumentation_details','boolean'),
+Field('sampling_area_and_frequency','boolean'),
+Field('sampling_description','boolean'),
+Field('research_project_title','boolean'),
+Field('research_project_funding_sources','boolean'),
+Field('research_project_personnel_information','boolean'),
+Field('research_project_individual_name','boolean'),
+Field('research_project_position_role','boolean'),
+Field('research_project_organization','boolean'),
+Field('research_project_address','boolean'),
+Field('research_project_phone','boolean'),
+Field('research_project_email_address','boolean'),
+Field('research_project_role','boolean'),
+Field('additional_metadata','boolean'),
+
+Field('access_control','boolean'),
+
+Field('usage_rights','boolean'),
+Field('special_conditions','boolean'),
+Field('entity_metadata','boolean'),
+Field('homepage_content','boolean'),
+Field('eml_homepage_links','boolean'),
+Field('can_the_plot_network_or_data_package_be_filtered_in_the_search_bar_of_the_portal','boolean'),
+Field('draft_publication_checklist_passed','boolean'),
+Field('metacat_publication_checklist_check_public_or_mediated_access','boolean'),
+Field('metacat_publication_checklist_add_publication_date_to_data_inventory','boolean'),
+Field('metacat_publication_checklist_passed','boolean'),
+Field('reporting_checklist_licenced','boolean'),
+Field('reporting_checklist_described_with_metadata_','boolean'),
+Field('reporting_checklist_doi_minted','boolean'),
+Field('reporting_checklist_metadata_feed_to_tddp_and_rda','boolean'),
+Field('reporting_checklist_passed','boolean')
+    )
+    
+db.checklist.checked_by.requires = IS_IN_SET(['Claire', 'Karl'])
+db.checklist.check_date.requires = IS_NOT_EMPTY()
+  
+#+end_src
+
+** COMMENT errors and addenda
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
+#### ONE (errors) TO one (dataset)
+db.define_table(
+    'error',
+    Field('dataset_id',db.dataset),
+Field('logged_by','string'),
+Field('date_logged','date'),
+Field('date_actioned','date'),
+Field('error','text'),
+Field('addenda','text')
+    )
+    
+db.error.logged_by.requires = IS_NOT_EMPTY()
+db.error.date_logged.requires = IS_NOT_EMPTY()    
+#+end_src
+* Design User Interface
+** Defaults for controllers/default.py
 - Following the example in the documentation 
 
 #+name:controllers/default.py
@@ -530,46 +771,56 @@ A web2py app to help manage research data
       return dict(form=crud())
 
 #+end_src
-*** Top Menu And Register Accessors
+** Top Menu 
 - From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
 - The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
 #+name:top menu and register a person
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no
-response.menu = [['Manage Projects', False, URL('manage_projects')],
-                 ['Register Accessor', False, URL('register_accessor')],
-                 ['Access Dataset', False, URL('access_dataset')]]
+  response.menu = [['Inventory Home', False, URL('data_inventory','default','index')],
+                   ['Manage Projects', False, URL('manage_projects')],
+                   ['Manage Datasets', False, URL('manage_datasets')],
+                   ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
+                   ['Set Access to a Dataset', False, URL('access_dataset')],
+                   ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
+#+end_src
+** COMMENT Deprecated registor accessor or group-code
+#+name:registor accessor or group
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:registor accessor or group####
+# from response.menu                 ['Register Accessor or Group', False, URL('register_accessor_or_group')],
 
-def register_accessor():
+
+def register_accessor_or_group():
     # create an insert form from the table
-    form = SQLFORM(db.accessor).process()
+    form = SQLFORM(db.accessdataset).process()
 
     # if form correct perform the insert
     if form.accepted:
         response.flash = 'new record inserted'
 
     # and get a list of all persons
-    records = SQLTABLE(db().select(db.accessor.ALL),headers='fieldname:capitalize')
+    records = SQLTABLE(db().select(db.accessdataset.ALL),headers='fieldname:capitalize')
 
     return dict(form=form, records=records)
 
 #+end_src
 
-*** Access a dataset
+** Access a dataset
 - Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
 
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('accessor_id',requires=IS_IN_DB(db,db.accessor.id,'%(email)s')),
+          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
           Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
           Field('title','string',requires=IS_NOT_EMPTY())).process()
       
       if form.accepted:
           # get previous access for same dataset
-          access = db((db.accessrequest.accessor_id == form.vars.accessor_id)&
+          access = db((db.accessrequest.accessdataset_id == form.vars.accessdataset_id)&
               (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
   
-          db.accessrequest.insert(accessor_id=form.vars.accessor_id,
+          db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
                            dataset_id=form.vars.dataset_id,
                            title=form.vars.title)
   
@@ -579,16 +830,16 @@ def register_accessor():
   
       
       # now get a list of all purchases
-      accessing = (db.accessor.id==db.accessrequest.accessor_id)&(db.dataset.id==db.accessrequest.dataset_id)
+      accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
       records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
       return dict(form=form, records=records)
   
   
 #+end_src
-*** COMMENT Access a dataset
+** COMMENT DEPRECATED Access a dataset
 - Example 32 is a rather sophisticated buy form. It checks that the buyer and the product are in the database and updates the corresponding record or inserts a new purchase. It also does a JOIN to list all purchases. 
 # controllers/forms.py
-#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/no :exports reports :eval no :padline no
+#+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
           Field('accessor_id',requires=IS_IN_DB(db,db.accessor.id,'%(email)s')),
@@ -619,7 +870,7 @@ def register_accessor():
       return dict(form=form, records=records)
   
 #+end_src
-*** Register access view
+** Register access view
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/views/forms/access_dataset.html :exports reports :eval no :padline no
   
   {{extend 'layout.html'}}
@@ -632,24 +883,106 @@ def register_accessor():
   
 #+end_src
 
-*** Main form ties it all together
+** Main form ties it all together (manage projects)
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
-    
-    def manage_projects():
-        grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'datatable', 'attributelist','accessrequest', 'keyword'],
-                                 fields = [db.project.title,
-                                           db.dataset.title, db.dataset.creator,
-                                           db.datatable.entityname,
-                                           db.attributelist.name, db.attributelist.definition,
-                                           db.accessrequest.accessor_id, db.accessrequest.dataset_id,
-                                           db.accessrequest.title, 
-                                           db.keyword.thesaurus, db.keyword.keyword],
-                                 user_signature=False,maxtextlength =200)
-        return dict(grid=grid)
-    
+  
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','intellectualright', 'attr','accessrequest', 
+                                                        'checklist', 'error'],
+                               fields = [db.project.title,db.project.id,
+                                         db.dataset.shortname,
+                                         db.dataset.id,
+                                         db.dataset.additionalinfo,
+                                         db.dataset.alternateidentifier,
+                                         db.entity.entityname,
+                                         db.attr.name, db.attr.definition,
+                                         db.accessrequest.accessdataset_id, 
+                                         db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.error.logged_by, db.error.date_logged,
+                                         db.checklist.checked_by, db.checklist.check_date, 
+                                         db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                         db.intellectualright.data_owner],
+                                         orderby = dict(project=db.project.id, dataset=db.dataset.title),
+                               user_signature=True,maxtextlength =200)
+      return dict(grid=grid)
+#+end_src  
+** COMMENT deprecated manageproj-code
+#+name:deprecated manageproj
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:deprecated manageproj####
+
+  def manage_projects():
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'attr','accessrequest', 'keyword'],
+                               fields = [db.project.title,
+                                         db.dataset.title, db.dataset.creator,
+                                         db.entity.entityname,
+                                         db.attr.name, db.attr.definition,
+                                         db.accessrequest.accessor_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.keyword.thesaurus, db.keyword.keyword],
+                               user_signature=True,maxtextlength =200)
+      return dict(grid=grid)
+  
 #+end_src
 
-*** finesse the interface
+** Form to manage all datasets
+#+name:manage datasets
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_datasets():
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
+                                                         'checklist',  'error'],
+                               fields = [db.dataset.project_id, db.dataset.shortname,
+                                         db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
+                                         db.entity.entityname,
+                                         db.attr.name, db.attr.definition,
+                                         db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.error.logged_by, db.error.date_logged,
+                                         db.checklist.checked_by, db.checklist.check_date, 
+                                         db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
+                                         db.intellectualright.data_owner],
+                                         orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
+                               user_signature=True,maxtextlength =200)
+      return dict(grid=grid)
+  
+#+end_src
+
+** Form to manage accessors or groups
+*** COMMENT manage access groups
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_accessors_or_groups():
+      grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
+                               fields = [
+                                         db.accessdataset.name,
+                                         db.accessdataset.email,
+                                         db.accessor.name, db.accessor.email],
+                                         orderby = dict(accessdataset=[db.accessdataset.name]),
+                               user_signature=True,maxtextlength =200)
+
+      return dict(grid=grid)
+      # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]  
+#+end_src
+
+*** COMMENT summarise-access-code
+#+name:summarise-access
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:summarise-access####
+select foo.*, t3.*
+from (
+SELECT t1.*, t2.title
+  FROM accessrequest t1
+  join dataset t2
+  on t1.dataset_id = t2.id
+  ) foo
+  join accessor t3
+  on foo.accessor_id = t3.id
+
+#+end_src
+
+** finesse the interface
 - the following makes a home page
 - also go to static/css/web2py.css and change line 33/34 text width to about 800px
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
@@ -662,9 +995,18 @@ def register_accessor():
   <h4>{{=T('Instructions')}}</h4>
   <ol>
     <li>{{=T('You are using the data inventory')}}</li>
-    <li>{{=XML(T('The main tool for managing projects is at %s',
+    <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
              A('%(application)s/forms/manage_projects/'%request,
              _href=URL('forms','manage_projects'))))}}</li>
+    <li>{{=XML(T('The main tool for managing datasets is at %s',
+             A('%(application)s/forms/manage_datasets/'%request,
+             _href=URL('forms','manage_datasets'))))}}</li>
+    <li>{{=XML(T('The technical documentation for this application is at %s',
+             A('this link',
+             _href=URL('static','index.html'))))}}</li>
+    <li>{{=XML(T('The links to other apps is at %s',
+             A('this link',
+             _href=URL('audio','default','index'))))}}</li>
   </ol>
   {{elif 'content' in globals():}}
   {{=content}}
@@ -679,10 +1021,17 @@ def register_accessor():
   
 #+end_src
 
+* COMMENT load using sql.r-code
+#+name:load using sql.r
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:load using sql.r####
+
+#+end_src
+
 * COMMENT migrate DDI R Code
 ** COMMENT load data-code
 #+name:load data
-#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:load data####
   library(swishdbtools)
   ch <- connect2postgres2("data_inventory2")
@@ -793,7 +1142,7 @@ def register_accessor():
     
   sql <- sprintf(
      "INSERT INTO dataset(
-              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              id, project_id, title, creator, contact, metadataprovider, intellectualright, 
               pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
               abstract)
       VALUES (?, ?, ?, ?, ?, ?, ?, 
@@ -809,7 +1158,7 @@ def register_accessor():
   #  i <- 1
   sql <- sprintf(
   "INSERT INTO dataset(
-              id, project_id, title, creator, contact, metadataprovider, intellectualrights, 
+              id, project_id, title, creator, contact, metadataprovider, intellectualright, 
               pubdate, temporalcoverage, boundingcoordinates, geographicdescription, 
               abstract)
       VALUES (?, ?, ?, ?, ?, ?, ?, 
@@ -826,7 +1175,7 @@ def register_accessor():
 *** COMMENT models/db.py-code
 - 
 - The first bit to change is the db reference from SQLite to postgres
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/no :exports reports :eval no :padline no
+#+begin_src markdown :tangle no :exports reports :eval no :padline no
   # -*- coding: utf-8 -*-
   
   #########################################################################
@@ -944,8 +1293,8 @@ def register_accessor():
       Field('tern_type','text'),
       Field('data_interview_status','text'),
       Field('data_interview_date','date'),
-      Field('deed_status','text'),
-      Field('deed_status_date','date'),
+      Field('intellectualright_status','text'),
+      Field('intellectualright_status_date','date'),
       Field('licence_code','text'),
       Field('access_restrictions','text'),
       Field('estimate_timeframe_data_ready_by_plot','date'),
@@ -979,10 +1328,10 @@ def register_accessor():
       Field('creator', 'string')
       )
   
-  #### ONE (dataset) TO MANY (attributes/variables)
+  #### ONE (dataset) TO MANY (attr/variables)
   
   db.define_table(
-      'attribute',
+      'attr',
       Field('dataset_id',db.dataset),
       Field('name','string'),
       Field('definition', 'string')
@@ -991,7 +1340,7 @@ def register_accessor():
 #+end_src
 *** COMMENT controllers/default.py-code
 #+name:controllers/default.py
-#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/no :exports none :eval no :padline no
+#+begin_src R :session *R* :tangle no :exports none :eval no :padline no
   # -*- coding: utf-8 -*-
   # this file is released under public domain and you can use without limitations
   
@@ -1079,22 +1428,204 @@ def register_accessor():
   #    return dict(form=form, records=records)
   
   def search_dogs():
-      return dict(form=SQLFORM.grid(db.data_inventory, user_signature=False, maxtextlength =200,
+      return dict(form=SQLFORM.grid(db.data_inventory, user_signature=True, maxtextlength =200,
                                     fields = [db.data_inventory.id, db.data_inventory.plot_network_study_name, db.data_inventory.pn_group, db.data_inventory.data_type, db.data_inventory.eda_status_date]))
   
   
   def search_datasets():
-      return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=False, maxtextlength =200,
+      return dict(form=SQLFORM.grid(db.dataset.id==db.data_inventory.id2, user_signature=True, maxtextlength =200,
                                     fields = [db.dataset.id, db.dataset.plot_network_study_name, db.dataset.pn_code, db.dataset.dataset, db.dataset.tern_type, db.data_inventory.notes_issues]))
   
   
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attribute'],
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'attr'],
                                fields = [db.project.title,
                                          db.dataset.title, db.dataset.creator,
-                                         db.attribute.name, db.attribute.definition],
-                               user_signature=False)
+                                         db.attr.name, db.attr.definition],
+                               user_signature=True)
       return dict(grid=grid)
   
 #+end_src
+** COMMENT floating tooltips-code
+#+name:floating tooltips
+#+begin_src R :session *R* :tangle no :exports none :eval no
+
+#### name:floating tooltips####
+# if we want floating tooltips
+# http://www.web2pyslices.com/slice/show/1418/auto-tooltip-in-forms
+You will need a jquery plugin to show the tip so you may google for it and pick one. Or you can use this http://jquery.bassistance.de/tooltip/jquery.tooltip.zip See it what it looks like here http://jquery.bassistance.de/tooltip/demo/
+
+Extract jquery.tooltip.min.js and jquery.tooltip.css to static folder. Edit web2py_ajax.html and include the call for these files. Something like this:
+
+....
+# to views/web2py_ajax.html
+<script type="text/javascript"><!--
+    // These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).
+    var w2p_ajax_confirm_message = "{{=T('Are you sure you want to delete this object?')}}";
+    var w2p_ajax_disable_with_message = "{{=T('Working...')}}";
+    var w2p_ajax_date_format = "{{=T('%Y-%m-%d')}}";
+    var w2p_ajax_datetime_format = "{{=T('%Y-%m-%d %H:%M:%S')}}";
+    var ajax_error_500 = '{{=T.M('An error occured, please [[reload %s]] the page') % URL(args=request.args, vars=request.get_vars) }}'
+    //--></script>
+{{
+response.files.insert(0,URL('static','js/jquery.js'))
+response.files.insert(1,URL('static','css/calendar.css'))
+response.files.insert(2,URL('static','js/calendar.js'))
+response.files.insert(3,URL('static','js/web2py.js'))
+response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.min.js'))
+response.files.insert(3,URL(r=request,c='static',f='jquery.tooltip.css'))
+response.include_meta()
+response.include_files()
+}}
+
+<script type="text/javascript">
+       $(function() {
+               $(".w2p_fw").each(function (){                    //iterates over all form widgets
+                       $(this).attr('title',$(this).next().html());      // set title for the widget taken from the comment column
+                       $(this).next().html('');                             // clear the comment
+                       $(this).tooltip();                                    // create the tooltip with title attribute set
+               });
+       });
+</script>
+
+#+end_src
+* COMMENT crosswalk-code
+#+name:crosswalk
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:crosswalk####
+  library(gdata)
+  library(disentangle)
+  library(rpostgrestools)
+  ch <- connect2postgres2("data_inventory_ltern_dev_3")
+  fi <- dir("../emldb", full.names = T)
+  fi
+  dat  <- read.xls(fi[2])
+  str(dat)
+  cat(
+  paste(
+    lcu(names(dat))
+    , collapse = "','string'),\n", sep = "")
+  )
+  # dbWriteTable(ch, "crosswalk", dat, append = T)
+  
+  
+  
+  
+  # backups
+  dir("../emldb")
+  dat <- dbReadTable(ch, "crosswalk")
+  str(dat)
+  write.table(dat, file.path("../emldb", "crosswalk-2015-02-22.csv"), sep = ",", row.names = F)
+#+end_src  
+** COMMENT crosswlak-code
+#+name:crosswlak 
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+   
+  db.define_table(
+      'crosswalk',
+      Field('transfer2new','string'),
+      Field('eml_module','string'),
+      Field('eml_table','string'),
+      Field('eml_node','string'),
+      Field('eml_desc','text'),
+      Field('eml_standard_link','string'),
+      Field('eml_local_link','string'),
+      Field('morpho','string'),
+      Field('ltern_table','string'),
+      Field('ltern_name','string'),
+      Field('datinv','string'),
+      Field('portal_ddf_qaf','string'),
+      Field('help_comment','string'),
+      Field('ltern_desc','text'),
+      Field('aekos_shared','string'),
+      Field('aekos_desc','text'),
+      Field('ddi_module','string'),
+      Field('ddi_node','string'),
+      Field('asn','string'),
+      Field('tern','string'),
+      Field('ala','string'),
+      Field('psql_type','string'),
+      Field('w2p_code','string'),
+      Field('constraint_text','string'),
+      Field('lter_manual_page','string')
+      )
+#+end_src
+
+** Form to manage crosswalk
+*** COMMENT manage access groups
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_crosswalk():
+      grid = SQLFORM.smartgrid(db.crosswalk,
+                               fields = [db.crosswalk.transfer2new,   
+                                         db.crosswalk.eml_node,
+                                         db.crosswalk.datinv,
+                                         db.crosswalk.ltern_name,
+                                         db.crosswalk.portal_ddf_qaf,
+                                         db.crosswalk.ddi_node,
+                                         db.crosswalk.aekos_shared
+                                         ],
+                                         orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),
+                               user_signature=True,maxtextlength =200)
+
+      return dict(grid=grid)
+
+#+end_src
+
+*** COMMENT summarise-access-code
+#+name:summarise-access
+#+begin_src R :session *R* :tangle no :exports none :eval no
+#### name:summarise-access####
+select foo.*, t3.*
+from (
+SELECT t1.*, t2.title
+  FROM accessrequest t1
+  join dataset t2
+  on t1.dataset_id = t2.id
+  ) foo
+  join accessor t3
+  on foo.accessor_id = t3.id
+
+#+end_src
+
+* backups
+** COMMENT backup-code
+#+name:backup
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  require(swishdbtools)
+  ch <- connect2postgres2("data_inventory_hanigan_dev")  
+  tbls <- pgListTables(ch, "public")
+  tbls$no <- 1:nrow(tbls)
+  tbls
+  tbls <- tbls[,1]
+  tbls <- tbls[c(1:4,11:18)]
+  for(tbl_i in tbls){
+  #  tbl_i = tbls[1]
+  dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))
+  #  str(dat)
+  write.csv(dat,
+            file.path("~/Dropbox/data/data_inventory_hanigan/backups",
+                      paste("backup-",tbl_i,"-",
+                            gsub(":", "-", gsub(" ", "-", Sys.time()))
+                            , ".csv", sep = ""))
+            , row.names = F, na = ''
+            )
+  }
+#+end_src
+
+#+RESULTS: backup
+
+
+** COMMENT pgdump-local
+#+name:pgdump
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  cat(sprintf('
+  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory/hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev
+  ',gsub(":","-",gsub(" ","-",Sys.time()))))
+    
+#+end_src
+
+#+RESULTS: pgdump
+
