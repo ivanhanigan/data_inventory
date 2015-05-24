@@ -150,6 +150,7 @@ db.define_table(
     Field('entityname','string'),
     Field('entitydescription', 'text'),
     Field('numberOfRecords', 'integer'),
+    Field('physical_distribution', 'string'),    
     format = '%(entityname)s'
     )
 #### ONE (entity) TO MANY (attributes/variables)
