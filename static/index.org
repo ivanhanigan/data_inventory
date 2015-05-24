@@ -491,6 +491,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('entityname','string'),
       Field('entitydescription', 'text'),
       Field('numberOfRecords', 'integer'),
+      Field('physical_distribution', 'string'),    
       format = '%(entityname)s'
       )
 #+end_src
