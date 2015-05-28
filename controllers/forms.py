@@ -8,7 +8,7 @@ response.menu = [['Inventory Home', False, URL('data_inventory','default','index
 def access_dataset():
     form = SQLFORM.factory(
         Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
-        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
+        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
         Field('title','string',requires=IS_NOT_EMPTY())).process()
     
     if form.accepted:
@@ -37,7 +37,7 @@ def manage_projects():
                                        db.dataset.id,
                                        db.dataset.additionalinfo,
                                        db.dataset.alternateidentifier,
-                                       db.entity.entityname,
+                                       db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
@@ -54,7 +54,7 @@ def manage_datasets():
                                                        'checklist',  'error'],
                              fields = [db.dataset.project_id, db.dataset.shortname,
                                        db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
-                                       db.entity.entityname,
+                                       db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
                                        db.accessrequest.title, 

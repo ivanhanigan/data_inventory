@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -116,25 +116,25 @@ db.define_table(
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+    Field('contact','string', comment = 'An email address for general enquiries.  This field is COMPULSORY.'),
+    Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('alternateidentifier','string',
+    comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+    ),
     Field('keyword','string',
     comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
-    Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
     Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-    Field('alternateidentifier','string',
-    comment = XML(T('Additional identifier that is used to label this dataset. %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-    ),
     Field('abstract','text'),
     Field('pubdate','date'),
     Field('geographicdescription','string'),
     Field('boundingcoordinates','string'),
     Field('temporalcoverage','string'),
     Field('metadataprovider','string'),
-    Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-    ),
     format = '%(shortname)s'
     )
 
@@ -165,10 +165,13 @@ db.define_table(
     Field('definition', 'string')
     )
 #### accessdatasets
-
+  
 db.define_table(
     'accessdataset',
-    Field('name'),
+    Field('name','string',
+comment= XML(T('A person or group. %s',    
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+    ),
     Field('email'),
     Field('title', 'string'),
     Field('description', 'text'),

@@ -95,6 +95,11 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <additionalLinks>
   
 #+end_src
+** A schematic diagram of the EML modules
+In the figure below the EML hierarchy of modules is shown graphically. An EML metadata document contains a dataset module that allows the grouping of one or more data entities linked together by particular integrity constraints to form a Data Package.  The project module places the dataset that is being documented into its larger research context, and optionally allows multiple related Data Packages to be linked. The mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines).
+
+[[file:./images/EML_project.png]]
+
 ** The parts of an EML document 
 In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
@@ -122,6 +127,11 @@ create an EML document that contains enough information about the data
 and research to make funding agencies happy and give other ecologists
 something to work with.
 
+Datasets may include one or more data entities such as data tables and spatial images along with associated metadata, but inclusion of data entities are not mandatory. The dataset module enables entities which are linked together to be grouped logically.  LTERN groups entities into a single dataset using a range of integrity constraints such as the use of a specific sampling structure or monitoring theme employed over a discrete temporal and geographic range.
+In the context of the work undertaken by the LTERN Data Portal Team, the term dataset is sometimes used interchangeably with the term “data package”, however it should be recognised that these are not exactly the same.  The dataset module is a part of an EML document which forms the basis for a data package.  
+
+In EML, the dataset tag contains general information about a dataset; at minimum this must comprise a title, one Data Creator and a contact (often the Data Creator and contact will be the same).  Additional information such as abstract, temporal coverage, keywords, geographic coverage and methods are used to provide context for the published or archived data packages. 
+
 For more information about the general EML descriptions see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html
 
@@ -132,6 +142,9 @@ this provides an overall description of the larger-scale project or
 research context with which that dataset is associated.  For example
 it might be an entire Longterm Ecological Research Network (LTER)
 site, or an individual project at an LTER site.
+
+The EML “project” module of the EML enables data packages to be grouped logically together. The project module is primarily used by LTERN to identify the Data Owner and the source of funding.
+The project module is recursive in that it provides an overall description of the larger-scale project or research context for the specific project with which that data package is associated.  Information in the project tag of the EML include detailed descriptions of the aims and objectives of the research, funding sources, personnel and a description of the study area.  This module also includes content on the study and sampling design and the methods employed during the research.  As an example, a project might comprise an entire Long Term Ecological Research Network (LTERN) plot network or an individual project at an LTERN site.
 
 For more information about the EML-dataset module see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html
@@ -227,8 +240,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -427,25 +440,25 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
       Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
+      Field('contact','string', comment = 'An email address for general enquiries.  This field is COMPULSORY.'),
+      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+      Field('alternateidentifier','string',
+      comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+      ),
       Field('keyword','string',
       comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
-      Field('contact','string', comment = 'An email address for general enquiries.  This field is compulsory.'),
       Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-      Field('alternateidentifier','string',
-      comment = XML(T('Additional identifier that is used to label this dataset. %s.',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-      ),
       Field('abstract','text'),
       Field('pubdate','date'),
       Field('geographicdescription','string'),
       Field('boundingcoordinates','string'),
       Field('temporalcoverage','string'),
       Field('metadataprovider','string'),
-      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project. %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-      ),
       format = '%(shortname)s'
       )
   
@@ -534,19 +547,22 @@ An optional access tree at this location controls access to the entire metadata 
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#access
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   
-  #### accessdatasets
+#### accessdatasets
   
-  db.define_table(
-      'accessdataset',
-      Field('name'),
-      Field('email'),
-      Field('title', 'string'),
-      Field('description', 'text'),
-      format = '%(name)s'
-      )
-  #       format = '%(email)s'
-  db.accessdataset.name.requires = IS_NOT_EMPTY()
-  # db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+db.define_table(
+    'accessdataset',
+    Field('name','string',
+comment= XML(T('A person or group. %s',    
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+    ),
+    Field('email'),
+    Field('title', 'string'),
+    Field('description', 'text'),
+    format = '%(name)s'
+    )
+#       format = '%(email)s'
+db.accessdataset.name.requires = IS_NOT_EMPTY()
+# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
   
 #+end_src
 ** COMMENT accessor
@@ -834,7 +850,7 @@ def register_accessor_or_group():
   def access_dataset():
       form = SQLFORM.factory(
           Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
-          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(title)s')),
+          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
           Field('title','string',requires=IS_NOT_EMPTY())).process()
       
       if form.accepted:
@@ -916,7 +932,7 @@ def register_accessor_or_group():
                                          db.dataset.id,
                                          db.dataset.additionalinfo,
                                          db.dataset.alternateidentifier,
-                                         db.entity.entityname,
+                                         db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.name, db.attr.definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
@@ -957,7 +973,7 @@ def register_accessor_or_group():
                                                          'checklist',  'error'],
                                fields = [db.dataset.project_id, db.dataset.shortname,
                                          db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
-                                         db.entity.entityname,
+                                         db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.name, db.attr.definition,
                                          db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
