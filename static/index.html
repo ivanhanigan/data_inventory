@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-06-21T14:12+1000"/>
+<meta name="generated" content="2015-06-21T14:57+1000"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -992,7 +992,7 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 <ul>
 <li>Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
 </li>
-<li>removed           Field('title','string',requires=IS<sub>NOT</sub><sub>EMPTY</sub>())).process()
+<li>removed           
 </li>
 <li>title=form.vars.title
 </li>
@@ -1003,8 +1003,12 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 
 <pre class="src src-R">def access_dataset():
     form = SQLFORM.factory(
-        Field(<span style="color: #2aa198;">'accessdataset_id'</span>,requires=IS_IN_DB(db,db.accessdataset.id,<span style="color: #2aa198;">'%(title)s'</span>)),
-        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(shortname)s'</span>))).process()
+        Field(<span style="color: #2aa198;">'accessdataset_id'</span>,requires=IS_IN_DB(db,db.accessdataset.id,<span style="color: #2aa198;">'%(name)s'</span>)),
+        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(shortname)s'</span>)),
+        Field(<span style="color: #2aa198;">'title'</span>,<span style="color: #2aa198;">'string'</span>,requires=IS_NOT_EMPTY()),
+        Field(<span style="color: #2aa198;">'description'</span>,<span style="color: #2aa198;">'text'</span>,requires=IS_NOT_EMPTY()),
+        Field(<span style="color: #2aa198;">'begin_date'</span>,<span style="color: #2aa198;">'date'</span>),
+        Field(<span style="color: #2aa198;">'end_date'</span>,<span style="color: #2aa198;">'date'</span>)).process()
 
     
     <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
@@ -1013,7 +1017,11 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
         db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                         dataset_id=form.vars.dataset_id
+                         dataset_id=form.vars.dataset_id,
+                         title=form.vars.title,
+                         description=form.vars.description,
+                         begin_date =form.vars.begin_date,
+                         end_date   =form.vars.end_date
                          )
 
         response.flash = <span style="color: #2aa198;">'dataset accessed!'</span>
@@ -1021,7 +1029,7 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
         response.flash = <span style="color: #2aa198;">'invalid values in form!'</span>
 
     
-    <span style="color: #586e75;"># </span><span style="color: #586e75;">now get a list of all purchases</span>
+    <span style="color: #586e75;"># </span><span style="color: #586e75;">now get a list of all accesses</span>
     accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&amp;(db.dataset.id==db.accessrequest.dataset_id)
     records = SQLTABLE(db(accessing).select(),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
     <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)
@@ -1053,7 +1061,7 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
                                        db.dataset.creator,                                          
                                        db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
-                                       db.attr.name, db.attr.definition,
+                                       db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
@@ -1087,7 +1095,7 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
                                        db.dataset.creator,                                          
                                        db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
-                                       db.attr.name, db.attr.definition,
+                                       db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 

@@ -250,8 +250,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      #db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev", fake_migrate_all = True)
+      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev3", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -666,8 +666,8 @@ comment= XML(T('Information required for retrieving the resource. %s',
   db.define_table(
       'attr',
       Field('entity_id',db.entity),
-      Field('name','string', 'The name of the variable'),
-      Field('definition', 'string', comment = 'Definition of the variable.'),
+      Field('variable_name', 'string', comment = 'The name of the variable'),
+      Field('variable_definition', 'string', comment = 'Definition of the variable.'),
       Field('measurement_scales', 'string', comment = 'One of nominal, ordinal, interval, ratio or datetime', requires = IS_IN_SET(['nominal', 'ordinal', 'interval', 'ratio', 'datetime'])),
       Field('units', 'string', comment = 'Standard Unit of Measurement'),
       Field('value_labels', 'string', comment = 'Labels for levels of a factor.  For example a=bud, b=flower, c=fruiting')      
@@ -683,15 +683,12 @@ https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml.html#acce
 db.define_table(
     'accessdataset',
     Field('name','string',
-comment= XML(T('A person or group. %s',    
+comment= XML(T('A person or group. Keep this to a short (two or three word) title as it is used to specify access requests in the acessrequest table). %s',    
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
     ),
     Field('email'),
-    Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
-    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
-    Field('begin_date', 'date', comment = "Access granted on this date"),
-    Field('end_date', 'date', comment = "Access revoked on this date"),
-    format = '%(title)s'
+    Field('bio', 'string', comment = "A short description of this person/group."),
+    format = '%(name)s'
     )
 db.accessdataset.name.requires = IS_NOT_EMPTY()
 db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
@@ -708,8 +705,6 @@ db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
       Field('name'),
       Field('email'),
       Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
-      Field('begin_date', 'date', comment = "Access granted on this date"),
-      Field('end_date', 'date', comment = "Access revoked on this date"),
       format = '%(name)s'
       )
   db.accessor.email.requires = [IS_EMAIL()]
@@ -725,6 +720,10 @@ db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
       'accessrequest',
       Field('dataset_id',db.dataset),
       Field('accessdataset_id',db.accessdataset),
+      Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
+      Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+      Field('begin_date', 'date', comment = "Access granted on this date"),
+      Field('end_date', 'date', comment = "Access revoked on this date"),
       format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
       )
 
@@ -981,13 +980,17 @@ def register_accessor_or_group():
 
 ** Access a dataset
 - Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
-- removed           Field('title','string',requires=IS_NOT_EMPTY())).process()
+- removed           
 - title=form.vars.title
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(title)s')),
-          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s'))).process()
+          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
+          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
+          Field('title','string',requires=IS_NOT_EMPTY()),
+          Field('description','text',requires=IS_NOT_EMPTY()),
+          Field('begin_date','date'),
+          Field('end_date','date')).process()
 
       
       if form.accepted:
@@ -996,7 +999,11 @@ def register_accessor_or_group():
               (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
   
           db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                           dataset_id=form.vars.dataset_id
+                           dataset_id=form.vars.dataset_id,
+                           title=form.vars.title,
+                           description=form.vars.description,
+                           begin_date =form.vars.begin_date,
+                           end_date   =form.vars.end_date
                            )
   
           response.flash = 'dataset accessed!'
@@ -1004,7 +1011,7 @@ def register_accessor_or_group():
           response.flash = 'invalid values in form!'
   
       
-      # now get a list of all purchases
+      # now get a list of all accesses
       accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
       records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
       return dict(form=form, records=records)
@@ -1071,7 +1078,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.dataset.creator,                                          
                                          db.dataset.contact,
                                          db.entity.entityname, db.entity.physical_distribution,
-                                         db.attr.name, db.attr.definition,
+                                         db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
@@ -1114,7 +1121,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.dataset.creator,                                          
                                          db.dataset.contact,
                                          db.entity.entityname, db.entity.physical_distribution,
-                                         db.attr.name, db.attr.definition,
+                                         db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
@@ -2071,7 +2078,16 @@ response.include_files()
   library(gdata)
   library(disentangle)
   library(rpostgrestools)
-  ch <- connect2postgres2("data_inventory_ltern_dev_3")
+  ch <- connect2postgres2("data_inventory_hanigan_dev")
+  ch2 <- connect2postgres2("data_inventory_hanigan_dev3")
+  dat <- dbGetQuery(ch, "select * from crosswalk")
+  str(dat)
+  dbWriteTable(ch2, "crosswalk", dat, append = T, row.names=F)
+  
+  
+  
+  
+  # OLD CRAP
   fi <- dir("../emldb", full.names = T)
   fi
   dat  <- read.xls(fi[2])
@@ -2173,7 +2189,7 @@ SELECT t1.*, t2.title
   library(gdata)
   library(disentangle)
   library(rpostgrestools)
-  ch <- connect2postgres2("data_inventory_hanigan_dev")
+  ch <- connect2postgres2("data_inventory_hanigan_dev3")
   fi <- dir("~/Dropbox/data/ltern_data_inventory-backups", full.names = T, pattern = "packages-2015-04")
   fi
   dat  <- read.csv(fi[9], stringsAsFactor = F)
@@ -2187,8 +2203,8 @@ SELECT t1.*, t2.title
   names(ky) <- "keyword"
   head(ky)
   #dbRemoveTable(ch, "thesaurus_ltern")
-  dbWriteTable(ch, "thesaurus_ltern_insert",
-               ky, append = F, row.names=F)
+  dbWriteTable(ch, "thesaurus_ltern",
+               ky, append = T, row.names=T)
   
 #+end_src  
 ** table

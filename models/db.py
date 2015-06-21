@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    #db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev", fake_migrate_all = True)
+    ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev3", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -198,8 +198,8 @@ format = '%(entityname)s'
 db.define_table(
     'attr',
     Field('entity_id',db.entity),
-    Field('name','string', 'The name of the variable'),
-    Field('definition', 'string', comment = 'Definition of the variable.'),
+    Field('variable_name', 'string', comment = 'The name of the variable'),
+    Field('variable_definition', 'string', comment = 'Definition of the variable.'),
     Field('measurement_scales', 'string', comment = 'One of nominal, ordinal, interval, ratio or datetime', requires = IS_IN_SET(['nominal', 'ordinal', 'interval', 'ratio', 'datetime'])),
     Field('units', 'string', comment = 'Standard Unit of Measurement'),
     Field('value_labels', 'string', comment = 'Labels for levels of a factor.  For example a=bud, b=flower, c=fruiting')      
@@ -209,15 +209,12 @@ db.define_table(
 db.define_table(
     'accessdataset',
     Field('name','string',
-comment= XML(T('A person or group. %s',    
+comment= XML(T('A person or group. Keep this to a short (two or three word) title as it is used to specify access requests in the acessrequest table). %s',    
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
     ),
     Field('email'),
-    Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
-    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
-    Field('begin_date', 'date', comment = "Access granted on this date"),
-    Field('end_date', 'date', comment = "Access revoked on this date"),
-    format = '%(title)s'
+    Field('bio', 'string', comment = "A short description of this person/group."),
+    format = '%(name)s'
     )
 db.accessdataset.name.requires = IS_NOT_EMPTY()
 db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
@@ -229,8 +226,6 @@ db.define_table(
     Field('name'),
     Field('email'),
     Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
-    Field('begin_date', 'date', comment = "Access granted on this date"),
-    Field('end_date', 'date', comment = "Access revoked on this date"),
     format = '%(name)s'
     )
 db.accessor.email.requires = [IS_EMAIL()]
@@ -241,6 +236,10 @@ db.define_table(
     'accessrequest',
     Field('dataset_id',db.dataset),
     Field('accessdataset_id',db.accessdataset),
+    Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
+    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+    Field('begin_date', 'date', comment = "Access granted on this date"),
+    Field('end_date', 'date', comment = "Access revoked on this date"),
     format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
     )
 #### MANY (keywords) TO one (dataset)

@@ -7,8 +7,12 @@ response.menu = [['Inventory Home', False, URL('data_inventory','default','index
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 def access_dataset():
     form = SQLFORM.factory(
-        Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(title)s')),
-        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s'))).process()
+        Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
+        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
+        Field('title','string',requires=IS_NOT_EMPTY()),
+        Field('description','text',requires=IS_NOT_EMPTY()),
+        Field('begin_date','date'),
+        Field('end_date','date')).process()
 
     
     if form.accepted:
@@ -17,7 +21,11 @@ def access_dataset():
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
         db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                         dataset_id=form.vars.dataset_id
+                         dataset_id=form.vars.dataset_id,
+                         title=form.vars.title,
+                         description=form.vars.description,
+                         begin_date =form.vars.begin_date,
+                         end_date   =form.vars.end_date
                          )
 
         response.flash = 'dataset accessed!'
@@ -25,7 +33,7 @@ def access_dataset():
         response.flash = 'invalid values in form!'
 
     
-    # now get a list of all purchases
+    # now get a list of all accesses
     accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&(db.dataset.id==db.accessrequest.dataset_id)
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
@@ -39,7 +47,7 @@ def manage_projects():
                                        db.dataset.creator,                                          
                                        db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
-                                       db.attr.name, db.attr.definition,
+                                       db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
@@ -58,7 +66,7 @@ def manage_datasets():
                                        db.dataset.creator,                                          
                                        db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
-                                       db.attr.name, db.attr.definition,
+                                       db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
