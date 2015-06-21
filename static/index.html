@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-05-28T14:47+1000"/>
+<meta name="generated" content="2015-06-21T14:12+1000"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -167,13 +167,24 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5-1-4">5.1.4 eml/dataset/project/studyAreaDescription</a></li>
 </ul>
 </li>
-<li><a href="#sec-5-2">5.2 Dataset</a></li>
+<li><a href="#sec-5-2">5.2 Dataset</a>
+<ul>
+<li><a href="#sec-5-2-1">5.2.1 bounding coords</a></li>
+<li><a href="#sec-5-2-2">5.2.2 temporal cov</a></li>
+<li><a href="#sec-5-2-3">5.2.3 temporal cov</a></li>
+<li><a href="#sec-5-2-4">5.2.4 methods</a></li>
+<li><a href="#sec-5-2-5">5.2.5 additional metadata links</a></li>
+<li><a href="#sec-5-2-6">5.2.6 metadataprovider</a></li>
+<li><a href="#sec-5-2-7">5.2.7 end</a></li>
+</ul>
+</li>
 <li><a href="#sec-5-3">5.3 Data Entity (dataTable)</a>
 <ul>
 <li><a href="#sec-5-3-1">5.3.1 eml/dataset/entity/id</a></li>
 <li><a href="#sec-5-3-2">5.3.2 eml/dataset/entity/name</a></li>
 <li><a href="#sec-5-3-3">5.3.3 eml/dataset/entity/description</a></li>
-<li><a href="#sec-5-3-4">5.3.4 eml/dataset/entity/physical/distribution</a></li>
+<li><a href="#sec-5-3-4">5.3.4 eml/dataset/entity methods</a></li>
+<li><a href="#sec-5-3-5">5.3.5 eml/dataset/entity/physical/distribution</a></li>
 </ul></li>
 </ul>
 </li>
@@ -182,14 +193,19 @@ for the JavaScript code in this tag.
 <li><a href="#sec-6-1">6.1 Defaults for controllers/default.py</a></li>
 <li><a href="#sec-6-2">6.2 Top Menu</a></li>
 <li><a href="#sec-6-3">6.3 Access a dataset</a></li>
-<li><a href="#sec-6-4">6.4 Register access view</a></li>
-<li><a href="#sec-6-5">6.5 Main form ties it all together (manage projects)</a></li>
-<li><a href="#sec-6-6">6.6 Form to manage all datasets</a></li>
-<li><a href="#sec-6-7">6.7 Form to manage accessors or groups</a></li>
-<li><a href="#sec-6-8">6.8 finesse the interface</a></li>
+<li><a href="#sec-6-4">6.4 Main form ties it all together (manage projects)</a></li>
+<li><a href="#sec-6-5">6.5 Form to manage all datasets</a></li>
+<li><a href="#sec-6-6">6.6 Form to manage accessors or groups</a></li>
+<li><a href="#sec-6-7">6.7 finesse the interface</a></li>
 </ul>
 </li>
 <li><a href="#sec-7">7 backups</a></li>
+<li><a href="#sec-8">8 ETL</a>
+<ul>
+<li><a href="#sec-8-1">8.1 summary of data for ETL</a></li>
+<li><a href="#sec-8-2">8.2 load transformed</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -612,6 +628,20 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 
 
 
+<ul>
+<li id="sec-5-1-2-1">personnel general<br/>
+
+
+
+<pre class="src src-markdown">Field('personnel','string', 
+comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+),
+</pre>
+
+
+</li>
+</ul>
 </div>
 
 </div>
@@ -661,6 +691,10 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+
+
+
+
 </div>
 </div>
 
@@ -673,6 +707,130 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+
+
+
+
+
+
+</div>
+
+<div id="outline-container-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> <span class="todo TODO">TODO</span> bounding coords</h4>
+<div class="outline-text-4" id="text-5-2-1">
+
+
+
+
+<pre class="src src-markdown">Field('boundingcoordinates','string',
+comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-2" class="outline-4">
+<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> <span class="todo TODO">TODO</span> temporal cov</h4>
+<div class="outline-text-4" id="text-5-2-2">
+
+
+
+
+<pre class="src src-markdown">Field('temporalcoverage<span style="color: #268bd2; font-style: italic;">_daterange','string', comment = "A text description of the temporal range that events were observed on"),</span>
+<span style="color: #268bd2; font-style: italic;">Field('temporalcoverage_</span>begindate','date', comment="A begin date.  The dates that events were observed on."),
+Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-3" class="outline-4">
+<h4 id="sec-5-2-3"><span class="section-number-4">5.2.3</span> <span class="todo TODO">TODO</span> temporal cov</h4>
+<div class="outline-text-4" id="text-5-2-3">
+
+
+
+
+<pre class="src src-markdown">Field('taxonomic_coverage','string', comment="List of scientific names."),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-4" class="outline-4">
+<h4 id="sec-5-2-4"><span class="section-number-4">5.2.4</span> <span class="todo TODO">TODO</span> methods</h4>
+<div class="outline-text-4" id="text-5-2-4">
+
+
+
+
+<pre class="src src-markdown">Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
+Field('sampling<span style="color: #268bd2; font-style: italic;">_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),</span>
+<span style="color: #268bd2; font-style: italic;">Field('method_</span>steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
+Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-5" class="outline-4">
+<h4 id="sec-5-2-5"><span class="section-number-4">5.2.5</span> <span class="todo TODO">TODO</span> additional metadata links</h4>
+<div class="outline-text-4" id="text-5-2-5">
+
+
+
+
+<pre class="src src-markdown">Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-6" class="outline-4">
+<h4 id="sec-5-2-6"><span class="section-number-4">5.2.6</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
+<div class="outline-text-4" id="text-5-2-6">
+
+
+
+
+<pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-7" class="outline-4">
+<h4 id="sec-5-2-7"><span class="section-number-4">5.2.7</span> <span class="todo TODO">TODO</span> end</h4>
+<div class="outline-text-4" id="text-5-2-7">
+
+
+
+
+<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">    format = '%(shortname)s'</span>
+<span style="color: #268bd2; font-weight: bold;">    )</span>
+
+db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requires = [IS_</span>EMAIL()]
+
+    
+<span style="color: #268bd2; font-weight: bold;"># db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]</span>
+   
+</pre>
+
+
+
+</div>
 </div>
 
 </div>
@@ -709,6 +867,12 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> eml/dataset/entity/name</h4>
 <div class="outline-text-4" id="text-5-3-2">
 
+
+
+
+<pre class="src src-markdown">Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+</pre>
+
 </div>
 
 </div>
@@ -717,13 +881,34 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <h4 id="sec-5-3-3"><span class="section-number-4">5.3.3</span> eml/dataset/entity/description</h4>
 <div class="outline-text-4" id="text-5-3-3">
 
+
+
+
+<pre class="src src-markdown">Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
+</pre>
+
+
 </div>
 
 </div>
 
 <div id="outline-container-5-3-4" class="outline-4">
-<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> eml/dataset/entity/physical/distribution</h4>
+<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> eml/dataset/entity methods</h4>
 <div class="outline-text-4" id="text-5-3-4">
+
+
+
+
+<pre class="src src-markdown">Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-5" class="outline-4">
+<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> eml/dataset/entity/physical/distribution</h4>
+<div class="outline-text-4" id="text-5-3-5">
 
 <ul>
 <li>The PhysicalDistribution contains the information required for retrieving the resource.
@@ -807,17 +992,20 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <ul>
 <li>Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
 </li>
+<li>removed           Field('title','string',requires=IS<sub>NOT</sub><sub>EMPTY</sub>())).process()
+</li>
+<li>title=form.vars.title
+</li>
 </ul>
-
 
 
 
 
 <pre class="src src-R">def access_dataset():
     form = SQLFORM.factory(
-        Field(<span style="color: #2aa198;">'accessdataset_id'</span>,requires=IS_IN_DB(db,db.accessdataset.id,<span style="color: #2aa198;">'%(name)s'</span>)),
-        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(shortname)s'</span>)),
-        Field(<span style="color: #2aa198;">'title'</span>,<span style="color: #2aa198;">'string'</span>,requires=IS_NOT_EMPTY())).process()
+        Field(<span style="color: #2aa198;">'accessdataset_id'</span>,requires=IS_IN_DB(db,db.accessdataset.id,<span style="color: #2aa198;">'%(title)s'</span>)),
+        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(shortname)s'</span>))).process()
+
     
     <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
         <span style="color: #586e75;"># </span><span style="color: #586e75;">get previous access for same dataset</span>
@@ -825,8 +1013,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
         db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                         dataset_id=form.vars.dataset_id,
-                         title=form.vars.title)
+                         dataset_id=form.vars.dataset_id
+                         )
 
         response.flash = <span style="color: #2aa198;">'dataset accessed!'</span>
     elif form.errors:
@@ -842,56 +1030,35 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 </pre>
 
 
+
+
 </div>
 
 </div>
 
 <div id="outline-container-6-4" class="outline-3">
-<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Register access view</h3>
+<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Main form ties it all together (manage projects)</h3>
 <div class="outline-text-3" id="text-6-4">
 
 
 
 
-<pre class="src src-R">{{extend <span style="color: #2aa198;">'layout.html'</span>}}
-&lt;h1&gt;Access form&lt;/h1&gt;
-  {{=form}}
-  [ {{=A(<span style="color: #2aa198;">'delete accesses'</span>,_href=URL(<span style="color: #2aa198;">'delete_accessed'</span>))}} ]
-  &lt;h2&gt;Current access (SQL JOIN!)&lt;/h2&gt;
-&lt;p&gt;{{=records}}&lt;/p&gt;
-
-
-</pre>
-
-
-</div>
-
-</div>
-
-<div id="outline-container-6-5" class="outline-3">
-<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Main form ties it all together (manage projects)</h3>
-<div class="outline-text-3" id="text-6-5">
-
-
-
-
 <pre class="src src-R">def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>,<span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, 
-                                                      <span style="color: #2aa198;">'checklist'</span>, <span style="color: #2aa198;">'error'</span>],
-                             fields = [db.project.title,db.project.id,
+    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>
+                                                      ],
+                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.additionalinfo,
-                                       db.dataset.alternateidentifier,
+                                       db.dataset.shortname,
+                                       db.dataset.creator,                                          
+                                       db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.error.logged_by, db.error.date_logged,
-                                       db.checklist.checked_by, db.checklist.check_date, 
-                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.intellectualright.data_owner],
+                                       db.keyword.keyword,
+                                       db.intellectualright.licence_code],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
@@ -903,27 +1070,29 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-6-6" class="outline-3">
-<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage all datasets</h3>
-<div class="outline-text-3" id="text-6-6">
+<div id="outline-container-6-5" class="outline-3">
+<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Form to manage all datasets</h3>
+<div class="outline-text-3" id="text-6-5">
 
 
 
 
 <pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[<span style="color: #2aa198;">'project'</span>, <span style="color: #2aa198;">'entity'</span>,<span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, 
-                                                       <span style="color: #2aa198;">'checklist'</span>,  <span style="color: #2aa198;">'error'</span>],
-                             fields = [db.dataset.project_id, db.dataset.shortname,
-                                       db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[<span style="color: #2aa198;">'project'</span>, <span style="color: #2aa198;">'entity'</span>,<span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>
+                                                      ],
+                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                                       db.dataset.shortname,
+                                       db.dataset.id,
+                                       db.dataset.shortname,
+                                       db.dataset.creator,                                          
+                                       db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
-                                       db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.accessdataset_id, 
+                                       db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.error.logged_by, db.error.date_logged,
-                                       db.checklist.checked_by, db.checklist.check_date, 
-                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.intellectualright.data_owner],
-                                       orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
+                                       db.keyword.keyword,
+                                       db.intellectualright.licence_code],
                              user_signature=True,maxtextlength =200)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
 
@@ -934,21 +1103,21 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
+<div id="outline-container-6-6" class="outline-3">
+<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage accessors or groups</h3>
+<div class="outline-text-3" id="text-6-6">
+
+
+
+
+
+</div>
+
+</div>
+
 <div id="outline-container-6-7" class="outline-3">
-<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage accessors or groups</h3>
+<h3 id="sec-6-7"><span class="section-number-3">6.7</span> finesse the interface</h3>
 <div class="outline-text-3" id="text-6-7">
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-6-8" class="outline-3">
-<h3 id="sec-6-8"><span class="section-number-3">6.8</span> finesse the interface</h3>
-<div class="outline-text-3" id="text-6-8">
 
 <ul>
 <li>the following makes a home page
@@ -1003,6 +1172,11 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+
+
+
+
+
 </div>
 </div>
 
@@ -1016,6 +1190,36 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> ETL</h2>
+<div class="outline-text-2" id="text-8">
+
+
+
+
+</div>
+
+<div id="outline-container-8-1" class="outline-3">
+<h3 id="sec-8-1"><span class="section-number-3">8.1</span> summary of data for ETL</h3>
+<div class="outline-text-3" id="text-8-1">
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-2" class="outline-3">
+<h3 id="sec-8-2"><span class="section-number-3">8.2</span> load transformed</h3>
+<div class="outline-text-3" id="text-8-2">
+
+
+</div>
 </div>
 </div>
 </div>

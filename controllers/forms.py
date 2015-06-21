@@ -7,9 +7,9 @@ response.menu = [['Inventory Home', False, URL('data_inventory','default','index
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
 def access_dataset():
     form = SQLFORM.factory(
-        Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
-        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
-        Field('title','string',requires=IS_NOT_EMPTY())).process()
+        Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(title)s')),
+        Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s'))).process()
+
     
     if form.accepted:
         # get previous access for same dataset
@@ -17,8 +17,8 @@ def access_dataset():
             (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
 
         db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                         dataset_id=form.vars.dataset_id,
-                         title=form.vars.title)
+                         dataset_id=form.vars.dataset_id
+                         )
 
         response.flash = 'dataset accessed!'
     elif form.errors:
@@ -30,39 +30,40 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','intellectualright', 'attr','accessrequest', 
-                                                      'checklist', 'error'],
-                             fields = [db.project.title,db.project.id,
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest'
+                                                      ],
+                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.additionalinfo,
-                                       db.dataset.alternateidentifier,
+                                       db.dataset.shortname,
+                                       db.dataset.creator,                                          
+                                       db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.error.logged_by, db.error.date_logged,
-                                       db.checklist.checked_by, db.checklist.check_date, 
-                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.intellectualright.data_owner],
+                                       db.keyword.keyword,
+                                       db.intellectualright.licence_code],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
-                                                       'checklist',  'error'],
-                             fields = [db.dataset.project_id, db.dataset.shortname,
-                                       db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','keyword', 'intellectualright', 'attr','accessrequest'
+                                                      ],
+                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                                       db.dataset.shortname,
+                                       db.dataset.id,
+                                       db.dataset.shortname,
+                                       db.dataset.creator,                                          
+                                       db.dataset.contact,
                                        db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.name, db.attr.definition,
-                                       db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
+                                       db.accessrequest.accessdataset_id, 
+                                       db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.error.logged_by, db.error.date_logged,
-                                       db.checklist.checked_by, db.checklist.check_date, 
-                                       db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                       db.intellectualright.data_owner],
-                                       orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
+                                       db.keyword.keyword,
+                                       db.intellectualright.licence_code],
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_accessors_or_groups():
@@ -87,6 +88,15 @@ def manage_crosswalk():
                                        db.crosswalk.aekos_shared
                                        ],
                                        orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),
+                             user_signature=True,maxtextlength =200)
+
+    return dict(grid=grid)
+def manage_thesaurus_ltern():
+    grid = SQLFORM.smartgrid(db.thesaurus_ltern,
+                             fields = [   
+                                       db.thesaurus_ltern.keyword
+                                       ],
+                                       orderby = dict(thesaurus_ltern=[ db.thesaurus_ltern.keyword]),
                              user_signature=True,maxtextlength =200)
 
     return dict(grid=grid)

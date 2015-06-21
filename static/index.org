@@ -251,7 +251,7 @@ This is where Morpho and other EML tools come into their own.  Our
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
+      #db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev", fake_migrate_all = True)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -350,7 +350,7 @@ LTERN's suggested structure is either:
 **** COMMENT project/title/code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('title', 'string',
-  comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+  comment= XML(T('The EML Project module places the data into its larger research context. If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title. %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
   ),
 #+end_src
@@ -361,12 +361,30 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 
 **** COMMENT personnel-code
 # cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
-
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-  Field('personnel','string', 
-  comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+  Field('personnel_data_owner','string', 
+  comment= XML(T('This is the data owner, and a compulsory field. A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data. %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
+  Field('personnel_owner_organisationname','string', 
+  comment= XML(T('This is the data owner organisation. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+  ),
+#+end_src
+**** personnel general
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  Field('personnel','string', 
+  comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+  ),
+#+end_src
+*** COMMENT funding-code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('funding', 'text',
+      comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
+      ),
+
 #+end_src
 *** eml/dataset/project/abstract
 The following information is used to create the LTERN Data Portal record for each Data Package:
@@ -383,7 +401,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#abstract][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#abstract][EML online]]
 **** COMMENT abstract-code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('abstract', 'text',
+      Field('project_abstract', 'text',
       comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
       ),
@@ -396,12 +414,30 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
+#+end_src
+
+*** COMMENT project_established
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('project_established','date', 
+      comment= XML(T('Commencement date of overarching research project as a specific date or year. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      ),
+#+end_src
+*** COMMENT project citation
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('project_citation','text', 
+      comment= XML(T('Citations relevant to the design of the overarching project. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      ),
+#+end_src
+*** COMMENT end
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(title)s' 
       )
   
-      db.project.personnel.requires = IS_NOT_EMPTY()
+      db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
 #+end_src
-*** COMMENT dataset-setup-code
+*** COMMENT DEPRECATED dataset-setup-code
 #+name:dataset-setup
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:dataset-setup####
@@ -439,40 +475,113 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 ** Dataset 
 *** COMMENT dataset
-
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   #### ONE (project) TO MANY (dataset)
   
   db.define_table(
       'dataset',
       Field('project_id',db.project),
+#+end_src
+*** COMMENT dataset shortname
+**** TODO shortname
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
-      Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-      Field('contact','string', comment = 'An email address for general enquiries.  This field is COMPULSORY.'),
+#+end_src
+*** COMMENT dataset title
+**** TODO title
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('title','text', comment = XML(T('Suggested structure is: [Project name (optional sub-project name)] [:] [Data type (such as experimental unit, observational unit, and/or measurement methods)] [,] [Geographic location] [,] [State] [,] [Country] [,] [Annual or seasonal tranches]. %s',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+#+end_src
+*** COMMENT dataset creator
+**** TODO creator
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('creator','string', comment='The name of the person, organization, or position who created the data'),
+#+end_src
+*** COMMENT dataset contact
+**** TODO contact
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
+      Field('contact_email','string', comment = 'An email address for general enquiries.'),
+#+end_src
+*** COMMENT dataset abstract
+**** TODO abstract
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+#+end_src
+*** COMMENT dataset assoc
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('associated_party','string', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      ),
+#+end_src
+*** COMMENT dataset geographic
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('geographicdescription','string',
+      comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+      ),
+#+end_src
+*** TODO bounding coords
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('boundingcoordinates','string',
+      comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+      ),
+#+end_src
+*** TODO temporal cov
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+      Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
+      Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+#+end_src
+*** TODO temporal cov
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('taxonomic_coverage','string', comment="List of scientific names."),
+#+end_src
+*** TODO methods 
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
+      Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
+      Field('method_steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
+      Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
+#+end_src
+
+*** TODO additional metadata links
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
+#+end_src
+*** COMMENT dataset additional info
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
+#+end_src
+*** COMMENT dataset alternateidentifier
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('alternateidentifier','string',
       comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
       ),
-      Field('keyword','string',
-      comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-      ),
-      Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-      Field('abstract','text'),
+#+end_src
+*** COMMENT dataset pubdate
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
-      Field('geographicdescription','string'),
-      Field('boundingcoordinates','string'),
-      Field('temporalcoverage','string'),
-      Field('metadataprovider','string'),
+#+end_src
+*** TODO metadataprovider
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
+#+end_src
+*** TODO end
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(shortname)s'
       )
   
-  db.dataset.contact.requires = [IS_EMAIL()]
+  db.dataset.contact_email.requires = [IS_EMAIL()]
   
       
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
@@ -509,34 +618,43 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 **** COMMENT entity code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
-  #### ONE (dataset) TO MANY (entity)
+#### ONE (dataset) TO MANY (entity)
   
-  db.define_table(
+db.define_table(
       'entity',
 #+end_src
 *** eml/dataset/entity/id
 **** COMMENT entity code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('dataset_id',db.dataset),
-      Field('entityname','string'),
-      Field('entitydescription', 'text'),
 #+end_src
 *** eml/dataset/entity/name
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+#+end_src
 *** eml/dataset/entity/description
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
+#+end_src
+
+*** eml/dataset/entity methods
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
+#+end_src
 *** eml/dataset/entity/physical/distribution
 - The PhysicalDistribution contains the information required for retrieving the resource.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution][EML online]]
 **** COMMENT entity code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-  Field('physical_distribution', 'string',
+      Field('physical_distribution', 'string',
 comment= XML(T('Information required for retrieving the resource. %s',    
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
-  ),
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+      ),
 #+end_src
-*** COMMENT eml/dataset/entity fin
-**** COMMENT entity code
+*** COMMENT eml/dataset/entity num recs
+
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('numberOfRecords', 'integer'),
+      Field('numberOfRecords', 'integer', comment = 'The number of rows in a table.'),
       format = '%(entityname)s'
       )
 #+end_src
@@ -548,8 +666,11 @@ comment= XML(T('Information required for retrieving the resource. %s',
   db.define_table(
       'attr',
       Field('entity_id',db.entity),
-      Field('name','string'),
-      Field('definition', 'string')
+      Field('name','string', 'The name of the variable'),
+      Field('definition', 'string', comment = 'Definition of the variable.'),
+      Field('measurement_scales', 'string', comment = 'One of nominal, ordinal, interval, ratio or datetime', requires = IS_IN_SET(['nominal', 'ordinal', 'interval', 'ratio', 'datetime'])),
+      Field('units', 'string', comment = 'Standard Unit of Measurement'),
+      Field('value_labels', 'string', comment = 'Labels for levels of a factor.  For example a=bud, b=flower, c=fruiting')      
       )
 #+end_src
 ** COMMENT accessdataset 
@@ -566,13 +687,14 @@ comment= XML(T('A person or group. %s',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
     ),
     Field('email'),
-    Field('title', 'string'),
-    Field('description', 'text'),
-    format = '%(name)s'
+    Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
+    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+    Field('begin_date', 'date', comment = "Access granted on this date"),
+    Field('end_date', 'date', comment = "Access revoked on this date"),
+    format = '%(title)s'
     )
-#       format = '%(email)s'
 db.accessdataset.name.requires = IS_NOT_EMPTY()
-# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
   
 #+end_src
 ** COMMENT accessor
@@ -585,6 +707,10 @@ db.accessdataset.name.requires = IS_NOT_EMPTY()
       Field('accessdataset_id',db.accessdataset),
       Field('name'),
       Field('email'),
+      Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
+      Field('begin_date', 'date', comment = "Access granted on this date"),
+      Field('end_date', 'date', comment = "Access revoked on this date"),
+      format = '%(name)s'
       )
   db.accessor.email.requires = [IS_EMAIL()]
   # , IS_NOT_IN_DB(db, 'accessor.email')]
@@ -599,7 +725,6 @@ db.accessdataset.name.requires = IS_NOT_EMPTY()
       'accessrequest',
       Field('dataset_id',db.dataset),
       Field('accessdataset_id',db.accessdataset),
-      Field('title', 'string'),
       format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
       )
 
@@ -613,25 +738,26 @@ db.accessdataset.name.requires = IS_NOT_EMPTY()
       'keyword',
       Field('dataset_id',db.dataset),
       Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
-      Field('keyword', 'string')
+      Field('keyword', 'string', requires=IS_IN_DB(db, 'thesaurus_ltern.keyword'))
       )
     
 #+end_src
 
 ** COMMENT intellectualright
+http://creativecommons.org/licenses/
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
     
 #### ONE (intellectualright) TO one (dataset)
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
-    Field('data_owner', 'string'),
-    Field('special_permissions', 'string'),
-    Field('licence_code', 'string')
+    Field('licence_code', 'string', comment = XML(T('The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. %s',     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('licence_text', 'string', comment = 'The name of the licence.'),
+    Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
     )
     
-db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
-db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])    
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])    
 
 #+end_src
 ** COMMENT checklists
@@ -855,13 +981,14 @@ def register_accessor_or_group():
 
 ** Access a dataset
 - Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
-
+- removed           Field('title','string',requires=IS_NOT_EMPTY())).process()
+- title=form.vars.title
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   def access_dataset():
       form = SQLFORM.factory(
-          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
-          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s')),
-          Field('title','string',requires=IS_NOT_EMPTY())).process()
+          Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(title)s')),
+          Field('dataset_id',requires=IS_IN_DB(db,db.dataset.id,'%(shortname)s'))).process()
+
       
       if form.accepted:
           # get previous access for same dataset
@@ -869,8 +996,8 @@ def register_accessor_or_group():
               (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
   
           db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                           dataset_id=form.vars.dataset_id,
-                           title=form.vars.title)
+                           dataset_id=form.vars.dataset_id
+                           )
   
           response.flash = 'dataset accessed!'
       elif form.errors:
@@ -918,13 +1045,13 @@ def register_accessor_or_group():
       return dict(form=form, records=records)
   
 #+end_src
-** Register access view
+** COMMENT  Register access view
+DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/views/forms/access_dataset.html :exports reports :eval no :padline no
   
   {{extend 'layout.html'}}
   <h1>Access form</h1>
     {{=form}}
-    [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
     <h2>Current access (SQL JOIN!)</h2>
   <p>{{=records}}</p>
   
@@ -935,22 +1062,21 @@ def register_accessor_or_group():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity','intellectualright', 'attr','accessrequest', 
-                                                        'checklist', 'error'],
-                               fields = [db.project.title,db.project.id,
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest'
+                                                        ],
+                               fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
-                                         db.dataset.additionalinfo,
-                                         db.dataset.alternateidentifier,
+                                         db.dataset.shortname,
+                                         db.dataset.creator,                                          
+                                         db.dataset.contact,
                                          db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.name, db.attr.definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
-                                         db.error.logged_by, db.error.date_logged,
-                                         db.checklist.checked_by, db.checklist.check_date, 
-                                         db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                         db.intellectualright.data_owner],
+                                         db.keyword.keyword,
+                                         db.intellectualright.licence_code],
                                          orderby = dict(project=db.project.id, dataset=db.dataset.title),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
@@ -979,19 +1105,21 @@ def register_accessor_or_group():
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','intellectualright', 'attr','accessrequest', 
-                                                         'checklist',  'error'],
-                               fields = [db.dataset.project_id, db.dataset.shortname,
-                                         db.dataset.id,db.dataset.additionalinfo,db.dataset.alternateidentifier,
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','keyword', 'intellectualright', 'attr','accessrequest'
+                                                        ],
+                               fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                                         db.dataset.shortname,
+                                         db.dataset.id,
+                                         db.dataset.shortname,
+                                         db.dataset.creator,                                          
+                                         db.dataset.contact,
                                          db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.name, db.attr.definition,
-                                         db.accessrequest.accessdataset_id, db.accessrequest.dataset_id,
+                                         db.accessrequest.accessdataset_id, 
+                                         db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
-                                         db.error.logged_by, db.error.date_logged,
-                                         db.checklist.checked_by, db.checklist.check_date, 
-                                         db.checklist.draft_publication_checklist_passed, db.checklist.reporting_checklist_passed, 
-                                         db.intellectualright.data_owner],
-                                         orderby = dict(dataset=[db.dataset.project_id,db.dataset.title]),
+                                         db.keyword.keyword,
+                                         db.intellectualright.licence_code],
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
   
@@ -1082,36 +1210,434 @@ SELECT t1.*, t2.title
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:load data####
   library(swishdbtools)
-  ch <- connect2postgres2("data_inventory2")
+  library(sqldf)
+  #ch <- connect2postgres2("data_inventory2")
   
-  pgListTables(ch, "public")
+  #pgListTables(ch, "public")
   
   indir <- "~/Dropbox/projects/0.3 Catalogue/backups/csvs/2014-04-15"
-  dir(indir)
-  dat <- read.csv(file.path(indir, "STDYDSCR_edit.csv"))
+  setwd(indir)
+  
+  # load
+  stdy <- read.csv("STDYDSCR_edit.csv", stringsAsFactor = F)
+  fdsc <- read.csv("FILEDSCR.csv", stringsAsFactor = F)
+  
+  # check
+  #str(stdy)
+  #str(fdsc)
+  #names(table(stdy$IDNO))
+  
+  # do
+  stdy_i <- "drought"
+  stdy_i
+  stdyj <- stdy[tolower(stdy$IDNO) == stdy_i, ]
+  names(stdyj) <- tolower(names(stdyj))
+  stdyj[,1:5]
+  sql <- paste("select t1.IDNO, t2.*
+  from stdy t1
+  left join fdsc t2
+  on t1.IDNO = t2.IDNO
+  where lower(t1.IDNO) like '",stdy_i,"'", sep = "")
+  #cat(sql)
+  dat <- sqldf(sql)
   str(dat)
-  dbWriteTable(ch, "stdydscr", dat)
+  dat[,1:10]
+  dat[,'FILENAME']
+  names(dat) <- tolower(names(dat))
+#+end_src
+** COMMENT snip-code
+#+name:snip
+#+begin_src R :session *shell* :tangle no :exports none :eval no
+#### name:snip ####
+
+
+
+  ## for(i in 1:nrow(dat)){
+  ## # i = 1
+  ## print(as.character(dat[i,'FILENAME']))
+  ## qc <-   cbind(names(dat),t(dat[i,]))
+  ## #str(qc)
+  ## print(qc)
+  ## #print(xtable(qc), include.rownames = F, type = 'html')
+  ## }
   
-  names(table(dat$IDNO))
-  names(table(dat$AUTHENTY))
-  names(table(dat$DISTRBTR))
-  
-  
-  stdy <- dat[grep("ECOR", dat$IDNO),]
-  t(stdy[,1:25])
-  matrix(names(stdy))
   
   
   
-  dat <- read.csv(file.path(indir, "FILEDSCR.csv"))
-  str(dat)
-  names(table(dat$IDNO))
-  dat[grep("mesic", dat$FILENAME),]
   
-  file <- dat[grep("ECOR", dat$IDNO),]
-  file
+  
+  ## dir(indir)
+  ## dat <- read.csv(file.path(indir, "STDYDSCR_edit.csv"), stringsAsFactor = F)
+  ## str(dat)
+  ## #dbWriteTable(ch, "stdydscr", dat)
+  
+  ## names(table(dat$IDNO))
+  ## names(table(dat$AUTHENTY))
+  ## names(table(dat$DISTRBTR))
+  
+  
+  ## stdy <- dat[grep("drought$", tolower(dat$IDNO)),]
+  ## t(stdy[,])
+  ## #matrix(names(stdy))
+  
+  
+  
+  #dat <- read.csv(file.path(indir, "FILEDSCR.csv"))
+  #str(dat)
+  #names(table(dat$IDNO))
+  #dat[grep("mesic", dat$FILENAME),]
+  
+  #file <- dat[grep("ECOR", dat$IDNO),]
+  #file
   
 #+end_src
+* COMMENT use-EML-code
+#+name:use-EML
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:use-EML ####
+  
+  #title <- "Thresholds and Tipping Points in a Sarracenia 
+  #          Microecosystem at Harvard Forest since 2012"
+  
+  title <- stdyj$titl
+  
+  #creator <- c(as("Aaron Ellison", "creator"), as("Nicholas Gotelli", "creator"))
+  
+  creator <- stdyj$authenty
+  
+  #abstract <- "The primary "
+  
+  abstract  <- stdyj$abstract
+  
+  ## contact <- as(aaron, "contact")
+  ## contact@address = HF_address
+  ## contact@organizationName = "Harvard Forest"
+  ## contact@phone = "000-000-0000"
+  
+  contact <- stdyj$distrbtr
+
+  #### PROJECT ####  
+  project_title <- stdyj$titl
+  
+  personnel_individualname <-  ifelse(stdyj$producer == "", stdyj$distrbtr, stdyj$producer)
+  #personnel_organisationname
+  
+  funding  <- stdyj$fundag
+  
+  ## The `eml_person` function automatically decides whether to return a `contact`, `creator` list, or `associatedParty`, based on the additional information provided (such as an email address in angle braces, contributor role, `ctb` in square brackets).
+  ## other_researchers <- eml_person("Benjamin Baiser [ctb]", 
+  ##                                 "Jennifer Sirota [ctb]")
+  
+  associated_party <- ""
+  
+  keyword <- stdyj$datakind
+  
+  ## keys <- eml_keyword(list(
+  ##  "LTER controlled vocabulary" = c("bacteria", 
+  ##                                   "carnivorous plants", 
+  ##                                   "genetics", 
+  ##                                   "thresholds"),
+  ##              "LTER core area" = c("populations", 
+  ##                                   "inorganic nutrients", 
+  ##                                   "disturbance"),
+  ##                 "HFR default" = c("Harvard Forest", 
+  ##                                   "HFR", 
+  ##                                   "LTER", 
+  ##                                   "USA")))
+  
+  geographicdescription <- stdyj$geogcover
+  
+  boundingcoordinates <- stdyj$geogunit
+  
+  temporalcoverage_daterange <- stdyj$proddatestdy
+  temporalcoverage_date <- ifelse(stdyj$timeprd == "", stdyj$colldate, stdyj$timeprd)
+  
+  # dates <- temporalcoverage_date
+    
+  ## coverage <- eml_coverage(
+  ##   scientific_names = "Sarracenia purpurea", 
+  ##   dates            = c('2012-06-01', '2013-12-31'),
+  ##   geographic_description = "Harvard Forest Greenhouse, 
+  ##                             Tom Swamp Tract (Harvard Forest)", 
+  ##   NSEWbox          = c( 42.55,  42.42, -72.1, -72.29, 160, 330))
+  
+  #### Methods
+  methods <- ""
+  
+  ## library(RWordXML)
+  ## library(XML)
+  ## f2 <- wordDoc(system.file("examples", "methods.docx", package="EML"))
+  ## doc <- f2[[getDocument(f2)]]
+  ## txt <- xpathSApply(doc, "//w:t", xmlValue)
+  ## ## FIXME add <title> <section> and <para> blocking back: 
+  ## method <- paste(txt, collapse = "\n\n")
+  
+  
+  #methods <- new("methods", methodStep = c(new("methodStep", description = method)))
+  
+  methods_citation             <-   stdyj$biblcitdoc      
+  methods_citation_attribution <-   stdyj$biblcitstdy     
+  qualitycontrol               <-   stdyj$cleanops        
+  sampling_desc                <-   stdyj$anlyunit        
+  studyextent                  <-   stdyj$universe
+  
+  
+  additionalMetadata <- stdyj$confdec
+    
+  #hf205 <- eml_read(system.file("examples", "hf205.xml", package="EML"))
+  #additionalMetadata <- hf205@additionalMetadata # extracted from previous eml file
+  
+  intellectualrights  <- stdyj$copyright
+  special_permissions <- stdyj$specperm
+  restrictions        <- stdyj$restrctn
+  rights <- paste(intellectualrights, special_permissions, restrictions)
+  
+  #rights <- "This dataset is released to the public "
+  
+  pubDate <- "2012"
+  
+  
+  dataTable <- eml_dataTable(dat,
+                             col.defs = col.defs,
+                             unit.defs = unit.defs,
+                             description = "Metadata documentation for S1.csv", 
+                             filename = "S1.csv")
+  
+  
+  
+  ## dataset <- new("dataset", 
+  ##                 title = title,
+  ##                 creator = creator,
+  ##                 contact = contact,
+  ##                 pubDate = pubDate,
+  ##                 intellectualRights = rights,
+  ##                 abstract = abstract,
+  ##                 associatedParty = other_researchers,
+  ##                 keywordSet = keys,
+  ##                 coverage = coverage,
+  ##                 methods = methods,
+  ##                 dataTable = c(dataTable))
+  
+  ## eml     <- eml( dataset = dat,
+  ##                 title = title,
+  ##                 creator = creator,
+  ##                 contact = contact,
+  ##                 pubDate = pubDate,
+  ##                 associatedParty = other_researchers,
+  ##                 intellectualRights = rights,
+  ##                 abstract = abstract,
+  ##                 keywordSet = keys,
+  ##                 coverage = coverage,
+  ##                 methods = method,
+  ##                 additionalMetadata = additionalMetadata
+  ##               )
+  title 
+  creator 
+  contact 
+  pubDate 
+  #associatedParty
+  associated_party
+  #  other_researchers
+  #intellectualRights
+   rights
+  abstract
+  #keywordSet =
+    keys
+  coverage
+  methods 
+  additionalMetadata
+  
+  
+  
+  eml_write(eml, file="hf205_from_EML.xml")
+  eml_validate("hf205_from_EML.xml")
+#+end_src
+
+* COMMENT use-EML-func
+#+name:use-EML
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:use-EML ####
+  add_eml_project <- function(indir){
+  
+  #### PROJECT ####  
+  project_title <- readline("umbrella project title: ")
+  
+  personnel_data_owner <- readline("personnel data owner (individual, role or organisation): ")
+  personnel_owner_organisationname <- readline("personnel owner organisation name: ")
+  
+  ## The `eml_person` function automatically decides whether to return a `contact`, `creator` list, or `associatedParty`, based on the additional information provided (such as an email address in angle braces, contributor role, `ctb` in square brackets).
+  ## other_researchers <- eml_person("Benjamin Baiser [ctb]", 
+  ##                                 "Jennifer Sirota [ctb]")
+
+  funding  <- readline("funding: ")
+  project_abstract <- readline("project abstract: ")
+  studyareadescription <- readline("study area description: ")
+  project_established <- readline("project established: ")
+  project_citation <- readline("project citation: ")
+  
+  keyword <- readline("keywords: ")
+  
+  ## keys <- eml_keyword(list(
+  ##  "LTER controlled vocabulary" = c("bacteria", 
+  ##                                   "carnivorous plants", 
+  ##                                   "genetics", 
+  ##                                   "thresholds"),
+  ##              "LTER core area" = c("populations", 
+  ##                                   "inorganic nutrients", 
+  ##                                   "disturbance"),
+  ##                 "HFR default" = c("Harvard Forest", 
+  ##                                   "HFR", 
+  ##                                   "LTER", 
+  ##                                   "USA")))
+  return(eml_project)
+  }
+  
+  add_eml_dataset <- function(indir = getwd(), eml_validate = FALSE){
+  
+  shortname <- readline("shortname: ")
+    
+  #title <- "Thresholds and Tipping Points in a Sarracenia 
+  #          Microecosystem at Harvard Forest since 2012"
+  
+  title <- readline("title: ")
+  
+  #creator <- c(as("Aaron Ellison", "creator"), as("Nicholas Gotelli", "creator"))
+  
+  creator <- readline("creator: ")
+  
+ 
+  ## contact <- as(aaron, "contact")
+  ## contact@address = HF_address
+  ## contact@organizationName = "Harvard Forest"
+  ## contact@phone = "000-000-0000"
+  
+  contact <- readline("contact: ")
+  contact_email <- readline("contact email: ")
+
+  #abstract <- "The primary "
+  
+  abstract  <- readline("abstract: ")
+  
+  associated_party <- readline("associated_party: ")
+  
+  geographicdescription <- readline("geographic description: ")
+  
+  boundingcoordinates <- readline("bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax): ")
+  
+  temporalcoverage_daterange <- readline("temporalcoverage date range: ")
+  temporalcoverage_begindate <- readline("temporalcoverage begin date: ")
+  temporalcoverage_enddate <- readline("temporalcoverage end date: ")
+  # dates <- temporalcoverage_date
+    
+  taxonomic_coverage <- readline("taxonomic coverage: ")
+  ## coverage <- eml_coverage(
+  ##   scientific_names = "Sarracenia purpurea", 
+  ##   dates            = c('2012-06-01', '2013-12-31'),
+  ##   geographic_description = "Harvard Forest Greenhouse, 
+  ##                             Tom Swamp Tract (Harvard Forest)", 
+  ##   NSEWbox          = c( 42.55,  42.42, -72.1, -72.29, 160, 330))
+  
+  #### Methods
+
+  
+  ## library(RWordXML)
+  ## library(XML)
+  ## f2 <- wordDoc(system.file("examples", "methods.docx", package="EML"))
+  ## doc <- f2[[getDocument(f2)]]
+  ## txt <- xpathSApply(doc, "//w:t", xmlValue)
+  ## ## FIXME add <title> <section> and <para> blocking back: 
+  ## method <- paste(txt, collapse = "\n\n")
+  
+  studyextent                  <-   readline("study extent: ")
+  sampling_desc                <-   readline("sampling desc: ") 
+  
+  #methods <- new("methods", methodStep = c(new("methodStep", description = method)))
+  method_steps <- readline("methods_and_sampling_information: ")  
+  methods_citation             <-   readline("method citation: ")
+  #methods_citation_attribution <-   stdyj$biblcitstdy     
+  #qualitycontrol               <-   stdyj$cleanops        
+  
+  
+  additional_metadata <- readline("additional metadata: ")
+  additionalinfo <- readline("additionalinfo: ")
+  alternateidentifier <- readline("alternate identifier: ")
+  #hf205 <- eml_read(system.file("examples", "hf205.xml", package="EML"))
+  #additionalMetadata <- hf205@additionalMetadata # extracted from previous eml file
+
+  pubDate <- "2012"
+
+  metadataprovider <- readline("metadataprovider: ")
+
+  # intellectualrights
+  licence_code <- readline("licence code: ") 
+  licence_text <- readline("licence_text: ")
+  special_conditions <- readline("special conditions: ")
+  #restrictions        <- stdyj$restrctn
+  #rights <- paste(intellectualrights, special_conditions, restrictions)
+  
+  #rights <- "This dataset is released to the public "
+  
+
+  
+  
+  dataTable <- eml_dataTable(dat,
+                             col.defs = col.defs,
+                             unit.defs = unit.defs,
+                             description = "Metadata documentation for S1.csv", 
+                             filename = "S1.csv")
+  
+  
+  
+  ## dataset <- new("dataset", 
+  ##                 title = title,
+  ##                 creator = creator,
+  ##                 contact = contact,
+  ##                 pubDate = pubDate,
+  ##                 intellectualRights = rights,
+  ##                 abstract = abstract,
+  ##                 associatedParty = other_researchers,
+  ##                 keywordSet = keys,
+  ##                 coverage = coverage,
+  ##                 methods = methods,
+  ##                 dataTable = c(dataTable))
+  
+  ## eml     <- eml( dataset = dat,
+  ##                 title = title,
+  ##                 creator = creator,
+  ##                 contact = contact,
+  ##                 pubDate = pubDate,
+  ##                 associatedParty = other_researchers,
+  ##                 intellectualRights = rights,
+  ##                 abstract = abstract,
+  ##                 keywordSet = keys,
+  ##                 coverage = coverage,
+  ##                 methods = method,
+  ##                 additionalMetadata = additionalMetadata
+  ##               )
+  title 
+  creator 
+  contact 
+  pubDate 
+  #associatedParty
+  associated_party
+  #  other_researchers
+  #intellectualRights
+   rights
+  abstract
+  #keywordSet =
+    keys
+  coverage
+  methods 
+  additionalMetadata
+  
+  
+  
+  #eml_write(eml, file="hf205_from_EML.xml")
+  #eml_validate("hf205_from_EML.xml")
+  
+  }
+#+end_src
+
 
 * COMMENT DEPRECATED old crap
 ** COMMENT load old access data
@@ -1556,9 +2082,11 @@ response.include_files()
     , collapse = "','string'),\n", sep = "")
   )
   # dbWriteTable(ch, "crosswalk", dat, append = T)
-  
-  
-  
+  # deprecated, now using the hanigan db
+  dat <- dbReadTable(ch, "crosswalk")
+  ch2  <- connect2postgres2("data_inventory_hanigan_dev")
+  str(dat)
+  dbWriteTable(ch2, "crosswalk", dat, append = F, row.names=F)
   
   # backups
   dir("../emldb")
@@ -1566,43 +2094,43 @@ response.include_files()
   str(dat)
   write.table(dat, file.path("../emldb", "crosswalk-2015-02-22.csv"), sep = ",", row.names = F)
 #+end_src  
-** COMMENT crosswlak-code
+** COMMENT crosswalk-code
 #+name:crosswlak 
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
    
   db.define_table(
       'crosswalk',
-      Field('transfer2new','string'),
       Field('eml_module','string'),
       Field('eml_table','string'),
+      Field('datinv','string'),
       Field('eml_node','string'),
+      Field('help_comment','text'),
       Field('eml_desc','text'),
       Field('eml_standard_link','string'),
       Field('eml_local_link','string'),
+      Field('ddi_module','string'),
+      Field('ddi_node','string'),
       Field('morpho','string'),
       Field('ltern_table','string'),
       Field('ltern_name','string'),
-      Field('datinv','string'),
       Field('portal_ddf_qaf','string'),
-      Field('help_comment','string'),
       Field('ltern_desc','text'),
       Field('aekos_shared','string'),
       Field('aekos_desc','text'),
-      Field('ddi_module','string'),
-      Field('ddi_node','string'),
       Field('asn','string'),
       Field('tern','string'),
       Field('ala','string'),
       Field('psql_type','string'),
       Field('w2p_code','string'),
       Field('constraint_text','string'),
-      Field('lter_manual_page','string')
+      Field('lter_manual_page','string'),
+      Field('transfer2new','string')
       )
 #+end_src
 
 ** Form to manage crosswalk
-*** COMMENT manage access groups
+
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_crosswalk():
@@ -1622,7 +2150,7 @@ response.include_files()
 
 #+end_src
 
-*** COMMENT summarise-access-code
+** COMMENT summarise-access-code
 #+name:summarise-access
 #+begin_src R :session *R* :tangle no :exports none :eval no
 #### name:summarise-access####
@@ -1635,6 +2163,60 @@ SELECT t1.*, t2.title
   ) foo
   join accessor t3
   on foo.accessor_id = t3.id
+
+#+end_src
+
+* COMMENT keyword-code
+#+name:keyword
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:keyword####
+  library(gdata)
+  library(disentangle)
+  library(rpostgrestools)
+  ch <- connect2postgres2("data_inventory_hanigan_dev")
+  fi <- dir("~/Dropbox/data/ltern_data_inventory-backups", full.names = T, pattern = "packages-2015-04")
+  fi
+  dat  <- read.csv(fi[9], stringsAsFactor = F)
+  #str(dat)
+  names(dat)
+  ky <- sqldf("select data_package_type
+   from dat
+    group by data_package_type
+    order by data_package_type",
+              drv= "SQLite")
+  names(ky) <- "keyword"
+  head(ky)
+  #dbRemoveTable(ch, "thesaurus_ltern")
+  dbWriteTable(ch, "thesaurus_ltern_insert",
+               ky, append = F, row.names=F)
+  
+#+end_src  
+** table
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+  
+  # thesaurus
+  
+  db.define_table(
+      'thesaurus_ltern',
+      Field('keyword', 'string')
+      )
+    
+#+end_src
+
+** Form to manage keyword
+
+
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_thesaurus_ltern():
+      grid = SQLFORM.smartgrid(db.thesaurus_ltern,
+                               fields = [   
+                                         db.thesaurus_ltern.keyword
+                                         ],
+                                         orderby = dict(thesaurus_ltern=[ db.thesaurus_ltern.keyword]),
+                               user_signature=True,maxtextlength =200)
+
+      return dict(grid=grid)
 
 #+end_src
 
@@ -1670,10 +2252,224 @@ SELECT t1.*, t2.title
 #+name:pgdump
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   cat(sprintf('
-  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory/hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev
+  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev
   ',gsub(":","-",gsub(" ","-",Sys.time()))))
     
 #+end_src
 
 #+RESULTS: pgdump
 
+* ETL
+** COMMENT go-code
+#+name:go
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  #### name:go ####
+  library(rmarkdown)
+  library(knitr)
+  setwd("~/tools/web2py/applications/data_inventory/static/")
+  dir()
+  #render("data_deposit_form.Rmd") 
+  knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
+  #browseURL("data_deposit_form.html")
+#+end_src
+
+#+RESULTS: go
+: data_deposit_form.html
+
+** summary of data for ETL
+#+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
+  ---
+  title: DDF
+  output: html_document
+  ---
+  ```{r, echo = F, eval = T, results="hide"}
+  #### name:summary of data for john ####
+  if(exists('ch'))   dbDisconnect(ch)
+  library(swishdbtools)
+  library(sqldf)
+  library(knitr)
+  ch  <- connect2postgres2("data_inventory_hanigan_dev")
+  prj <- 'IUCNmountainashforests_data'
+  #### dataset ####
+  
+  dat <- sqldf(
+  sprintf("select t1.title as project_id, 
+  t1.title as project_title, 
+  t1.personnel_data_owner,
+  t1.personnel_owner_organisationname,
+  t1.funding,
+# keywords
+
+  t2.shortname,
+  t2.title,
+  t2.creator,
+  t2.abstract,
+  t2.associated_party,
+  t2.geographicdescription,
+  t2.boundingcoordinates
+  from project t1
+  join dataset t2
+  on t1.id = t2.project_id
+  where t1.title = '%s'", prj),
+  connection = ch)
+  names(dat)
+  #head(dat[,1:2])
+  
+  #### dataset help
+  help  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_node like '%dataset%'
+    or eml_node like '%project%'",
+    connection = ch)
+  head(help)
+  
+  #### for each dataset
+  #dat$shortname
+  # for(i in 1:nrow(dat)){
+    dset = "lastregen"
+    i = which(dat$shortname == dset)
+  
+    dat_i <- data.frame(V1 = names(dat), V2=t(dat[i,]))
+  dat_i
+    dat_i$order <- 1:nrow(dat_i)
+    title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
+          collapse = ", ", sep = "")
+    #title
+    qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  qc2[,1]
+  qc3 <- data.frame(index1 = rep(paste("0. dataset", dset), nrow(qc2)),
+             index2 = c(title, rep("", nrow(qc2) - 1)),
+             metadata = qc2)
+  names(qc3) <- c("index1", "index2", "variable", "value", "help")
+  names(  qc3)
+  qc3[1,]
+  
+  #### Keyword
+  ky <- dbGetQuery(ch,
+    #cat(q
+    paste("select t3.keyword
+    from dataset t1
+    join keyword t3
+    on t1.id = t3.dataset_id
+    where t1.shortname = '",dset,"'
+    ", sep = "")
+  )
+  ky <- ky[,1]
+  ky <- paste(ky, sep = "", collapse=", ")
+  ky <- data.frame(index1=qc3[1,1], index2="", variable = "keywords", value = ky, help="Keywords or phrases that concisely describe the resource. Example is biodiversity. Use a controlled vocabulary thesaurus")
+  
+  
+  qc_out <- rbind(qc3[1:10,], ky)
+  qc_out <- rbind(qc_out, qc3[11:nrow(qc3),])
+  qc_out[,1:3]
+  qc_out
+  
+  #### entity ####
+  dat_ent <- sqldf(
+  #cat(
+  sprintf("select 
+  t3.entityname,
+  t3.entitydescription,
+  t3.physical_distribution, t3.entity_methods
+  from project t1
+  join dataset t2
+  on t1.id = t2.project_id
+  join entity t3
+  on t2.id = t3.dataset_id
+  where t1.title = '%s'
+  and t2.shortname = '%s'", prj, dset),
+  connection = ch)
+  # head(dat_ent)
+  
+  help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%entity%'",
+    connection = ch)
+  #help_ent
+  
+  
+  for(j in 1:nrow(dat_ent)){
+  #j = 1
+  ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
+  ent_j$order <- 1:nrow(ent_j)
+  title2 <- paste(c(j, "entity", as.character(ent_j[1,2])),
+          collapse = ", ", sep = "")
+    title2
+    qc_ent <- merge(ent_j, help_ent, by.x = "V1", by.y = "datinv")
+    qc_ent2 <- qc_ent[order(qc_ent$order),c(1,2,5)]
+  qc_ent3 <- data.frame(index = rep(title2, nrow(qc_ent2)),
+                        index = c(title2, rep("", nrow(qc_ent2) - 1)),
+                        meta = qc_ent2)
+  names(qc_ent3) <- names(qc_out)
+  qc_out <- rbind(qc_out, qc_ent3)
+  qc_out
+  
+  }
+  ```
+  ```{r, echo = F, eval = T, results = "asis"}
+  # print(kable(qc_out), row.names = F))
+  library(xtable)
+  print(xtable(qc_out), type = "html", include.rownames = F)
+  #write.csv(qc_out, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
+  ```
+  
+  
+  
+#+end_src
+
+#+RESULTS:
+
+
+** load transformed
+*** COMMENT load-code
+#+name:load
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:load ####
+  if(exists('ch'))   dbDisconnect(ch)
+  library(swishdbtools)
+  library(sqldf)
+  library(knitr)
+  
+  etl  <- read.csv("lastregen_data_deposit_form.csv", stringsAsFactor = F)
+  etl2 <- as.data.frame(t(etl[,"value"]))
+  names(etl2)  <- etl[,"variable"]
+  etl2
+  ch  <- connect2postgres2("data_inventory_hanigan_dev")
+  prj <- etl2$shortname
+  did <- dbGetQuery(ch,
+                    sprintf("select id from dataset where shortname = '%s'", prj)
+                            )
+  did
+  pid <- dbGetQuery(ch,
+  sprintf("select id from project where title = '%s'", etl2$project_title)
+                    )
+  pid
+  # project
+  dbSendQuery(ch,
+  #cat(
+  paste("INSERT INTO project(
+  id, title, personnel, abstract, studyareadescription)
+  VALUES (",pid,",
+  '",etl2$project_title,"',
+  '",etl2$creator,"',
+  '",etl2$abstract,"',
+  '",etl2$studyareadescription,"');
+  ",sep = ""
+  )
+  )
+  
+  # datasets
+  
+  
+  
+  # entity
+  
+  
+  # keywords
+  library(stringr)
+  keywords <- unlist(lapply(strsplit(as.character(etl2$keywords), ","), str_trim))
+  keywords
+  
+#+end_src

@@ -12,7 +12,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev")
+    #db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev", fake_migrate_all = True)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -88,14 +88,26 @@ use_janrain(auth, filename='private/janrain.key')
 db.define_table(
     'project',
 Field('title', 'string',
-comment= XML(T('The EML Project module places the data into its larger research context. Suggested structure is: [Plot Network] OR [geographic coverage] [data type]. %s',
+comment= XML(T('The EML Project module places the data into its larger research context. If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
 ),
-Field('personnel','string', 
-comment= XML(T('Compulsory. A project must have at least one originator. At LTERN this is assumed to have role = data owner unless different role is specified. %s',
+Field('personnel_data_owner','string', 
+comment= XML(T('This is the data owner, and a compulsory field. A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
-Field('abstract', 'text',
+Field('personnel_owner_organisationname','string', 
+comment= XML(T('This is the data owner organisation. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+),
+Field('personnel','string', 
+comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+),
+Field('funding', 'text',
+comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
+),
+Field('project_abstract', 'text',
 comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
 ),
@@ -103,57 +115,82 @@ Field('studyAreaDescription','string',
 comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
 A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
 ),
+Field('project_established','date', 
+comment= XML(T('Commencement date of overarching research project as a specific date or year. %s', 
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+),
+Field('project_citation','text', 
+comment= XML(T('Citations relevant to the design of the overarching project. %s', 
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+),
 format = '%(title)s' 
 )
   
-db.project.personnel.requires = IS_NOT_EMPTY()
+db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
 #### ONE (project) TO MANY (dataset)
 
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-    Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-    ),
-    Field('title','text', comment='Suggested structure is: [umbrella project] [data type] [geographic coverage] [temporal coverage]'),
-    Field('contact','string', comment = 'An email address for general enquiries.  This field is COMPULSORY.'),
-    Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-    ),
-    Field('alternateidentifier','string',
-    comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-    ),
-    Field('keyword','string',
-    comment = XML(T('A single keyword or key phrase that concisely describes the resource. Example is biodiversity. More can be added via the keywords table. %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-    ),
-    Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-    Field('abstract','text'),
-    Field('pubdate','date'),
-    Field('geographicdescription','string'),
-    Field('boundingcoordinates','string'),
-    Field('temporalcoverage','string'),
-    Field('metadataprovider','string'),
-    format = '%(shortname)s'
+Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+),
+Field('title','text', comment = XML(T('Suggested structure is: [Project name (optional sub-project name)] [:] [Data type (such as experimental unit, observational unit, and/or measurement methods)] [,] [Geographic location] [,] [State] [,] [Country] [,] [Annual or seasonal tranches]. %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+),
+Field('creator','string', comment='The name of the person, organization, or position who created the data'),
+Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
+Field('contact_email','string', comment = 'An email address for general enquiries.'),
+Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+Field('associated_party','string', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  ),
+Field('geographicdescription','string',
+comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
+Field('boundingcoordinates','string',
+comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
+Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
+Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+Field('taxonomic_coverage','string', comment="List of scientific names."),
+Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
+Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
+Field('method_steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
+Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
+Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
+Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  ),
+Field('alternateidentifier','string',
+comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
+Field('pubdate','date'),
+Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
+format = '%(shortname)s'
     )
 
-db.dataset.contact.requires = [IS_EMAIL()]
+db.dataset.contact_email.requires = [IS_EMAIL()]
 
     
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
-
+  
 db.define_table(
-    'entity',
+      'entity',
 Field('dataset_id',db.dataset),
-Field('entityname','string'),
-Field('entitydescription', 'text'),
+Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
+Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 Field('physical_distribution', 'string',
 comment= XML(T('Information required for retrieving the resource. %s',    
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
-  ),
-Field('numberOfRecords', 'integer'),
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+      ),
+Field('numberOfRecords', 'integer', comment = 'The number of rows in a table.'),
 format = '%(entityname)s'
 )
 #### ONE (entity) TO MANY (attributes/variables)
@@ -161,8 +198,11 @@ format = '%(entityname)s'
 db.define_table(
     'attr',
     Field('entity_id',db.entity),
-    Field('name','string'),
-    Field('definition', 'string')
+    Field('name','string', 'The name of the variable'),
+    Field('definition', 'string', comment = 'Definition of the variable.'),
+    Field('measurement_scales', 'string', comment = 'One of nominal, ordinal, interval, ratio or datetime', requires = IS_IN_SET(['nominal', 'ordinal', 'interval', 'ratio', 'datetime'])),
+    Field('units', 'string', comment = 'Standard Unit of Measurement'),
+    Field('value_labels', 'string', comment = 'Labels for levels of a factor.  For example a=bud, b=flower, c=fruiting')      
     )
 #### accessdatasets
   
@@ -173,13 +213,14 @@ comment= XML(T('A person or group. %s',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
     ),
     Field('email'),
-    Field('title', 'string'),
-    Field('description', 'text'),
-    format = '%(name)s'
+    Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
+    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+    Field('begin_date', 'date', comment = "Access granted on this date"),
+    Field('end_date', 'date', comment = "Access revoked on this date"),
+    format = '%(title)s'
     )
-#       format = '%(email)s'
 db.accessdataset.name.requires = IS_NOT_EMPTY()
-# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'accessdataset.email')]
+db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
 #### MANY (accessors) TO MANY (accessdataset members)
 
 db.define_table(
@@ -187,6 +228,10 @@ db.define_table(
     Field('accessdataset_id',db.accessdataset),
     Field('name'),
     Field('email'),
+    Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
+    Field('begin_date', 'date', comment = "Access granted on this date"),
+    Field('end_date', 'date', comment = "Access revoked on this date"),
+    format = '%(name)s'
     )
 db.accessor.email.requires = [IS_EMAIL()]
 # , IS_NOT_IN_DB(db, 'accessor.email')]
@@ -196,7 +241,6 @@ db.define_table(
     'accessrequest',
     Field('dataset_id',db.dataset),
     Field('accessdataset_id',db.accessdataset),
-    Field('title', 'string'),
     format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
     )
 #### MANY (keywords) TO one (dataset)
@@ -205,19 +249,19 @@ db.define_table(
     'keyword',
     Field('dataset_id',db.dataset),
     Field('thesaurus', 'string', comment = 'source of authoritative definitions'),
-    Field('keyword', 'string')
+    Field('keyword', 'string', requires=IS_IN_DB(db, 'thesaurus_ltern.keyword'))
     )
 #### ONE (intellectualright) TO one (dataset)
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
-    Field('data_owner', 'string'),
-    Field('special_permissions', 'string'),
-    Field('licence_code', 'string')
+    Field('licence_code', 'string', comment = XML(T('The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. %s',     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
+    Field('licence_text', 'string', comment = 'The name of the licence.'),
+    Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
     )
     
-db.intellectualright.data_owner.requires = IS_NOT_EMPTY()    
-db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'TERN-BYNC', 'adhoc'])
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',
@@ -311,29 +355,35 @@ db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
 db.define_table(
     'crosswalk',
-    Field('transfer2new','string'),
     Field('eml_module','string'),
     Field('eml_table','string'),
+    Field('datinv','string'),
     Field('eml_node','string'),
+    Field('help_comment','text'),
     Field('eml_desc','text'),
     Field('eml_standard_link','string'),
     Field('eml_local_link','string'),
+    Field('ddi_module','string'),
+    Field('ddi_node','string'),
     Field('morpho','string'),
     Field('ltern_table','string'),
     Field('ltern_name','string'),
-    Field('datinv','string'),
     Field('portal_ddf_qaf','string'),
-    Field('help_comment','string'),
     Field('ltern_desc','text'),
     Field('aekos_shared','string'),
     Field('aekos_desc','text'),
-    Field('ddi_module','string'),
-    Field('ddi_node','string'),
     Field('asn','string'),
     Field('tern','string'),
     Field('ala','string'),
     Field('psql_type','string'),
     Field('w2p_code','string'),
     Field('constraint_text','string'),
-    Field('lter_manual_page','string')
+    Field('lter_manual_page','string'),
+    Field('transfer2new','string')
+    )
+# thesaurus
+
+db.define_table(
+    'thesaurus_ltern',
+    Field('keyword', 'string')
     )
