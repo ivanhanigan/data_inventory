@@ -12,7 +12,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev3", fake_migrate_all = False)
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -159,7 +159,7 @@ Field('temporalcoverage_enddate','date', comment="A end date. The dates that eve
 Field('taxonomic_coverage','string', comment="List of scientific names."),
 Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
 Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-Field('method_steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
+Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
 Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
@@ -183,11 +183,15 @@ db.dataset.contact_email.requires = [IS_EMAIL()]
 db.define_table(
       'entity',
 Field('dataset_id',db.dataset),
-Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv", requires = IS_NOT_EMPTY()),
 Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
 Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 Field('physical_distribution', 'string',
 comment= XML(T('Information required for retrieving the resource. %s',    
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+      ),
+      Field('physical_distribution_additionalinfo', 'text',
+comment= XML(T('Additional Information about the storage of the resource, including backup regime. %s',    
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
       ),
 Field('numberOfRecords', 'integer', comment = 'The number of rows in a table.'),
@@ -254,7 +258,7 @@ db.define_table(
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
-    Field('licence_code', 'string', comment = XML(T('The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. %s',     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('licence_text', 'string', comment = 'The name of the licence.'),
     Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')

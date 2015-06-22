@@ -251,7 +251,7 @@ This is where Morpho and other EML tools come into their own.  Our
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
       ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev3", fake_migrate_all = False)
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -547,7 +547,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
       Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-      Field('method_steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
+      Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
       Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
 #+end_src
 
@@ -630,7 +630,7 @@ db.define_table(
 #+end_src
 *** eml/dataset/entity/name
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+      Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv", requires = IS_NOT_EMPTY()),
 #+end_src
 *** eml/dataset/entity/description
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -650,6 +650,10 @@ db.define_table(
 comment= XML(T('Information required for retrieving the resource. %s',    
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
       ),
+      Field('physical_distribution_additionalinfo', 'text',
+comment= XML(T('Additional Information about the storage of the resource, including backup regime. %s',    
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+      ),
 #+end_src
 *** COMMENT eml/dataset/entity num recs
 
@@ -657,6 +661,8 @@ comment= XML(T('Information required for retrieving the resource. %s',
       Field('numberOfRecords', 'integer', comment = 'The number of rows in a table.'),
       format = '%(entityname)s'
       )
+
+
 #+end_src
 ** COMMENT attr
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -750,7 +756,7 @@ http://creativecommons.org/licenses/
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
-    Field('licence_code', 'string', comment = XML(T('The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. %s',     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('licence_text', 'string', comment = 'The name of the licence.'),
     Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
@@ -1074,9 +1080,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
-                                         db.dataset.shortname,
                                          db.dataset.creator,                                          
-                                         db.dataset.contact,
+                                         db.dataset.contact_email,
                                          db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
@@ -1117,9 +1122,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
-                                         db.dataset.shortname,
                                          db.dataset.creator,                                          
-                                         db.dataset.contact,
+                                         db.dataset.contact_email,
                                          db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
@@ -2078,11 +2082,11 @@ response.include_files()
   library(gdata)
   library(disentangle)
   library(rpostgrestools)
-  ch <- connect2postgres2("data_inventory_hanigan_dev")
-  ch2 <- connect2postgres2("data_inventory_hanigan_dev3")
+  ch <- connect2postgres2("data_inventory_hanigan_dev3")
+  ch2 <- connect2postgres2("data_inventory_hanigan_dev4")
   dat <- dbGetQuery(ch, "select * from crosswalk")
   str(dat)
-  dbWriteTable(ch2, "crosswalk", dat, append = T, row.names=F)
+  dbWriteTable(ch2, "crosswalk2", dat, append = F, row.names=F)
   
   
   
@@ -2189,7 +2193,7 @@ SELECT t1.*, t2.title
   library(gdata)
   library(disentangle)
   library(rpostgrestools)
-  ch <- connect2postgres2("data_inventory_hanigan_dev3")
+  ch <- connect2postgres2("data_inventory_hanigan_dev4")
   fi <- dir("~/Dropbox/data/ltern_data_inventory-backups", full.names = T, pattern = "packages-2015-04")
   fi
   dat  <- read.csv(fi[9], stringsAsFactor = F)
@@ -2241,7 +2245,7 @@ SELECT t1.*, t2.title
 #+name:backup
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   require(swishdbtools)
-  ch <- connect2postgres2("data_inventory_hanigan_dev")  
+  ch <- connect2postgres2("data_inventory_hanigan_dev4")  
   tbls <- pgListTables(ch, "public")
   tbls$no <- 1:nrow(tbls)
   tbls
@@ -2268,7 +2272,7 @@ SELECT t1.*, t2.title
 #+name:pgdump
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   cat(sprintf('
-  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev
+  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev4
   ',gsub(":","-",gsub(" ","-",Sys.time()))))
     
 #+end_src
@@ -2287,6 +2291,7 @@ SELECT t1.*, t2.title
   #render("data_deposit_form.Rmd") 
   knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
+  # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
 #+RESULTS: go
@@ -2298,70 +2303,94 @@ SELECT t1.*, t2.title
   title: DDF
   output: html_document
   ---
+  
+  # Introduction
+    
+  # Project level information
+  
   ```{r, echo = F, eval = T, results="hide"}
-  #### name:summary of data for john ####
+  #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
   library(swishdbtools)
   library(sqldf)
   library(knitr)
-  ch  <- connect2postgres2("data_inventory_hanigan_dev")
-  prj <- 'IUCNmountainashforests_data'
-  #### dataset ####
+  library(xtable)  
   
-  dat <- sqldf(
-  sprintf("select t1.title as project_id, 
-  t1.title as project_title, 
-  t1.personnel_data_owner,
-  t1.personnel_owner_organisationname,
-  t1.funding,
-# keywords
-
-  t2.shortname,
-  t2.title,
-  t2.creator,
-  t2.abstract,
-  t2.associated_party,
-  t2.geographicdescription,
-  t2.boundingcoordinates
-  from project t1
-  join dataset t2
-  on t1.id = t2.project_id
-  where t1.title = '%s'", prj),
-  connection = ch)
-  names(dat)
-  #head(dat[,1:2])
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  prj <- "IUCNmountainashforests_data"
+  dset <- "nvis"
   
-  #### dataset help
-  help  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
+  ```
+  ```{r, echo = F, eval = T, results="asis"}  
+  
+  dat <- sqldf(connection = ch,
+    sprintf("select t1.*
+    from project t1
+    where t1.title = '%s'", prj)
+    )
+  #names(dat)
+  #t(dat)
+  
+  ####  help
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
     from crosswalk t1
-    where eml_node like '%dataset%'
-    or eml_node like '%project%'",
-    connection = ch)
-  head(help)
+    where eml_table like '%project%'"
+    )
+  # head(help)
+  
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  #dat_i
+  dat_i$order <- 1:nrow(dat_i)  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help_comment")
+
+  qc2[,2] <- gsub("\n", " | ", qc2[,2])
+  print(xtable(qc2), type = "html", include.rownames = F)
+
+  ```
+  
+  # Dataset level information (data packages)
+  ```{r, echo = F, eval = T, results="asis"}
   
   #### for each dataset
   #dat$shortname
   # for(i in 1:nrow(dat)){
-    dset = "lastregen"
-    i = which(dat$shortname == dset)
   
-    dat_i <- data.frame(V1 = names(dat), V2=t(dat[i,]))
-  dat_i
-    dat_i$order <- 1:nrow(dat_i)
-    title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
-          collapse = ", ", sep = "")
+  i = which(dat$shortname == dset)
+  
+  
+  dat <- dbGetQuery(ch,
+  sprintf("select * from dataset
+   where shortname ='%s'", dset)
+  )
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  # dat_i
+   dat_i$order <- 1:nrow(dat_i)
+    #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
+    #      collapse = ", ", sep = "")
     #title
-    qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
-  qc
-  qc2 <- qc[order(qc$order),c(1,2,5)]
-  qc2[,1]
-  qc3 <- data.frame(index1 = rep(paste("0. dataset", dset), nrow(qc2)),
-             index2 = c(title, rep("", nrow(qc2) - 1)),
-             metadata = qc2)
-  names(qc3) <- c("index1", "index2", "variable", "value", "help")
-  names(  qc3)
-  qc3[1,]
   
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%dataset%'"
+    )
+  # head(help)
+  
+  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  #qc[1,]
+  #names(qc)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  #qc2
+  #qc3 <- data.frame(index1 = rep(paste("0. dataset", dset), nrow(qc2)),
+  #           index2 = c(title, rep("", nrow(qc2) - 1)),
+  #           metadata = qc2)
+  #names(qc3) <- c("index1", "index2", "variable", "value", "help")
+  names(qc2) <- c("variable", "value", "help")
+  #names(qc2)
   #### Keyword
   ky <- dbGetQuery(ch,
     #cat(q
@@ -2372,23 +2401,66 @@ SELECT t1.*, t2.title
     where t1.shortname = '",dset,"'
     ", sep = "")
   )
+  
+  if(nrow(ky) > 0){
   ky <- ky[,1]
+  } else {
+  ky <- ''
+  }
   ky <- paste(ky, sep = "", collapse=", ")
-  ky <- data.frame(index1=qc3[1,1], index2="", variable = "keywords", value = ky, help="Keywords or phrases that concisely describe the resource. Example is biodiversity. Use a controlled vocabulary thesaurus")
+  ky <- data.frame(variable = "keywords", value = ky, help="Keywords or phrases that concisely describe the resource. Example is biodiversity. Use a controlled vocabulary thesaurus")
   
   
-  qc_out <- rbind(qc3[1:10,], ky)
-  qc_out <- rbind(qc_out, qc3[11:nrow(qc3),])
-  qc_out[,1:3]
-  qc_out
+  qc_out <- rbind(qc2, ky)
+  #qc_out[,1:3]
+  #qc_out
   
+  #kable(qc_out, row.names = F)
+  
+  
+  dat <- dbGetQuery(ch,
+  sprintf("select t1.*
+  from intellectualright t1
+  join dataset t2
+  on t1.dataset_id =  t2.id
+   where shortname ='%s'", dset)
+  )
+  if(nrow(dat) == 0){
+  dat <- data.frame(id = '', dataset_id = '', licence_code = '',
+    licence_text = '', special_conditions='')
+  }
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+   #dat_i
+   dat_i$order <- 1:nrow(dat_i)
+    #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
+    #      collapse = ", ", sep = "")
+    #title
+  
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%intellectualright%'"
+    )
+  # head(help)
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help")
+  # names(  qc2)
+  qc_out <- rbind(qc_out, qc2[-c(1,2),])
+  qc_out[,2] <- gsub("\n", " | ", qc_out[,2])
+  print(xtable(qc_out), type = "html", include.rownames = F)
+  ```
+  
+  # Entity level information (files)  
+  
+  ```{r, echo = F, eval = T, results="asis"}
+    
   #### entity ####
-  dat_ent <- sqldf(
+  #dat <- dbGetQuery(ch, "select * from entity")
+  dat_ent <- sqldf(connection = ch,
   #cat(
   sprintf("select 
-  t3.entityname,
-  t3.entitydescription,
-  t3.physical_distribution, t3.entity_methods
+  t3.*
   from project t1
   join dataset t2
   on t1.id = t2.project_id
@@ -2396,7 +2468,7 @@ SELECT t1.*, t2.title
   on t2.id = t3.dataset_id
   where t1.title = '%s'
   and t2.shortname = '%s'", prj, dset),
-  connection = ch)
+  )
   # head(dat_ent)
   
   help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
@@ -2408,27 +2480,28 @@ SELECT t1.*, t2.title
   
   for(j in 1:nrow(dat_ent)){
   #j = 1
+  print(paste("#### File", j))
   ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
   ent_j$order <- 1:nrow(ent_j)
-  title2 <- paste(c(j, "entity", as.character(ent_j[1,2])),
-          collapse = ", ", sep = "")
-    title2
-    qc_ent <- merge(ent_j, help_ent, by.x = "V1", by.y = "datinv")
+  #title2 <- paste(c(j, "entity", as.character(ent_j[1,2])),
+  #        collapse = ", ", sep = "")
+  #  title2
+    qc_ent <- merge(ent_j, help_ent, by.x = "V1", by.y = "datinv", all.x = T)
     qc_ent2 <- qc_ent[order(qc_ent$order),c(1,2,5)]
-  qc_ent3 <- data.frame(index = rep(title2, nrow(qc_ent2)),
-                        index = c(title2, rep("", nrow(qc_ent2) - 1)),
-                        meta = qc_ent2)
-  names(qc_ent3) <- names(qc_out)
-  qc_out <- rbind(qc_out, qc_ent3)
-  qc_out
+  #qc_ent2
+  #qc_ent3 <- data.frame(index = rep(title2, nrow(qc_ent2)),
+  #                      index = c(title2, rep("", nrow(qc_ent2) - 1)),
+  #                      meta = qc_ent2)
+  names(qc_ent2) <- c("variable","value","help_comment")
+  qc_ent2[,2] <- gsub("\n", " | ", qc_ent2[,2])
+  #print(kable(qc_ent2, row.names = F))
   
+  print(xtable(qc_ent2), type = "html", include.rownames = F)
+  #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
   }
-  ```
-  ```{r, echo = F, eval = T, results = "asis"}
-  # print(kable(qc_out), row.names = F))
-  library(xtable)
-  print(xtable(qc_out), type = "html", include.rownames = F)
-  #write.csv(qc_out, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
+  
+  
+    
   ```
   
   
@@ -2448,11 +2521,23 @@ SELECT t1.*, t2.title
   library(sqldf)
   library(knitr)
   
-  etl  <- read.csv("lastregen_data_deposit_form.csv", stringsAsFactor = F)
-  etl2 <- as.data.frame(t(etl[,"value"]))
-  names(etl2)  <- etl[,"variable"]
-  etl2
+  #etl  <- read.csv("lastregen_data_deposit_form.csv", stringsAsFactor = F)
+  #etl2 <- as.data.frame(t(etl[,"value"]))
+  #names(etl2)  <- etl[,"variable"]
+  #etl2
   ch  <- connect2postgres2("data_inventory_hanigan_dev")
+  ch2 <- connect2postgres2("data_inventory_hanigan_dev3")
+  #etl <- sqldf(connection = ch, "select * from dataset where shortname  = 'lastregen'")
+  dbGetQuery(ch, "select id from dataset where shortname = 'lastregen'")
+  
+  etl <- sqldf(connection = ch, "select * from entity where dataset_id  = 23")
+  etl
+  dbRemoveTable(ch2, "temp")
+  dbWriteTable(ch2, "temp", etl, row.names = F)
+  
+  
+  
+  
   prj <- etl2$shortname
   did <- dbGetQuery(ch,
                     sprintf("select id from dataset where shortname = '%s'", prj)
