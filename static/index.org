@@ -8,30 +8,22 @@
 
 
 * COMMENT todo list
-> drv <- dbDriver("SQLite")
-> tfile <- tempfile()
-> con <- dbConnect(drv, dbname = "~/pitch.sqlite")
-> dbListTables(con)
-character(0)
-> dbListTables(con)
-character(0)
-> con <- dbConnect(drv, dbname = "/home/ivan_hanigan/tools/web2py/applications/pitch/databases/storage.sqlite")
-> dbListTables(con)
-[1] "auth_cas"        "auth_event"      "auth_group"      "auth_membership"
-[5] "auth_permission" "auth_user"       "post"            "sqlite_sequence"
-> dbGetQuery(con , "select * from post")
-  id  con user_id
-1  1 asdf       1
-2  2 asdf       2
-3  3   hi       1
-> dbGetQuery(con , "select * from post")
-  id                 con user_id
-1  1                asdf       1
-2  2                asdf       2
-3  3                  hi       1
-4  4 this is a testing 1       2
-> 
 
+*** COMMENT sqlite-code
+#+name:sqlite
+#+begin_src R :session *shell* :tangle no :exports none :eval no
+  #### name:sqlite ####
+  library(RSQLite)
+  drv <- dbDriver("SQLite")
+  con <- dbConnect(drv, dbname = "/home/ivan_hanigan/tools/web2py/applications/data_inventory/databases/storage.sqlite")
+  dbListTables(con)
+  dbGetQuery(con , "select * from dataset")[,1:5]
+  dbGetQuery(con , "select * from entity")[,1:5]
+  
+  
+#+end_src
+
+    
 * COMMENT Init
 ** COMMENT torun-code
 #+name:torun
@@ -250,8 +242,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      ##db = DAL("postgres://w2p_user:pssword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
