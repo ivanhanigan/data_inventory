@@ -539,7 +539,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
       Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
 #+end_src
-*** TODO temporal cov
+*** TODO taxo cov
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('taxonomic_coverage','string', comment="List of scientific names."),
 #+end_src
@@ -571,6 +571,10 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 *** COMMENT dataset pubdate
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
+#+end_src
+*** TODO access_rules (ie ethics required)
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('access_rules','string', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 #+end_src
 *** TODO metadataprovider
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -637,10 +641,16 @@ db.define_table(
       Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
 #+end_src
 
+*** TODO temporal cov
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entity_temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+#+end_src
+
 *** eml/dataset/entity methods
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 #+end_src
+
 *** eml/dataset/entity/physical/distribution
 - The PhysicalDistribution contains the information required for retrieving the resource.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution][EML online]]
@@ -727,7 +737,7 @@ db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
       Field('dataset_id',db.dataset),
       Field('accessdataset_id',db.accessdataset),
       Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
-      Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+      Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of any ethics committee approvals and the intended publication strategy."),
       Field('begin_date', 'date', comment = "Access granted on this date"),
       Field('end_date', 'date', comment = "Access revoked on this date"),
       format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
@@ -2170,20 +2180,27 @@ response.include_files()
 
 #+end_src
 
-** COMMENT summarise-access-code
+* COMMENT summarise-access-code
 #+name:summarise-access
 #+begin_src R :session *R* :tangle no :exports none :eval no
-#### name:summarise-access####
-select foo.*, t3.*
-from (
-SELECT t1.*, t2.title
-  FROM accessrequest t1
-  join dataset t2
-  on t1.dataset_id = t2.id
-  ) foo
-  join accessor t3
-  on foo.accessor_id = t3.id
-
+  #### name:summarise-access####
+  library(swishdbtools)
+  ch <- connect2postgres2("data_inventory_hanigan_dev4")
+  accessid <- dbGetQuery(ch,
+  "
+  select foo.*, t3.*
+  from (
+    SELECT t1.*, t2.title
+    FROM accessrequest t1
+    join dataset t2
+    on t1.dataset_id = t2.id
+    ) foo
+    left join accessor t3
+    on foo.accessdataset_id = t3.id
+  ")
+  library(knitr)
+  
+  write.csv(accessid[,4:5], '~/ethics.csv', row.names = F)
 #+end_src
 
 * COMMENT keyword-code
@@ -2318,7 +2335,7 @@ SELECT t1.*, t2.title
   
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
   prj <- "IUCNmountainashforests_data"
-  dset <- "nvis"
+  dset <- "fire100_year"
   
   ```
   ```{r, echo = F, eval = T, results="asis"}  

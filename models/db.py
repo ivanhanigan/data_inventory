@@ -170,6 +170,7 @@ comment = XML(T('Additional identifier that is used to label this dataset. This 
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
 Field('pubdate','date'),
+Field('access_rules','string', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 format = '%(shortname)s'
     )
@@ -185,6 +186,7 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv", requires = IS_NOT_EMPTY()),
 Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
+Field('entity_temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 Field('physical_distribution', 'string',
 comment= XML(T('Information required for retrieving the resource. %s',    
@@ -241,7 +243,7 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('accessdataset_id',db.accessdataset),
     Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
-    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of the intended publication strategy"),
+    Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of any ethics committee approvals and the intended publication strategy."),
     Field('begin_date', 'date', comment = "Access granted on this date"),
     Field('end_date', 'date', comment = "Access revoked on this date"),
     format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
