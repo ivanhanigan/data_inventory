@@ -38,20 +38,24 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest'
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
                                                       ],
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
                                        db.dataset.id,
                                        db.dataset.creator,                                          
                                        db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.physical_distribution,
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
-                                       db.intellectualright.licence_code],
+                                       db.intellectualright.licence_code,
+                                       db.bibliometric.google_pubid, db.bibliometric.citation,  
+                                       db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
+                                       db.approval.name, db.approval.date_request_sent,
+                                       db.approval.date_approval_given],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
@@ -63,13 +67,14 @@ def manage_datasets():
                                        db.dataset.id,
                                        db.dataset.creator,                                          
                                        db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.physical_distribution,
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
                                        db.intellectualright.licence_code],
+                                       orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_accessors_or_groups():

@@ -242,8 +242,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      ##db = DAL("postgres://w2p_user:pssword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -338,24 +338,26 @@ LTERN's suggested structure is either:
 - the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
 - a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
-
+- If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title.
 **** COMMENT project/title/code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('title', 'string',
-  comment= XML(T('The EML Project module places the data into its larger research context. If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title. %s',
+  comment= XML(T('The project places the data into its larger research context.  %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
   ),
 #+end_src
 *** eml/dataset/project/personnel
 In EML the Data Owner is able to be shown at various points on the xpath.  
 LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
+- A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data.
+- Also , organisational roles or organisations , such as the originator
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel][EML online]]
 
 **** COMMENT personnel-code
 # cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel_data_owner','string', 
-  comment= XML(T('This is the data owner, and a compulsory field. A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data. %s',
+  comment= XML(T('This is the data owner, and a compulsory field.  %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
   Field('personnel_owner_organisationname','string', 
@@ -366,7 +368,7 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 **** personnel general
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel','string', 
-  comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+  comment= XML(T('This is for key people etc that are not the owner. %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
 #+end_src
@@ -477,7 +479,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 *** COMMENT dataset shortname
 **** TODO shortname
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+      Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
 #+end_src
@@ -868,6 +870,46 @@ Field('addenda','text')
 db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
+** COMMENT bibliometrics
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
+#### ONE (biblio) TO one (entity)
+db.define_table(
+    'bibliometric',
+    Field('entity_id',db.entity),
+Field('google_pubid','string', requires = IS_NOT_EMPTY()),
+Field('journal','string'),
+Field('title','string'),
+Field('citation', 'string'),
+Field('year_published','integer'),
+Field('impact_factor','double'),
+Field('date_impact_factor_checked','date'),
+Field('google_scholar_cites','integer'),
+Field('date_gs_cites_checked','date'),
+Field('web_of_science_cites','integer'),
+Field('date_wos_cites_checked','date'),
+Field('contribution','text')
+    )
+     
+#+end_src
+
+** COMMENT coauthors
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
+#### many approval_to_share TO one paper
+db.define_table(
+    'approval',
+    Field('bibliometric_id',db.bibliometric),
+Field('name','string'),
+Field('email','string'),
+Field('organisation', 'string'),
+Field('date_request_sent','date'),
+Field('date_approval_given','date'),
+Field('times_contacted','integer'),
+Field('notes','text')
+    )
+     
+#+end_src
 * Design User Interface
 ** Defaults for controllers/default.py
 - Following the example in the documentation 
@@ -1077,20 +1119,24 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest'
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
                                                         ],
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
                                          db.dataset.creator,                                          
                                          db.dataset.contact_email,
-                                         db.entity.entityname, db.entity.physical_distribution,
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
-                                         db.intellectualright.licence_code],
+                                         db.intellectualright.licence_code,
+                                         db.bibliometric.google_pubid, db.bibliometric.citation,  
+                                         db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
+                                         db.approval.name, db.approval.date_request_sent,
+                                         db.approval.date_approval_given],
                                          orderby = dict(project=db.project.id, dataset=db.dataset.title),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
@@ -1126,13 +1172,14 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.dataset.id,
                                          db.dataset.creator,                                          
                                          db.dataset.contact_email,
-                                         db.entity.entityname, db.entity.physical_distribution,
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
                                          db.intellectualright.licence_code],
+                                         orderby = dict(project=db.project.id, dataset=db.dataset.title),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
   
@@ -1224,7 +1271,7 @@ SELECT t1.*, t2.title
   #### name:load data####
   library(swishdbtools)
   library(sqldf)
-  #ch <- connect2postgres2("data_inventory2")
+  ch <- connect2postgres2("data_inventory_hanigan_dev4")
   
   #pgListTables(ch, "public")
   
@@ -1238,25 +1285,61 @@ SELECT t1.*, t2.title
   # check
   #str(stdy)
   #str(fdsc)
-  #names(table(stdy$IDNO))
-  
+  ids <- names(table(stdy$IDNO))
+  ids[grep("AMD", ids)]
   # do
-  stdy_i <- "drought"
+  stdy_i <- "amd"
   stdy_i
   stdyj <- stdy[tolower(stdy$IDNO) == stdy_i, ]
   names(stdyj) <- tolower(names(stdyj))
-  stdyj[,1:5]
-  sql <- paste("select t1.IDNO, t2.*
-  from stdy t1
-  left join fdsc t2
-  on t1.IDNO = t2.IDNO
-  where lower(t1.IDNO) like '",stdy_i,"'", sep = "")
-  #cat(sql)
-  dat <- sqldf(sql)
-  str(dat)
-  dat[,1:10]
-  dat[,'FILENAME']
-  names(dat) <- tolower(names(dat))
+  write.csv(t(stdyj), "foo.csv")
+  
+  
+  cwlk <- dbGetQuery(ch,
+  "
+  select datinv, DDI_NODE from crosswalk
+  where eml_table = 'project' and
+  datinv is not null and datinv !=''
+  "                   )
+  cwlk
+  ddi1 <- tolower(cwlk[cwlk$datinv != 'NA',2])
+  ddi <- ddi1[-c(which(ddi1 == ''))]
+  ddi
+  #ddi <- which(names(stdyj) %in% ddi)
+  ddi <- paste(ddi , sep = "", collapse = ", ")
+  cat(ddi)
+  
+  datinv <- tolower(cwlk[cwlk$datinv != 'NA',1])
+  datinv <- datinv[-c(which(ddi1 == ''))]
+  datinv<-paste(datinv, sep = "", collapse = ", ")
+  cat(datinv)
+  
+  dbWriteTable(ch,  "temp", stdyj, row.names = F)
+  
+  sqltxt <- paste("
+  insert into project (id, ", datinv ,")
+  select 1, ", ddi ,"
+  from temp
+  ", sep = "")
+  cat(sqltxt)
+  
+  dbSendQuery(ch, sqltxt)
+  dbRemoveTable(ch, "temp")
+  
+  
+  
+  ## sql <- paste("select t1.IDNO, t2.*
+  ## from stdy t1
+  ## left join fdsc t2
+  ## on t1.IDNO = t2.IDNO
+  ## where lower(t1.IDNO) like '",stdy_i,"'", sep = "")
+  ## #cat(sql)
+  ## dat <- sqldf(sql)
+  ## str(dat)
+  ## dat[,1:10]
+  ## dat[,'FILENAME']
+  ## names(dat) <- tolower(names(dat))
+  ## dat
 #+end_src
 ** COMMENT snip-code
 #+name:snip

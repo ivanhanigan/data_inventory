@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    ##db = DAL("postgres://w2p_user:pssword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+    ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -88,11 +88,11 @@ use_janrain(auth, filename='private/janrain.key')
 db.define_table(
     'project',
 Field('title', 'string',
-comment= XML(T('The EML Project module places the data into its larger research context. If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title. %s',
+comment= XML(T('The project places the data into its larger research context.  %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
 ),
 Field('personnel_data_owner','string', 
-comment= XML(T('This is the data owner, and a compulsory field. A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data. %s',
+comment= XML(T('This is the data owner, and a compulsory field.  %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('personnel_owner_organisationname','string', 
@@ -100,7 +100,7 @@ comment= XML(T('This is the data owner organisation. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('personnel','string', 
-comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+comment= XML(T('This is for key people etc that are not the owner. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('funding', 'text',
@@ -132,7 +132,7 @@ db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
 db.define_table(
     'dataset',
     Field('project_id',db.project),
-Field('shortname','string', comment = XML(T('A concise name that describes the resource that is being documented. Example is vernal-data-1999. %s.',
+Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
 ),
 Field('title','text', comment = XML(T('Suggested structure is: [Project name (optional sub-project name)] [:] [Data type (such as experimental unit, observational unit, and/or measurement methods)] [,] [Geographic location] [,] [State] [,] [Country] [,] [Annual or seasonal tranches]. %s',
@@ -358,6 +358,35 @@ Field('addenda','text')
     
 db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
+#### ONE (biblio) TO one (entity)
+db.define_table(
+    'bibliometric',
+    Field('entity_id',db.entity),
+Field('google_pubid','string', requires = IS_NOT_EMPTY()),
+Field('journal','string'),
+Field('title','string'),
+Field('citation', 'string'),
+Field('year_published','integer'),
+Field('impact_factor','double'),
+Field('date_impact_factor_checked','date'),
+Field('google_scholar_cites','integer'),
+Field('date_gs_cites_checked','date'),
+Field('web_of_science_cites','integer'),
+Field('date_wos_cites_checked','date'),
+Field('contribution','text')
+    )
+#### many approval_to_share TO one paper
+db.define_table(
+    'approval',
+    Field('bibliometric_id',db.bibliometric),
+Field('name','string'),
+Field('email','string'),
+Field('organisation', 'string'),
+Field('date_request_sent','date'),
+Field('date_approval_given','date'),
+Field('times_contacted','integer'),
+Field('notes','text')
+    )
 db.define_table(
     'crosswalk',
     Field('eml_module','string'),
