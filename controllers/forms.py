@@ -52,7 +52,7 @@ def manage_projects():
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
                                        db.intellectualright.licence_code,
-                                       db.bibliometric.google_pubid, db.bibliometric.citation,  
+                                       db.bibliometric.bibtex_key, db.bibliometric.title,  
                                        db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
                                        db.approval.name, db.approval.date_request_sent,
                                        db.approval.date_approval_given],
@@ -60,7 +60,7 @@ def manage_projects():
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','keyword', 'intellectualright', 'attr','accessrequest'
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
                                                       ],
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
@@ -73,7 +73,11 @@ def manage_datasets():
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
-                                       db.intellectualright.licence_code],
+                                       db.intellectualright.licence_code,
+                                       db.bibliometric.bibtex_key, db.bibliometric.title,  
+                                       db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
+                                       db.approval.name, db.approval.date_request_sent,
+                                       db.approval.date_approval_given],
                                        orderby = dict(project=db.project.id, dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)

@@ -15,7 +15,7 @@
   #### name:sqlite ####
   library(RSQLite)
   drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, dbname = "/home/ivan_hanigan/tools/web2py/applications/data_inventory/databases/storage.sqlite")
+  con <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory/databases/storage.sqlite")
   dbListTables(con)
   dbGetQuery(con , "select * from dataset")[,1:5]
   dbGetQuery(con , "select * from entity")[,1:5]
@@ -242,8 +242,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-      db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+      ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_db_name", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -883,8 +883,8 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
 db.define_table(
     'bibliometric',
     Field('dataset_id',db.dataset),
-Field('google_pubid','string', requires = IS_NOT_EMPTY(), comment = 'The unique ID used by google scholar'),
-Field('bibtex_key', 'string', comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}"),
+Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
+Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
 Field('citation', 'string'),
@@ -903,22 +903,48 @@ Field('contribution','text')
 #+name:R bibtex
 #+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:R bibtex ####
+  # if using postgres
   library(rpostgrestools)
   ch <- connect2postgres2("data_inventory_hanigan_dev4")
+  # if using sqlite
+    library(RSQLite)
+    drv <- dbDriver("SQLite")
+    ch <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory/databases/storage.sqlite")
+  
+  # get the literature resource ids
+  citn  <- dbGetQuery(ch,
+  "select id, bibtex_key
+  from bibliometric
+  ")
+  citn
+  citn$bibid  <- gsub("\\}", "", gsub("\\\\cite\\{", "", citn[,2]))
+  citn
+  
+  # get the bibtex info
   library(knitcitations)
   library(bibtex)
   cleanbib()
   cite_options(citation_format = "pandoc", check.entries=FALSE) 
-  bib <- read.bibtex("~/references/library.bib")
-  ct <- bib[["Johnston2011c"]]
-  str(ct)
-  ct[[1]]$key
+  if(!exists("bib")) bib <- read.bibtex("~/references/library.bib")
   
-  citn  <- dbGetQuery(ch,
-  "select bibtex_key
-  from bibliometric
-  ")
-  citn
+  # update the db with the bibtex info
+  for(citn_i in 1:nrow(citn)){
+  ct <- bib[[citn[citn_i, 3]]]
+  #print(ct)
+  
+  dbSendQuery(ch,
+  # cat(
+    sprintf("update bibliometric set title = '%s' where id = %s",  ct[[1]]$title, citn[citn_i, 1])
+              )
+  
+  }
+  
+  str(ct)
+  
+  
+  
+  
+  
   
   
 #+end_src
@@ -1163,7 +1189,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
                                          db.intellectualright.licence_code,
-                                         db.bibliometric.google_pubid, db.bibliometric.citation,  
+                                         db.bibliometric.bibtex_key, db.bibliometric.title,  
                                          db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
                                          db.approval.name, db.approval.date_request_sent,
                                          db.approval.date_approval_given],
@@ -1195,7 +1221,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=['project', 'entity','keyword', 'intellectualright', 'attr','accessrequest'
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
                                                         ],
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
@@ -1208,11 +1234,14 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.accessrequest.dataset_id,
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
-                                         db.intellectualright.licence_code],
+                                         db.intellectualright.licence_code,
+                                         db.bibliometric.bibtex_key, db.bibliometric.title,  
+                                         db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
+                                         db.approval.name, db.approval.date_request_sent,
+                                         db.approval.date_approval_given],
                                          orderby = dict(project=db.project.id, dataset=db.dataset.title),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
-  
 #+end_src
 
 ** Form to manage accessors or groups

@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_db_name", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -363,8 +363,8 @@ db.error.date_logged.requires = IS_NOT_EMPTY()
 db.define_table(
     'bibliometric',
     Field('dataset_id',db.dataset),
-Field('google_pubid','string', requires = IS_NOT_EMPTY(), comment = 'The unique ID used by google scholar'),
-Field('bibtex_key', 'string', comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}"),
+Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
+Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
 Field('citation', 'string'),
