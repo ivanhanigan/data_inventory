@@ -506,6 +506,11 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 #+end_src
+*** COMMENT dataset citation
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('methods_citation' ,'string', comment="The citation field allows to either reference a literature resource or enter structured literature information."),
+#+end_src
 *** COMMENT dataset assoc
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -542,7 +547,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
       Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
       Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-      Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
+      Field('methods_protocol' ,'string', comment="Citation of protocols used to design the study."),
 #+end_src
 
 *** TODO additional metadata links
@@ -871,13 +876,15 @@ db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
 ** COMMENT bibliometrics
+*** biblio table
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (biblio) TO one (entity)
 db.define_table(
     'bibliometric',
-    Field('entity_id',db.entity),
-Field('google_pubid','string', requires = IS_NOT_EMPTY()),
+    Field('dataset_id',db.dataset),
+Field('google_pubid','string', requires = IS_NOT_EMPTY(), comment = 'The unique ID used by google scholar'),
+Field('bibtex_key', 'string', comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}"),
 Field('journal','string'),
 Field('title','string'),
 Field('citation', 'string'),
@@ -891,6 +898,29 @@ Field('date_wos_cites_checked','date'),
 Field('contribution','text')
     )
      
+#+end_src
+*** COMMENT R bibtex-code
+#+name:R bibtex
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:R bibtex ####
+  library(rpostgrestools)
+  ch <- connect2postgres2("data_inventory_hanigan_dev4")
+  library(knitcitations)
+  library(bibtex)
+  cleanbib()
+  cite_options(citation_format = "pandoc", check.entries=FALSE) 
+  bib <- read.bibtex("~/references/library.bib")
+  ct <- bib[["Johnston2011c"]]
+  str(ct)
+  ct[[1]]$key
+  
+  citn  <- dbGetQuery(ch,
+  "select bibtex_key
+  from bibliometric
+  ")
+  citn
+  
+  
 #+end_src
 
 ** COMMENT coauthors
