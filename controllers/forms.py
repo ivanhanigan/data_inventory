@@ -60,10 +60,9 @@ def manage_projects():
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_datasets():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
                                                       ],
-                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
-                                       db.dataset.shortname,
+                             fields =  [db.dataset.shortname,
                                        db.dataset.id,
                                        db.dataset.creator,                                          
                                        db.dataset.contact_email,
@@ -78,7 +77,7 @@ def manage_datasets():
                                        db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
                                        db.approval.name, db.approval.date_request_sent,
                                        db.approval.date_approval_given],
-                                       orderby = dict(project=db.project.id, dataset=db.dataset.title),
+                                       orderby = dict(dataset=db.dataset.title),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_accessors_or_groups():
