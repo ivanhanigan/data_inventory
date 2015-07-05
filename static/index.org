@@ -884,6 +884,7 @@ db.define_table(
     'bibliometric',
     Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
+Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages'])),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
@@ -900,21 +901,21 @@ Field('contribution','text')
      
 #+end_src
 *** COMMENT R bibtex-code
-#+name:R bibtex
-#+begin_src R :session *R* :tangle no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:R bibtex ####
   # if using postgres
   library(rpostgrestools)
-  ch <- connect2postgres2("data_inventory_hanigan_dev4")
+  if(!exists("ch")) ch <- connect2postgres2("data_inventory_hanigan_dev4")
   # if using sqlite
-    library(RSQLite)
-    drv <- dbDriver("SQLite")
-    ch <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory/databases/storage.sqlite")
+    ## library(RSQLite)
+    ## drv <- dbDriver("SQLite")
+    ## ch <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory/databases/storage.sqlite")
   
   # get the literature resource ids
   citn  <- dbGetQuery(ch,
   "select id, bibtex_key
   from bibliometric
+  where bibtex_key not like '%Hanigan2008a%' 
   ")
   citn
   citn$bibid  <- gsub("\\}", "", gsub("\\\\cite\\{", "", citn[,2]))
@@ -925,21 +926,113 @@ Field('contribution','text')
   library(bibtex)
   cleanbib()
   cite_options(citation_format = "pandoc", check.entries=FALSE) 
-  if(!exists("bib")) bib <- read.bibtex("~/references/library.bib")
+  #if(!exists("bib"))c
+    bib <- read.bibtex("~/references/library.bib")
   
   # update the db with the bibtex info
+  citn
   for(citn_i in 1:nrow(citn)){
-  ct <- bib[[citn[citn_i, 3]]]
-  #print(ct)
   
+  ct <- bib[[citn[citn_i, 3]]]
+  #print(  ct[[1]]$year)
+  
+  
+  titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
+  id  <-  citn[citn_i, 1]
   dbSendQuery(ch,
-  # cat(
-    sprintf("update bibliometric set title = '%s' where id = %s",  ct[[1]]$title, citn[citn_i, 1])
+  #            cat(
+    sprintf("update bibliometric set title = '%s', year_published = %s where id = %s",  gsub("'", '"', titl), ct[[1]]$year, id)
+              )
+  }
+#+end_src
+
+#+RESULTS:
+
+*** COMMENT R bibtex authors -code
+#+name:R bibtex
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  
+  # author approvals, careful not to re-run!
+  #for(citn_i in 1:nrow(citn)){
+  citn_i = 6
+  ct <- bib[[citn[citn_i, 3]]]
+  #print(  ct[[1]]$year)
+  
+  
+  titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
+  id  <-  citn[citn_i, 1]
+  dbSendQuery(ch,
+  #            cat(
+    sprintf("update bibliometric set title = '%s', year_published = %s where id = %s",  titl, ct[[1]]$year, id)
               )
   
-  }
+  auths <- ct[[1]]$author
+  auths <- lapply(auths, paste)
   
-  str(ct)
+  for(name_i in auths){
+  dbSendQuery(ch,
+  #            cat(
+  sprintf("insert into approval(bibliometric_id, name) values (%s, '%s')\n", id, name_i)
+              )
+              
+  #}
+  
+  }
+#+end_src
+*** COMMENT DEPRECATED R bibtex, get formated citation from bib
+#+name:R bibtex
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  setwd("~/tools/web2py/applications/data_inventory/static")
+  
+  
+  ct[[1]]
+  #$author
+  txt_hd <- "---
+  title: Untitled
+  output: html_document
+  csl: chicago-author-date.csl
+  bibliography: references.bib
+  ---\n\n
+  
+  ```{r, echo = F, results = 'hide'}
+  # get the bibtex info
+  library(knitcitations)
+  library(bibtex)
+  cleanbib()
+  cite_options(citation_format = 'pandoc', check.entries=FALSE) 
+  if(!exists('bib')) bib <- read.bibtex('~/references/library.bib')
+    
+  ```
+  \n
+  "
+  
+  txt <- ""
+  for(citn_i in 1:nrow(citn)){
+  #citn
+  
+  txt <- paste(txt,
+               sprintf(
+  "`r citet(bib[['%s']])`"
+  ,
+  citn[citn_i, "bibid"]
+  )
+  )
+  }
+  cat(txt)
+  txt_bs <- "
+  ```{r, echo=FALSE, message=FALSE, eval = T}
+  write.bibtex(file='references.bib')
+  ```
+  "
+  
+  sink("bib.Rmd")
+  cat(txt_hd)
+  cat(txt)
+  cat(txt_bs)
+  sink()
+  rmarkdown::render("bib.Rmd", "html_document")
+  rm(bib)
+  
   
   
   
@@ -948,6 +1041,7 @@ Field('contribution','text')
   
   
 #+end_src
+
 
 ** COMMENT coauthors
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -1345,14 +1439,14 @@ SELECT t1.*, t2.title
   #str(stdy)
   #str(fdsc)
   ids <- names(table(stdy$IDNO))
-  ids[grep("AMD", ids)]
+  ids[grep("DROUGHT", ids)]
   # do
-  stdy_i <- "amd"
+  stdy_i <- "drought"
   stdy_i
   stdyj <- stdy[tolower(stdy$IDNO) == stdy_i, ]
   names(stdyj) <- tolower(names(stdyj))
-  write.csv(t(stdyj), "foo.csv")
-  
+  #write.csv(t(stdyj), "foo.csv"
+  t(stdyj)
   
   cwlk <- dbGetQuery(ch,
   "
@@ -2401,7 +2495,7 @@ response.include_files()
   tbls$no <- 1:nrow(tbls)
   tbls
   tbls <- tbls[,1]
-  tbls <- tbls[c(1:4,11:18)]
+  tbls <- tbls[c(1:5,12:21)]
   for(tbl_i in tbls){
   #  tbl_i = tbls[1]
   dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))
