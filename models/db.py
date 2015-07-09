@@ -142,7 +142,6 @@ Field('creator','string', comment='The name of the person, organization, or posi
 Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
 Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
-Field('methods_citation' ,'string', comment="The citation field allows to either reference a literature resource or enter structured literature information."),
 Field('associated_party','string', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
@@ -161,7 +160,7 @@ Field('taxonomic_coverage','string', comment="List of scientific names."),
 Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
 Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
 Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-Field('methods_protocol' ,'string', comment="Citation of protocols used to design the study."),
+Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
@@ -361,10 +360,10 @@ db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
 #### ONE (biblio) TO one (entity)
 db.define_table(
-    'bibliometric',
+    'publication',
     Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
-Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages'])),
+Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
@@ -380,8 +379,8 @@ Field('contribution','text')
     )
 #### many approval_to_share TO one paper
 db.define_table(
-    'approval',
-    Field('bibliometric_id',db.bibliometric),
+    'authorship_approval',
+    Field('publication_id',db.publication),
 Field('name','string'),
 Field('email','string'),
 Field('organisation', 'string'),

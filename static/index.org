@@ -506,9 +506,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 #+end_src
-*** COMMENT dataset citation
+*** COMMENT DEPRECATED, USE Pubs table instead: dataset methods citation
 
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+#+begin_src markdown :tangle no :exports reports :eval no :padline no
       Field('methods_citation' ,'string', comment="The citation field allows to either reference a literature resource or enter structured literature information."),
 #+end_src
 *** COMMENT dataset assoc
@@ -547,7 +547,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
       Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
       Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-      Field('methods_protocol' ,'string', comment="Citation of protocols used to design the study."),
+      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
 #+end_src
 
 *** TODO additional metadata links
@@ -875,16 +875,16 @@ Field('addenda','text')
 db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()    
 #+end_src
-** COMMENT bibliometrics
+** COMMENT publications
 *** biblio table
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### ONE (biblio) TO one (entity)
 db.define_table(
-    'bibliometric',
+    'publication',
     Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
-Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages'])),
+Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
@@ -914,7 +914,7 @@ Field('contribution','text')
   # get the literature resource ids
   citn  <- dbGetQuery(ch,
   "select id, bibtex_key
-  from bibliometric
+  from publication
   where bibtex_key not like '%Hanigan2008a%' 
   ")
   citn
@@ -941,7 +941,7 @@ Field('contribution','text')
   id  <-  citn[citn_i, 1]
   dbSendQuery(ch,
   #            cat(
-    sprintf("update bibliometric set title = '%s', year_published = %s where id = %s",  gsub("'", '"', titl), ct[[1]]$year, id)
+    sprintf("update publication set title = '%s', year_published = %s where id = %s",  gsub("'", '"', titl), ct[[1]]$year, id)
               )
   }
 #+end_src
@@ -954,31 +954,52 @@ Field('contribution','text')
   
   # author approvals, careful not to re-run!
   #for(citn_i in 1:nrow(citn)){
-  citn_i = 6
+  citn[,3]
+  citn_i = 36
   ct <- bib[[citn[citn_i, 3]]]
   #print(  ct[[1]]$year)
-  
+  ct
   
   titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
   id  <-  citn[citn_i, 1]
-  dbSendQuery(ch,
-  #            cat(
-    sprintf("update bibliometric set title = '%s', year_published = %s where id = %s",  titl, ct[[1]]$year, id)
-              )
+  ## dbSendQuery(ch,
+  ## #             cat(
+  ##   sprintf("update publication set title = '%s', year_published = %s where id = %s",  titl, ct[[1]]$year, id)
+  ##             )
   
   auths <- ct[[1]]$author
   auths <- lapply(auths, paste)
-  
+  auths[[length(auths) + 1]] <- "Copyright"
+  auths
   for(name_i in auths){
+  #  name_i = auths[1]
   dbSendQuery(ch,
   #            cat(
-  sprintf("insert into approval(bibliometric_id, name) values (%s, '%s')\n", id, name_i)
+  sprintf("insert into authorship_approval(publication_id, name) values (%s, '%s')\n", id, name_i)
               )
               
-  #}
-  
   }
+  
+  #}
 #+end_src
+*** COMMENT summarise approvals-code
+#+name:summarise approvals
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  #### name:summarise approvals ####
+  library(rpostgrestools)
+  if(!exists("ch")) ch <- connect2postgres2("data_inventory_hanigan_dev4")
+  id <- 42
+  dat <- dbGetQuery(ch,
+  #            cat(
+  sprintf("select name, email,  notes, date_approval_given as date_approved from authorship_approval where publication_id = %s order by id", id)
+              )
+  str(dat)
+  library(xtable)
+  tabcode <- xtable(dat)
+  align(tabcode) <-  c( 'l', 'p{1in}','p{1.5in}', '>{\\centering}p{2in}', 'p{.7in}' )
+  print(tabcode, include.rownames = F)
+#+end_src
+
 *** COMMENT DEPRECATED R bibtex, get formated citation from bib
 #+name:R bibtex
 #+begin_src R :session *R* :tangle no :exports none :eval no
@@ -1043,13 +1064,13 @@ Field('contribution','text')
 #+end_src
 
 
-** COMMENT coauthors
+** COMMENT coauthors approvals (and journal copyright controls)
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
 #### many approval_to_share TO one paper
 db.define_table(
-    'approval',
-    Field('bibliometric_id',db.bibliometric),
+    'authorship_approval',
+    Field('publication_id',db.publication),
 Field('name','string'),
 Field('email','string'),
 Field('organisation', 'string'),
@@ -1269,11 +1290,12 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_projects():
-      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
+      grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
                                                         ],
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
+                                         db.dataset.title,
                                          db.dataset.creator,                                          
                                          db.dataset.contact_email,
                                          db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
@@ -1283,11 +1305,11 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
                                          db.intellectualright.licence_code,
-                                         db.bibliometric.bibtex_key, db.bibliometric.title,  
-                                         db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
-                                         db.approval.name, db.approval.date_request_sent,
-                                         db.approval.date_approval_given],
-                                         orderby = dict(project=db.project.id, dataset=db.dataset.title),
+                                         db.publication.bibtex_key, db.publication.title,  
+                                         db.publication.google_scholar_cites, db.publication.impact_factor,
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(project=db.project.id, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
 #+end_src  
@@ -1315,11 +1337,12 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
   def manage_datasets():
-      grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'bibliometric', 'approval'
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
                                                         ],
                                fields = [
                                          db.dataset.shortname,
                                          db.dataset.id,
+                                         db.dataset.title,
                                          db.dataset.creator,                                          
                                          db.dataset.contact_email,
                                          db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
@@ -1329,11 +1352,11 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.accessrequest.title, 
                                          db.keyword.keyword,
                                          db.intellectualright.licence_code,
-                                         db.bibliometric.bibtex_key, db.bibliometric.title,  
-                                         db.bibliometric.google_scholar_cites, db.bibliometric.impact_factor,
-                                         db.approval.name, db.approval.date_request_sent,
-                                         db.approval.date_approval_given],
-                                         orderby = dict(dataset=db.dataset.title),
+                                         db.publication.bibtex_key, db.publication.title,  
+                                         db.publication.google_scholar_cites, db.publication.impact_factor,
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
 #+end_src
@@ -1564,7 +1587,7 @@ SELECT t1.*, t2.title
   ## contact@phone = "000-000-0000"
   
   contact <- stdyj$distrbtr
-
+  
   #### PROJECT ####  
   project_title <- stdyj$titl
   
@@ -1613,17 +1636,19 @@ SELECT t1.*, t2.title
   #### Methods
   methods <- ""
   
-  ## library(RWordXML)
-  ## library(XML)
-  ## f2 <- wordDoc(system.file("examples", "methods.docx", package="EML"))
-  ## doc <- f2[[getDocument(f2)]]
-  ## txt <- xpathSApply(doc, "//w:t", xmlValue)
+  library(RWordXML)
+  library(XML)
+  # f2 <- wordDoc(system.file("examples", "methods.docx",
+  # package="EML"))
+  f2 <- wordDoc("~/tools/EML/inst/examples/methods.docx")
+  doc <- f2[[getDocument(f2)]]
+  txt <- xpathSApply(doc, "//w:t", xmlValue)
   ## ## FIXME add <title> <section> and <para> blocking back: 
-  ## method <- paste(txt, collapse = "\n\n")
+  method <- paste(txt, collapse = "\n\n")
+  cat(method)
   
-  
-  #methods <- new("methods", methodStep = c(new("methodStep", description = method)))
-  
+  methods <- new("methods", methodStep = c(new("methodStep", description = method)))
+  print(methods)
   methods_citation             <-   stdyj$biblcitdoc      
   methods_citation_attribution <-   stdyj$biblcitstdy     
   qualitycontrol               <-   stdyj$cleanops        
@@ -2590,10 +2615,10 @@ response.include_files()
   qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
   qc2 <- qc[order(qc$order),c(1,2,5)]
   names(qc2) <- c("variable", "value", "help_comment")
-
+  
   qc2[,2] <- gsub("\n", " | ", qc2[,2])
   print(xtable(qc2), type = "html", include.rownames = F)
-
+  
   ```
   
   # Dataset level information (data packages)
@@ -2603,7 +2628,7 @@ response.include_files()
   #dat$shortname
   # for(i in 1:nrow(dat)){
   
-  i = which(dat$shortname == dset)
+  # i = which(dat$shortname == dset)
   
   
   dat <- dbGetQuery(ch,
@@ -2617,7 +2642,7 @@ response.include_files()
     #      collapse = ", ", sep = "")
     #title
   
-  help  <- sqldf(connection = ch,
+  help  <- dbGetQuery(ch,
     "select t1.eml_node, t1.help_comment, t1.datinv
     from crosswalk t1
     where eml_table like '%dataset%'"
@@ -2702,7 +2727,7 @@ response.include_files()
     
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
-  dat_ent <- sqldf(connection = ch,
+  dat_ent <- dbGetQuery(ch,
   #cat(
   sprintf("select 
   t3.*
@@ -2748,8 +2773,6 @@ response.include_files()
   
     
   ```
-  
-  
   
 #+end_src
 
