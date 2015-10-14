@@ -287,7 +287,7 @@ This is where Morpho and other EML tools come into their own.  Our
   
   ## configure auth policy
   auth.settings.registration_requires_verification = False
-  auth.settings.registration_requires_approval = False
+  auth.settings.registration_requires_approval = True
   auth.settings.reset_password_requires_verification = True
   
   ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
@@ -485,8 +485,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+end_src
 *** COMMENT dataset title
 **** TODO title
+[Project name (optional sub-project name)] [:] 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('title','text', comment = XML(T('Suggested structure is: [Project name (optional sub-project name)] [:] [Data type (such as experimental unit, observational unit, and/or measurement methods)] [,] [Geographic location] [,] [State] [,] [Country] [,] [Annual or seasonal tranches]. %s',
+      Field('title','string', comment = XML(T('Structure eg: project, data type, location, temporal tranches. %s',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
 #+end_src
@@ -506,11 +507,37 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 #+end_src
+
+*** TODO additional metadata links
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
+#+end_src
+*** COMMENT dataset methods/studyextent
+http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent
+Both specific to sampling area and frequency, spatial extent/resolution, temporal boundaries. eg CCD 2001."),
+
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
+#+end_src
 *** COMMENT DEPRECATED, USE Pubs table instead: dataset methods citation
 
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
       Field('methods_citation' ,'string', comment="The citation field allows to either reference a literature resource or enter structured literature information."),
 #+end_src
+*** TODO temporal cov
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+      Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
+      Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+#+end_src
+*** TODO methods sampling, steps, protocol
+http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
+      Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
+      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
+#+end_src
+
 *** COMMENT dataset assoc
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -518,8 +545,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
 #+end_src
-*** COMMENT dataset geographic
+*** dataset Geographic
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+
       Field('geographicdescription','string',
       comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
@@ -532,27 +560,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
       ),
 #+end_src
-*** TODO temporal cov
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
-      Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
-      Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
-#+end_src
 *** TODO taxo cov
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('taxonomic_coverage','string', comment="List of scientific names."),
-#+end_src
-*** TODO methods 
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
-      Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-      Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
-#+end_src
-
-*** TODO additional metadata links
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
 #+end_src
 *** COMMENT dataset additional info
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -573,7 +583,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+end_src
 *** TODO access_rules (ie ethics required)
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('access_rules','string', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
+      Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 #+end_src
 *** TODO metadataprovider
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -884,7 +894,8 @@ db.define_table(
     'publication',
     Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
-Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Proceedings', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
@@ -896,7 +907,10 @@ Field('google_scholar_cites','integer'),
 Field('date_gs_cites_checked','date'),
 Field('web_of_science_cites','integer'),
 Field('date_wos_cites_checked','date'),
-Field('contribution','text')
+Field('contribution','text'),
+Field('thesis_section','string'),
+Field('thesis_context_statement','text'),
+Field('thesis_publication_status','string')
     )
      
 #+end_src
@@ -932,7 +946,7 @@ Field('contribution','text')
   # update the db with the bibtex info
   citn
   for(citn_i in 1:nrow(citn)){
-  
+  #citn_i
   ct <- bib[[citn[citn_i, 3]]]
   #print(  ct[[1]]$year)
   
@@ -955,7 +969,7 @@ Field('contribution','text')
   # author approvals, careful not to re-run!
   #for(citn_i in 1:nrow(citn)){
   citn[,3]
-  citn_i = 36
+  citn_i = 23
   ct <- bib[[citn[citn_i, 3]]]
   #print(  ct[[1]]$year)
   ct
@@ -970,7 +984,8 @@ Field('contribution','text')
   auths <- ct[[1]]$author
   auths <- lapply(auths, paste)
   auths[[length(auths) + 1]] <- "Copyright"
-  auths
+  auths[[length(auths) + 1]] <- "Ethics Approval"
+  auths <- gsub("'", "", auths)
   for(name_i in auths){
   #  name_i = auths[1]
   dbSendQuery(ch,
@@ -1077,7 +1092,8 @@ Field('organisation', 'string'),
 Field('date_request_sent','date'),
 Field('date_approval_given','date'),
 Field('times_contacted','integer'),
-Field('notes','text')
+Field('notes','text'),
+Field('extra_details', 'text')
     )
      
 #+end_src
@@ -1295,8 +1311,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                          db.dataset.shortname,
                                          db.dataset.id,
-                                         db.dataset.title,
-                                         db.dataset.creator,                                          
+
+                                         db.dataset.additional_metadata,                                          
                                          db.dataset.contact_email,
                                          db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
@@ -1309,8 +1325,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.publication.google_scholar_cites, db.publication.impact_factor,
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
-                                         orderby = dict(project=db.project.id, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                               user_signature=True,maxtextlength =200)
+                                         orderby = dict(project=db.project.title, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200, csv=False, paginate=35)
       return dict(grid=grid)
 #+end_src  
 ** COMMENT deprecated manageproj-code
@@ -1342,8 +1358,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                fields = [
                                          db.dataset.shortname,
                                          db.dataset.id,
-                                         db.dataset.title,
-                                         db.dataset.creator,                                          
+                              
+                                         db.dataset.additional_metadata,                                          
                                          db.dataset.contact_email,
                                          db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
@@ -1357,9 +1373,27 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
+      return dict(grid=grid)
+#+end_src
+
+** Form to manage all publications
+#+name:manage datasets
+#+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
+  
+  def manage_publications():
+      grid = SQLFORM.smartgrid(db.publication,linked_tables=['publication', 'authorship_approval'
+                                                        ],
+                               fields = [
+                                         db.publication.bibtex_key, db.publication.citation,  
+                                         db.publication.thesis_section, 
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200)
       return dict(grid=grid)
 #+end_src
+
 
 ** Form to manage accessors or groups
 *** COMMENT manage access groups
@@ -1372,7 +1406,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.accessdataset.email,
                                          db.accessor.name, db.accessor.email],
                                          orderby = dict(accessdataset=[db.accessdataset.name]),
-                               user_signature=True,maxtextlength =200)
+                               user_signature=True,maxtextlength =200, csv=False, paginate=35)
 
       return dict(grid=grid)
       # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]  
@@ -1397,39 +1431,48 @@ SELECT t1.*, t2.title
 ** finesse the interface
 - the following makes a home page
 - also go to static/css/web2py.css and change line 33/34 text width to about 800px
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
-  {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
-  {{extend 'layout.html'}}
-  
+- removed from just above instructions and replaced with if auth is logged after instructions.
   {{if 'message' in globals():}}
   <h3>{{=message}}</h3>
-  
-  <h4>{{=T('Instructions')}}</h4>
-  <ol>
-    <li>{{=T('You are using the data inventory')}}</li>
-    <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-             A('%(application)s/forms/manage_projects/'%request,
-             _href=URL('forms','manage_projects'))))}}</li>
-    <li>{{=XML(T('The main tool for managing datasets is at %s',
-             A('%(application)s/forms/manage_datasets/'%request,
-             _href=URL('forms','manage_datasets'))))}}</li>
-    <li>{{=XML(T('The technical documentation for this application is at %s',
-             A('this link',
-             _href=URL('static','index.html'))))}}</li>
-    <li>{{=XML(T('The links to other apps is at %s',
-             A('this link',
-             _href=URL('audio','default','index'))))}}</li>
-  </ol>
-  {{elif 'content' in globals():}}
-  {{=content}}
-  {{else:}}
-  {{=BEAUTIFY(response._vars)}}
-  {{pass}}
-  
+
+- removed from bottom
   {{block right_sidebar}}
   {{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
        _style='margin-top: 1em;')}}
   {{end}}
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
+  {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+  
+
+  <h4>{{=T('Instructions')}}</h4>
+  <li>{{=T('To use the data inventory please register in top right corner.')}}</li>
+  {{if auth.is_logged_in():}}
+<ol>
+    <li>{{=T('You are using the data inventory')}}</li>
+  <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
+             A('%(application)s/forms/manage_projects/'%request,
+           _href=URL('forms','manage_projects'))))}}</li>
+    <li>{{=XML(T('The main tool for managing datasets is at %s',
+           A('%(application)s/forms/manage_datasets/'%request,
+             _href=URL('forms','manage_datasets'))))}}</li>
+  <li>{{=XML(T('The technical documentation for this application is at %s',
+             A('this link',
+           _href=URL('static','index.html'))))}}</li>
+    <li>{{=XML(T('The links to other apps is at %s',
+           A('this link',
+             _href=URL('audio','default','index'))))}}</li>
+</ol>
+  {{elif 'content' in globals():}}
+{{=content}}
+  {{else:}}
+{{=BEAUTIFY(response._vars)}}
+  {{pass}}
+
+  {{block right_sidebar}}
+{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
+       _style='margin-top: 1em;')}}
+{{end}}
   
 #+end_src
 
@@ -2519,8 +2562,8 @@ response.include_files()
   tbls <- pgListTables(ch, "public")
   tbls$no <- 1:nrow(tbls)
   tbls
-  tbls <- tbls[,1]
-  tbls <- tbls[c(1:5,12:21)]
+  tbls[c(1:4,9,12:21),1]
+  tbls <- tbls[c(1:4,9,12:21),1]
   for(tbl_i in tbls){
   #  tbl_i = tbls[1]
   dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))

@@ -43,8 +43,8 @@ def manage_projects():
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.title,
-                                       db.dataset.creator,                                          
+
+                                       db.dataset.additional_metadata,                                          
                                        db.dataset.contact_email,
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
@@ -57,8 +57,8 @@ def manage_projects():
                                        db.publication.google_scholar_cites, db.publication.impact_factor,
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
-                                       orderby = dict(project=db.project.id, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200)
+                                       orderby = dict(project=db.project.title, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200, csv=False, paginate=35)
     return dict(grid=grid)
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
@@ -66,8 +66,8 @@ def manage_datasets():
                              fields = [
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.title,
-                                       db.dataset.creator,                                          
+                            
+                                       db.dataset.additional_metadata,                                          
                                        db.dataset.contact_email,
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
@@ -81,6 +81,17 @@ def manage_datasets():
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
                                        orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
+    return dict(grid=grid)
+def manage_publications():
+    grid = SQLFORM.smartgrid(db.publication,linked_tables=['publication', 'authorship_approval'
+                                                      ],
+                             fields = [
+                                       db.publication.bibtex_key, db.publication.citation,  
+                                       db.publication.thesis_section, 
+                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                       db.authorship_approval.date_approval_given],
+                                       orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
                              user_signature=True,maxtextlength =200)
     return dict(grid=grid)
 def manage_accessors_or_groups():
@@ -90,7 +101,7 @@ def manage_accessors_or_groups():
                                        db.accessdataset.email,
                                        db.accessor.name, db.accessor.email],
                                        orderby = dict(accessdataset=[db.accessdataset.name]),
-                             user_signature=True,maxtextlength =200)
+                             user_signature=True,maxtextlength =200, csv=False, paginate=35)
 
     return dict(grid=grid)
     # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]
