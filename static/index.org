@@ -8,8 +8,7 @@
 
 
 * COMMENT todo list
-
-*** COMMENT sqlite-code
+** TODO sqlite-code
 #+name:sqlite
 #+begin_src R :session *shell* :tangle no :exports none :eval no
   #### name:sqlite ####
@@ -24,6 +23,15 @@
 #+end_src
 
     
+** TODO find home for distribution 
+Distribution strategy, including:
+- for paper likely journal, conference presentations and other communication vehicles
+- for data
+- for code
+
+This deals with IP and copyright, so maybe in intellectual right module?
+
+
 * COMMENT Init
 ** COMMENT torun-code
 #+name:torun
@@ -357,7 +365,7 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 # cut XML(URL('static','eml-2.1.1/docs/eml-2.1.1/eml-project.html',  anchor='personnel', scheme=True, host=True)))
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel_data_owner','string', 
-  comment= XML(T('This is the data owner, and a compulsory field.  %s',
+  comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
   Field('personnel_owner_organisationname','string', 
@@ -504,8 +512,13 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+end_src
 *** COMMENT dataset abstract
 **** TODO abstract
+include
+Study research question
+Specific hypothesis under study
+Endpoints or outcomes of interest
+
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+      Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 #+end_src
 
 *** TODO additional metadata links
@@ -531,17 +544,41 @@ Both specific to sampling area and frequency, spatial extent/resolution, tempora
       Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
 #+end_src
 *** TODO methods sampling, steps, protocol
+**** EML
 http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html
+The eml-methods module describes the methods followed in the creation of the dataset, including description of field, laboratory and processing steps, sampling methods and units, quality control procedures. The eml-methods module is used to describe the actual procedures that are used in the creation or the subsequent processing of a dataset. Likewise, eml-methods is used to describe processes that have been used to define / improve the quality of a data file, or to identify potential problems with the data file. Note that the eml-protocol module is intended to be used to document a prescribed procedure, whereas the eml-method module is used to describe procedures that were actually performed. The distinction is that the use of the term "protocol" is used in the "prescriptive" sense, and the term "method" is used in the "descriptive" sense. This distinction allows managers to build a protocol library of well-known, established protocols (procedures), but also document what procedure was truly performed in relation to the established protocol. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. 
+
+**** Include: 
+# methods protocol
+Study type: give a list like time-series, cross-sectional, spatial, exploratory, confirmatory
+Data sets collected/used 
+Analysis package (statistical package name and version)
+Study population (including inclusion and exclusion criteria)
+Exposure variables
+Outcome measures (outcome measures, including comparison group)
+Covariates (possible exposures, potential confounders or effect modifiers)
+
+If possible also details of the sequence of planned analyses, with statistical methods to be employed and how each of the planned hypotheses will be tested. Include details of how potential confounding and bias will be dealt with. For example:
+1. Descriptive analyses
+2. Univariable analysis
+3. Multivariable analysis, and
+4. Interactions, subgroups, sensitivity analyses
+
+# method steps
+Data cleaning strategy, and process for handling missing data
+
+
+
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
       Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
       Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
 #+end_src
 
 *** COMMENT dataset assoc
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('associated_party','string', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
+      Field('associated_party','text', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
       ),
 #+end_src
@@ -582,6 +619,7 @@ http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods
       Field('pubdate','date'),
 #+end_src
 *** TODO access_rules (ie ethics required)
+
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 #+end_src
@@ -775,10 +813,14 @@ http://creativecommons.org/licenses/
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
+    Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
+    Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('licence_text', 'string', comment = 'The name of the licence.'),
-    Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
+    Field('special_conditions', 'text', comment = 'Any restrictions to be placed on the access or use, especially the timeframe if this is limited.'),
+    Field('path_to_licence', 'string', comment = 'Optional.')
     )
     
 db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])    
@@ -2394,7 +2436,15 @@ response.include_files()
   str(dat)
   dbWriteTable(ch2, "crosswalk2", dat, append = F, row.names=F)
   
-  
+  # OR
+  ## dat <- dbGetQuery(ch2, "select * from crosswalk")
+  ## #str(dat)
+  ## dbWriteTable(ch, "crosswalk2", dat, append = F, row.names=F)
+  ## dbSendQuery(ch, "delete from crosswalk")
+  ## paste(names(dat), sep = "", collapse = ", ")
+  ## dbSendQuery(ch, "insert into crosswalk (eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new)
+  ## select eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new from crosswalk2")
+  ## dbSendQuery(ch, "delete from crosswalk2")
   
   
   # OLD CRAP
@@ -2606,7 +2656,7 @@ response.include_files()
   knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
   
   #browseURL("data_deposit_form.html")
-  #browseURL("EML_metadata_fields.html")
+  # browseURL("EML_metadata_fields.html")
 
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
@@ -2890,6 +2940,7 @@ response.include_files()
   
 #+end_src
 ** summary of EML fields for projects 
+*** head
 #+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
   ---
   title: EML metadata fields
@@ -2897,9 +2948,6 @@ response.include_files()
   ---
   
   # Introduction
-    
-  # Project level information
-  
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
@@ -2908,42 +2956,27 @@ response.include_files()
   library(knitr)
   library(xtable)  
   
-  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  prj <- "IUCNmountainashforests_data"
-  dset <- "fire100_year"
+  #ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  #prj <- "Climatic and Agricultural Drought"
+  #dset <- "DROUGHT-BOM-GRIDS"
   
-  ```
-  ```{r, echo = F, eval = T, results="asis"}  
-  
-  dat <- sqldf(connection = ch,
-    sprintf("select t1.*
-    from project t1
-    where t1.title = '%s'", prj)
-    )
-  #names(dat)
-  #t(dat)
-  
-  ####  help
-  help  <- sqldf(connection = ch,
-    "select t1.eml_node, t1.help_comment, t1.datinv
-    from crosswalk t1
-    where eml_table like '%project%'"
-    )
-  # head(help)
-  
-  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
-  #dat_i
-  dat_i$order <- 1:nrow(dat_i)  
-  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
-  qc2 <- qc[order(qc$order),c(1,2,5)]
-  names(qc2) <- c("variable", "value", "help_comment")
-  
-  qc2[,2] <- gsub("\n", " | ", qc2[,2])
-  print(xtable(qc2[,-2]), type = "html", include.rownames = F)
-  
+  #ch  <- connect2postgres2("data_inventory_noise")
+  #prj <- "Noise Model"
+  #dset <- "noise_model_preliminary_results"
+
+  ch  <- connect2postgres2("data_inventory_air_pollution")
+  prj <- "Walkability"
+  dset <- "walkability_mayne"
+
+
+  show_exemplar <- TRUE
   ```
   
-  # Dataset level information (data packages)
+#+end_src
+*** dataset overview
+#+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
+  
+  # Dataset or study 'package' overview
   ```{r, echo = F, eval = T, results="asis"}
   
   #### for each dataset
@@ -2954,7 +2987,29 @@ response.include_files()
   
   
   dat <- dbGetQuery(ch,
-  sprintf("select * from dataset
+  sprintf("select shortname,title,
+    creator,
+    contact,
+    contact_email,
+    abstract,
+    associated_party,
+    studyextent,
+    geographicdescription,
+    boundingcoordinates,
+    temporalcoverage_daterange,
+    temporalcoverage_begindate,
+    temporalcoverage_enddate,
+    sampling_desc,
+    method_steps,
+    methods_protocol,
+    additional_metadata,
+    taxonomic_coverage,
+    additionalinfo,
+    alternateidentifier,
+    pubdate,
+    metadataprovider,
+    access_rules
+   from dataset
    where shortname ='%s'", dset)
   )
   dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
@@ -3040,10 +3095,98 @@ response.include_files()
   # names(  qc2)
   qc_out <- rbind(qc_out, qc2[-c(1,2),])
   qc_out[,2] <- gsub("\n", " | ", qc_out[,2])
+  qc_out_raw <- qc_out
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c('shortname','title',
+  'creator',
+  'contact',
+  'contact_email',
+  'abstract'),]
+  if(show_exemplar){
+  print(xtable(qc_out[,]), type = "html", include.rownames = F)
+  } else {
   print(xtable(qc_out[,-2]), type = "html", include.rownames = F)
+  }
+  ```
+#+end_src
+*** umbrella project
+#+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
+    
+  # Umbrella project level information
+  
+  ```{r, echo = F, eval = T, results="asis"}  
+  
+  dat <- sqldf(connection = ch,
+    sprintf("select t1.*
+    from project t1
+    where t1.title = '%s'", prj)
+    )
+  #names(dat)
+  #t(dat)
+  
+  ####  help
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%project%'"
+    )
+  # head(help)
+  
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  #dat_i
+  dat_i$order <- 1:nrow(dat_i)  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help_comment")
+  
+  qc2[,2] <- gsub("\n", " | ", qc2[,2])
+  if(show_exemplar){
+  print(xtable(qc2[,]), type = "html", include.rownames = F)
+  } else {
+  print(xtable(qc2[,-2]), type = "html", include.rownames = F)
+  }  
+  ```
+#+end_src
+*** dataset overview
+#+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
+  # Dataset or study detailed information   
+  ```{r, echo = F, eval = T, results="asis"}  
+  
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c(
+  'associated_party',
+  'geographicdescription',
+  'boundingcoordinates',
+  'temporalcoverage_daterange',
+  'temporalcoverage_begindate',
+  'temporalcoverage_enddate',
+  'taxonomic_coverage',
+  'method_steps',
+  'additional_metadata',
+  'additionalinfo',
+  'alternateidentifier',
+  'pubdate',
+  'metadataprovider',
+  'methods_protocol',
+  'access_rules',
+  'sampling_desc',
+  'studyextent',
+  'keywords',
+  'licence_code',
+  'licence_text','licencee','data_owner','data_owner_contact','path_to_licence',
+  'special_conditions'
+  ),]
+  if(show_exemplar){
+  print(xtable(qc_out[,]), type = "html", include.rownames = F)
+  } else {
+  print(xtable(qc_out[,-2]), type = "html", include.rownames = F)
+  }
   ```
   
-  # Entity level information (files)  
+#+end_src
+
+*** files entities overview
+#+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
+  
+  # File / Entity level information 
   
   ```{r, echo = F, eval = T, results="asis"}
     
@@ -3087,8 +3230,11 @@ response.include_files()
   names(qc_ent2) <- c("variable","value","help_comment")
   qc_ent2[,2] <- gsub("\n", " | ", qc_ent2[,2])
   #print(kable(qc_ent2, row.names = F))
-  
+  if(show_exemplar){
+  print(xtable(qc_ent2[,]), type = "html", include.rownames = F)
+  } else {
   print(xtable(qc_ent2[,-2]), type = "html", include.rownames = F)
+  }
   #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
   #}
   
@@ -3097,6 +3243,60 @@ response.include_files()
   ```
   
 #+end_src
-
+*** attributes
+#+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
+  
+  # Variables attributes
+  ```{r, echo = F, eval = T, results="asis"}
+  dat <- sqldf(connection = ch,
+    sprintf("select t1.* 
+    from attr t1 
+    where entity_id = %s", as.numeric(as.character(ent_j[1,2])))
+    )
+  #names(dat)
+  #t(dat)
+  if(length(nrow(dat) > 0) == 0){
+  ####  help
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%%'"
+    )
+  # head(help)
+  
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  #dat_i
+  dat_i$order <- 1:nrow(dat_i)  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help_comment")
+  
+  qc2[,2] <- gsub("\n", " | ", qc2[,2])
+  if(show_exemplar){
+  print(xtable(qc2[-c(1,2),]), type = "html", include.rownames = F)
+  } else {
+  print(xtable(qc2[-c(1,2),-2]), type = "html", include.rownames = F)
+  }
+  }
+  ```
+#+end_src
 #+RESULTS:
 
+* deploy to gislibrary
+scp -i ~/tools/macpro_ssh/.ssh/id_rsa ivan@gislibrary.anu.edu.au:/var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py ~/Desktop/
+use ediff buffers then reload
+
+
+# TODO  this did not work for some unkown reason.  give up and do mods manually
+
+scp -i ~/tools/macpro_ssh/.ssh/id_rsa  db.py ivan@gislibrary.anu.edu.au:/home/ivan 
+
+log in and move it to the spot as sudo 
+ ssh -i ~/tools/macpro_ssh/.ssh/id_rsa ivan@gislibrary.anu.edu.au
+[ivan@gislibrary ~]$ sudo su
+mv /var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py db_py_backup_20151018.txt
+[root@gislibrary ivan]# 
+mv db.py /var/www/html/web2py/applications/data_inventory_air_pollution/models/
+chown w2p_user /var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py
+
+# rm ~/Desktop/db.py

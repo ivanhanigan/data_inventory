@@ -92,7 +92,7 @@ comment= XML(T('The project places the data into its larger research context.  %
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
 ),
 Field('personnel_data_owner','string', 
-comment= XML(T('This is the data owner, and a compulsory field.  %s',
+comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('personnel_owner_organisationname','string', 
@@ -141,16 +141,16 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 Field('creator','string', comment='The name of the person, organization, or position who created the data'),
 Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
-Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the resource. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
 Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
 Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
 Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
 Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
-Field('associated_party','string', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
+Field('associated_party','text', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
 Field('geographicdescription','string',
@@ -260,10 +260,14 @@ db.define_table(
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
+    Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
+    Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('licence_text', 'string', comment = 'The name of the licence.'),
-    Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
+    Field('special_conditions', 'text', comment = 'Any restrictions to be placed on the access or use, especially the timeframe if this is limited.'),
+    Field('path_to_licence', 'string', comment = 'Optional.')
     )
     
 db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])
