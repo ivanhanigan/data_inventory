@@ -568,11 +568,11 @@ If possible also details of the sequence of planned analyses, with statistical m
 Data cleaning strategy, and process for handling missing data
 
 
-
+**** codes
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('methods_protocol' ,'string', comment="The protocol field is used to either reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file, also used to identify potential problems with the data file."),
+      Field('methods_protocol' , 'text', comment="The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps)."),
       Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-      Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
+      Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable."),
 #+end_src
 
 *** COMMENT dataset assoc
@@ -2437,15 +2437,19 @@ response.include_files()
   dbWriteTable(ch2, "crosswalk2", dat, append = F, row.names=F)
   
   # OR
-  ## dat <- dbGetQuery(ch2, "select * from crosswalk")
-  ## #str(dat)
-  ## dbWriteTable(ch, "crosswalk2", dat, append = F, row.names=F)
-  ## dbSendQuery(ch, "delete from crosswalk")
-  ## paste(names(dat), sep = "", collapse = ", ")
-  ## dbSendQuery(ch, "insert into crosswalk (eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new)
-  ## select eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new from crosswalk2")
-  ## dbSendQuery(ch, "delete from crosswalk2")
-  
+  '
+  sourcedb <- connect2postgres2("data_inventory_hanigan_dev4")
+  targetdb <- connect2postgres2("data_inventory_air_pollution")
+  dat <- dbGetQuery(sourcedb, "select * from crosswalk")
+  #str(dat)
+  dbSendQuery(targetdb, "delete from crosswalk2")
+  dbWriteTable(targetdb, "crosswalk2", dat, append = T, row.names=F)
+  dbSendQuery(targetdb, "delete from crosswalk")
+  #paste(names(dat), sep = "", collapse = ", ")
+  dbSendQuery(targetdb, "insert into crosswalk (eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new)
+  select eml_module, eml_table, datinv, eml_node, help_comment, eml_desc, eml_standard_link, eml_local_link, ddi_module, ddi_node, morpho, ltern_table, ltern_name, portal_ddf_qaf, ltern_desc, aekos_shared, aekos_desc, asn, tern, ala, psql_type, w2p_code, constraint_text, lter_manual_page, transfer2new from crosswalk2")
+  dbSendQuery(targetdb, "delete from crosswalk2")
+  '
   
   # OLD CRAP
   fi <- dir("../emldb", full.names = T)
@@ -2999,9 +3003,9 @@ response.include_files()
     temporalcoverage_daterange,
     temporalcoverage_begindate,
     temporalcoverage_enddate,
+    methods_protocol,
     sampling_desc,
     method_steps,
-    methods_protocol,
     additional_metadata,
     taxonomic_coverage,
     additionalinfo,
@@ -3066,7 +3070,7 @@ response.include_files()
   
   
   dat <- dbGetQuery(ch,
-  sprintf("select t1.*
+  sprintf("select t1.data_owner, data_owner_contact, licence_code, licence_text, licencee, path_to_licence, special_conditions
   from intellectualright t1
   join dataset t2
   on t1.dataset_id =  t2.id
