@@ -147,9 +147,9 @@ Field('studyextent' ,'text', comment="Both a specific sampling area and frequenc
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
 Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
-Field('methods_protocol' , 'text', comment="The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps)."),
-Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable."),
+Field('methods_protocol' , 'text', comment = XML(T('The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps). %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-9', scheme=True, host=True)))))),
+Field('sampling_desc' ,'text', comment = XML(T('Similar to a description of sampling procedures found in the methods section of a journal article. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-10', scheme=True, host=True)))))),
+Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
 Field('associated_party','text', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
@@ -171,6 +171,7 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 ),
 Field('pubdate','date'),
 Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
+Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 format = '%(shortname)s'
     )

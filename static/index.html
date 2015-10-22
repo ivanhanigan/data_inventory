@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-06-21T14:57+1000"/>
+<meta name="generated" content="2015-10-22T09:57+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -169,13 +169,26 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#sec-5-2">5.2 Dataset</a>
 <ul>
-<li><a href="#sec-5-2-1">5.2.1 bounding coords</a></li>
-<li><a href="#sec-5-2-2">5.2.2 temporal cov</a></li>
-<li><a href="#sec-5-2-3">5.2.3 temporal cov</a></li>
-<li><a href="#sec-5-2-4">5.2.4 methods</a></li>
-<li><a href="#sec-5-2-5">5.2.5 additional metadata links</a></li>
-<li><a href="#sec-5-2-6">5.2.6 metadataprovider</a></li>
-<li><a href="#sec-5-2-7">5.2.7 end</a></li>
+<li><a href="#sec-5-2-1">5.2.1 dataset shortname</a></li>
+<li><a href="#sec-5-2-2">5.2.2 dataset title</a></li>
+<li><a href="#sec-5-2-3">5.2.3 dataset creator</a></li>
+<li><a href="#sec-5-2-4">5.2.4 dataset contact</a></li>
+<li><a href="#sec-5-2-5">5.2.5 dataset abstract</a></li>
+<li><a href="#sec-5-2-6">5.2.6 dataset additional metadata links</a></li>
+<li><a href="#sec-5-2-7">5.2.7 dataset methods/studyextent</a></li>
+<li><a href="#sec-5-2-8">5.2.8 dataset temporal coverage</a></li>
+<li><a href="#sec-5-2-9">5.2.9 dataset methods protocol</a></li>
+<li><a href="#sec-5-2-10">5.2.10 dataset sampling description</a></li>
+<li><a href="#sec-5-2-11">5.2.11 dataset method steps</a></li>
+<li><a href="#sec-5-2-12">5.2.12 dataset Geographic</a></li>
+<li><a href="#sec-5-2-13">5.2.13 dataset bounding coords</a></li>
+<li><a href="#sec-5-2-14">5.2.14 dataset taxo cov</a></li>
+<li><a href="#sec-5-2-15">5.2.15 dataset additional info</a></li>
+<li><a href="#sec-5-2-16">5.2.16 dataset alternateidentifier</a></li>
+<li><a href="#sec-5-2-17">5.2.17 dataset pubdate</a></li>
+<li><a href="#sec-5-2-18">5.2.18 access<sub>rules</sub> (ie ethics required)</a></li>
+<li><a href="#sec-5-2-19">5.2.19 distribution<sub>method</sub></a></li>
+<li><a href="#sec-5-2-20">5.2.20 metadataprovider</a></li>
 </ul>
 </li>
 <li><a href="#sec-5-3">5.3 Data Entity (dataTable)</a>
@@ -183,8 +196,9 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5-3-1">5.3.1 eml/dataset/entity/id</a></li>
 <li><a href="#sec-5-3-2">5.3.2 eml/dataset/entity/name</a></li>
 <li><a href="#sec-5-3-3">5.3.3 eml/dataset/entity/description</a></li>
-<li><a href="#sec-5-3-4">5.3.4 eml/dataset/entity methods</a></li>
-<li><a href="#sec-5-3-5">5.3.5 eml/dataset/entity/physical/distribution</a></li>
+<li><a href="#sec-5-3-4">5.3.4 temporal cov</a></li>
+<li><a href="#sec-5-3-5">5.3.5 eml/dataset/entity methods</a></li>
+<li><a href="#sec-5-3-6">5.3.6 eml/dataset/entity/physical/distribution</a></li>
 </ul></li>
 </ul>
 </li>
@@ -195,8 +209,9 @@ for the JavaScript code in this tag.
 <li><a href="#sec-6-3">6.3 Access a dataset</a></li>
 <li><a href="#sec-6-4">6.4 Main form ties it all together (manage projects)</a></li>
 <li><a href="#sec-6-5">6.5 Form to manage all datasets</a></li>
-<li><a href="#sec-6-6">6.6 Form to manage accessors or groups</a></li>
-<li><a href="#sec-6-7">6.7 finesse the interface</a></li>
+<li><a href="#sec-6-6">6.6 Form to manage all publications</a></li>
+<li><a href="#sec-6-7">6.7 Form to manage accessors or groups</a></li>
+<li><a href="#sec-6-8">6.8 finesse the interface</a></li>
 </ul>
 </li>
 <li><a href="#sec-7">7 backups</a></li>
@@ -204,8 +219,27 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#sec-8-1">8.1 summary of data for ETL</a></li>
 <li><a href="#sec-8-2">8.2 load transformed</a></li>
+<li><a href="#sec-8-3">8.3 summary of EML fields for projects/datasets</a>
+<ul>
+<li><a href="#sec-8-3-1">8.3.1 head</a></li>
+<li><a href="#sec-8-3-2">8.3.2 dataset overview</a></li>
+<li><a href="#sec-8-3-3">8.3.3 umbrella project</a></li>
+<li><a href="#sec-8-3-4">8.3.4 dataset overview</a></li>
+<li><a href="#sec-8-3-5">8.3.5 files entities overview</a></li>
+<li><a href="#sec-8-3-6">8.3.6 attributes</a></li>
 </ul>
 </li>
+<li><a href="#sec-8-4">8.4 short summary of EML fields for projects/datasets homepage</a>
+<ul>
+<li><a href="#sec-8-4-1">8.4.1 head</a></li>
+<li><a href="#sec-8-4-2">8.4.2 dataset overview</a></li>
+<li><a href="#sec-8-4-3">8.4.3 umbrella project</a></li>
+<li><a href="#sec-8-4-4">8.4.4 dataset overview</a></li>
+<li><a href="#sec-8-4-5">8.4.5 files entities overview</a></li>
+</ul></li>
+</ul>
+</li>
+<li><a href="#sec-9">9 deploy to gislibrary</a></li>
 </ul>
 </div>
 </div>
@@ -607,8 +641,9 @@ python ./web2py.py -S data_inventory
 </li>
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title">EML online</a>
 </li>
+<li>If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title.
+</li>
 </ul>
-
 
 
 </div>
@@ -622,6 +657,10 @@ python ./web2py.py -S data_inventory
 <p>In EML the Data Owner is able to be shown at various points on the xpath.  
 LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
 </p><ul>
+<li>A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data.
+</li>
+<li>Also , organisational roles or organisations , such as the originator
+</li>
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#personnel">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#personnel">EML online</a>
 </li>
 </ul>
@@ -634,7 +673,7 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 
 
 <pre class="src src-markdown">Field('personnel','string', 
-comment= XML(T('This is for key people, organisational roles or organisations that are not the owner, such as the originator. %s',
+comment= XML(T('This is for key people etc that are not the owner. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 </pre>
@@ -706,8 +745,209 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+</div>
+
+<div id="outline-container-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> dataset shortname</h4>
+<div class="outline-text-4" id="text-5-2-1">
+
+<p>TODO
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-2" class="outline-4">
+<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> dataset title</h4>
+<div class="outline-text-4" id="text-5-2-2">
+
+<p>TODO
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-3" class="outline-4">
+<h4 id="sec-5-2-3"><span class="section-number-4">5.2.3</span> dataset creator</h4>
+<div class="outline-text-4" id="text-5-2-3">
+
+<p>TODO
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-4" class="outline-4">
+<h4 id="sec-5-2-4"><span class="section-number-4">5.2.4</span> dataset contact</h4>
+<div class="outline-text-4" id="text-5-2-4">
+
+<p>TODO
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-5" class="outline-4">
+<h4 id="sec-5-2-5"><span class="section-number-4">5.2.5</span> dataset abstract</h4>
+<div class="outline-text-4" id="text-5-2-5">
+
+<p>This should be brief but include:
+</p><ul>
+<li>Study research question
+</li>
+<li>Specific hypothesis under study
+</li>
+<li>Endpoints or outcomes of interest
+</li>
+</ul>
 
 
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-6" class="outline-4">
+<h4 id="sec-5-2-6"><span class="section-number-4">5.2.6</span> dataset additional metadata links</h4>
+<div class="outline-text-4" id="text-5-2-6">
+
+<p>TODO
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-7" class="outline-4">
+<h4 id="sec-5-2-7"><span class="section-number-4">5.2.7</span> dataset methods/studyextent</h4>
+<div class="outline-text-4" id="text-5-2-7">
+
+<ul>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent</a>
+</li>
+<li>Both specific to sampling area and frequency, spatial extent/resolution, temporal boundaries. eg CCD 2001.
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-8" class="outline-4">
+<h4 id="sec-5-2-8"><span class="section-number-4">5.2.8</span> dataset temporal coverage</h4>
+<div class="outline-text-4" id="text-5-2-8">
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-9" class="outline-4">
+<h4 id="sec-5-2-9"><span class="section-number-4">5.2.9</span> dataset methods protocol</h4>
+<div class="outline-text-4" id="text-5-2-9">
+
+<ul>
+<li id="sec-5-2-9-1">general EML methods module info<br/>
+<ul>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html</a>
+</li>
+<li>The eml-methods module describes the methods followed in the creation of the dataset, including description of field, laboratory and processing steps, sampling methods and units, quality control procedures. The eml-methods module is used to describe the actual procedures that are used in the creation or the subsequent processing of a dataset. Likewise, eml-methods is used to describe processes that have been used to define / improve the quality of a data file, or to identify potential problems with the data file. Note that the eml-protocol module is intended to be used to document a prescribed procedure, whereas the eml-method module is used to describe procedures that were actually performed. The distinction is that the use of the term "protocol" is used in the "prescriptive" sense, and the term "method" is used in the "descriptive" sense. This distinction allows managers to build a protocol library of well-known, established protocols (procedures), but also document what procedure was truly performed in relation to the established protocol. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. 
+
+</li>
+<li>eml-methods is descriptive (often written in the declarative mood: "I took five subsamples&hellip;") whereas eml-protocol is prescriptive (often written in the imperative mood: "Take five subsamples&hellip;").
+</li>
+</ul>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-5-2-9-2">Recommendations for protocol<br/>
+The protocol information can be captured in two places of EML
+<ul>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html</a>
+</li>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#protocol">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#protocol</a>
+</li>
+<li>In many cases the simpler option is to use the methods module protocol section which is designed to capture 'reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file'.
+</li>
+<li>It can also be used to identify potential problems with the data collection protocol or study design, to be addressed in the methods steps.
+</li>
+</ul>
+
+
+
+<p>
+After deciding where the protocol information will sit, then consider including the following information:
+</p><ul>
+<li>Study type: select from a list like time-series, cross-sectional, spatial, exploratory, confirmatory
+</li>
+<li>Data sets collected/used 
+</li>
+<li>Analysis package (statistical package name and version)
+</li>
+<li>Study population (including inclusion and exclusion criteria)
+</li>
+<li>Exposure variables
+</li>
+<li>Outcome measures (outcome measures, including comparison group)
+</li>
+<li>Covariates (possible exposures, potential confounders or effect modifiers)
+</li>
+</ul>
+
+
+<p>
+If possible also details of the sequence of planned analyses, with statistical methods to be employed and how each of the planned hypotheses will be tested. Include details of how potential confounding and bias will be dealt with. For example:
+</p>
+<ol>
+<li>Descriptive analyses
+</li>
+<li>Univariable analysis
+</li>
+<li>Multivariable analysis, and
+</li>
+<li>Interactions, subgroups, sensitivity analyses
+</li>
+</ol>
+
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-10" class="outline-4">
+<h4 id="sec-5-2-10"><span class="section-number-4">5.2.10</span> dataset sampling description</h4>
+<div class="outline-text-4" id="text-5-2-10">
+
+<ul>
+<li>Similar to a description of sampling procedures found in the methods section of a journal article.
+</li>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#samplingDescription">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#samplingDescription</a>
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-11" class="outline-4">
+<h4 id="sec-5-2-11"><span class="section-number-4">5.2.11</span> dataset method steps</h4>
+<div class="outline-text-4" id="text-5-2-11">
+
+<ul>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep</a>
+</li>
+<li>EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable.
+</li>
+<li>Include data cleaning strategy, and process for handling missing data.
+</li>
+<li>Include text descriptions of the procedures, relevant literature, software, instrumentation, source data and any quality control measures taken.
+</li>
+</ul>
 
 
 
@@ -715,9 +955,28 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-1" class="outline-4">
-<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> <span class="todo TODO">TODO</span> bounding coords</h4>
-<div class="outline-text-4" id="text-5-2-1">
+</div>
+
+<div id="outline-container-5-2-12" class="outline-4">
+<h4 id="sec-5-2-12"><span class="section-number-4">5.2.12</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
+<div class="outline-text-4" id="text-5-2-12">
+
+
+
+
+<pre class="src src-markdown">Field('geographicdescription','string',
+comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-13" class="outline-4">
+<h4 id="sec-5-2-13"><span class="section-number-4">5.2.13</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
+<div class="outline-text-4" id="text-5-2-13">
 
 
 
@@ -732,25 +991,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-2" class="outline-4">
-<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> <span class="todo TODO">TODO</span> temporal cov</h4>
-<div class="outline-text-4" id="text-5-2-2">
-
-
-
-
-<pre class="src src-markdown">Field('temporalcoverage<span style="color: #268bd2; font-style: italic;">_daterange','string', comment = "A text description of the temporal range that events were observed on"),</span>
-<span style="color: #268bd2; font-style: italic;">Field('temporalcoverage_</span>begindate','date', comment="A begin date.  The dates that events were observed on."),
-Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2-3" class="outline-4">
-<h4 id="sec-5-2-3"><span class="section-number-4">5.2.3</span> <span class="todo TODO">TODO</span> temporal cov</h4>
-<div class="outline-text-4" id="text-5-2-3">
+<div id="outline-container-5-2-14" class="outline-4">
+<h4 id="sec-5-2-14"><span class="section-number-4">5.2.14</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
+<div class="outline-text-4" id="text-5-2-14">
 
 
 
@@ -762,44 +1005,110 @@ Field('temporalcoverage_enddate','date', comment="A end date. The dates that eve
 
 </div>
 
-<div id="outline-container-5-2-4" class="outline-4">
-<h4 id="sec-5-2-4"><span class="section-number-4">5.2.4</span> <span class="todo TODO">TODO</span> methods</h4>
-<div class="outline-text-4" id="text-5-2-4">
+<div id="outline-container-5-2-15" class="outline-4">
+<h4 id="sec-5-2-15"><span class="section-number-4">5.2.15</span> <span class="todo TODO">TODO</span> dataset additional info</h4>
+<div class="outline-text-4" id="text-5-2-15">
 
 
 
 
-<pre class="src src-markdown">Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
-Field('sampling<span style="color: #268bd2; font-style: italic;">_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),</span>
-<span style="color: #268bd2; font-style: italic;">Field('method_</span>steps','string', comment="EACH method step to implement the measurement protocols and set up the study."),
-Field('methods_citation' ,'string', comment="Citation of protocols used to design the study."),
+<pre class="src src-markdown">  Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+  ),
 </pre>
 
-
 </div>
 
 </div>
 
-<div id="outline-container-5-2-5" class="outline-4">
-<h4 id="sec-5-2-5"><span class="section-number-4">5.2.5</span> <span class="todo TODO">TODO</span> additional metadata links</h4>
-<div class="outline-text-4" id="text-5-2-5">
+<div id="outline-container-5-2-16" class="outline-4">
+<h4 id="sec-5-2-16"><span class="section-number-4">5.2.16</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
+<div class="outline-text-4" id="text-5-2-16">
 
 
 
 
-<pre class="src src-markdown">Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
+<pre class="src src-markdown">Field('alternateidentifier','string',
+comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+),
 </pre>
 
+</div>
+
+</div>
+
+<div id="outline-container-5-2-17" class="outline-4">
+<h4 id="sec-5-2-17"><span class="section-number-4">5.2.17</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
+<div class="outline-text-4" id="text-5-2-17">
 
 
+
+
+<pre class="src src-markdown">Field('pubdate','date'),
+</pre>
 
 </div>
 
 </div>
 
-<div id="outline-container-5-2-6" class="outline-4">
-<h4 id="sec-5-2-6"><span class="section-number-4">5.2.6</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
-<div class="outline-text-4" id="text-5-2-6">
+<div id="outline-container-5-2-18" class="outline-4">
+<h4 id="sec-5-2-18"><span class="section-number-4">5.2.18</span> <span class="todo TODO">TODO</span> access<sub>rules</sub> (ie ethics required)</h4>
+<div class="outline-text-4" id="text-5-2-18">
+
+
+
+
+
+<pre class="src src-markdown">Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2-19" class="outline-4">
+<h4 id="sec-5-2-19"><span class="section-number-4">5.2.19</span> <span class="todo TODO">TODO</span> distribution<sub>method</sub></h4>
+<div class="outline-text-4" id="text-5-2-19">
+
+<ul>
+<li id="sec-5-2-19-1">ideas<br/>
+new field = dataset/distribution<sub>methods</sub>
+The methods of distribution used for others to access the software, data, and documentation.
+
+<p>
+Distribution strategies include:
+</p><ul>
+<li>publication of journal papers, reports, conference presentations, blogging, twitter and news media
+</li>
+<li>data deposit in a portal or archive
+</li>
+<li>code publication online to open-source code sharing sites, or made available on request.
+</li>
+</ul>
+
+
+<p>
+This deals with IP and copyright, so maybe just have well been in the intellectual<sub>right</sub> module?
+</p></li>
+</ul>
+<ul>
+<li id="sec-5-2-19-2">code<br/>
+
+
+
+<pre class="src src-markdown">Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
+</pre>
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-5-2-20" class="outline-4">
+<h4 id="sec-5-2-20"><span class="section-number-4">5.2.20</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
+<div class="outline-text-4" id="text-5-2-20">
 
 
 
@@ -807,26 +1116,7 @@ Field('methods_citation' ,'string', comment="Citation of protocols used to desig
 <pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 </pre>
 
-</div>
 
-</div>
-
-<div id="outline-container-5-2-7" class="outline-4">
-<h4 id="sec-5-2-7"><span class="section-number-4">5.2.7</span> <span class="todo TODO">TODO</span> end</h4>
-<div class="outline-text-4" id="text-5-2-7">
-
-
-
-
-<pre class="src src-markdown"><span style="color: #268bd2; font-weight: bold;">    format = '%(shortname)s'</span>
-<span style="color: #268bd2; font-weight: bold;">    )</span>
-
-db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requires = [IS_</span>EMAIL()]
-
-    
-<span style="color: #268bd2; font-weight: bold;"># db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]</span>
-   
-</pre>
 
 
 
@@ -870,7 +1160,7 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 
 
 
-<pre class="src src-markdown">Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv"),
+<pre class="src src-markdown">Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv", requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()),
 </pre>
 
 </div>
@@ -893,8 +1183,23 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 </div>
 
 <div id="outline-container-5-3-4" class="outline-4">
-<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> eml/dataset/entity methods</h4>
+<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> <span class="todo TODO">TODO</span> temporal cov</h4>
 <div class="outline-text-4" id="text-5-3-4">
+
+
+
+
+<pre class="src src-markdown">Field('entity<span style="color: #268bd2; font-style: italic;">_temporalcoverage_</span>daterange','string', comment = "A text description of the temporal range that events were observed on"),
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-5" class="outline-4">
+<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> eml/dataset/entity methods</h4>
+<div class="outline-text-4" id="text-5-3-5">
 
 
 
@@ -902,13 +1207,14 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 <pre class="src src-markdown">Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 </pre>
 
-</div>
 
 </div>
 
-<div id="outline-container-5-3-5" class="outline-4">
-<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> eml/dataset/entity/physical/distribution</h4>
-<div class="outline-text-4" id="text-5-3-5">
+</div>
+
+<div id="outline-container-5-3-6" class="outline-4">
+<h4 id="sec-5-3-6"><span class="section-number-4">5.3.6</span> eml/dataset/entity/physical/distribution</h4>
+<div class="outline-text-4" id="text-5-3-6">
 
 <ul>
 <li>The PhysicalDistribution contains the information required for retrieving the resource.
@@ -916,6 +1222,9 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution">EML online</a>
 </li>
 </ul>
+
+
+
 
 
 
@@ -1052,23 +1361,27 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 
 
 <pre class="src src-R">def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>
+    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
                                                       ],
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.shortname,
-                                       db.dataset.creator,                                          
-                                       db.dataset.contact,
-                                       db.entity.entityname, db.entity.physical_distribution,
+
+                                       db.dataset.additional_metadata,                                          
+                                       db.dataset.contact_email,
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
-                                       db.intellectualright.licence_code],
-                                       orderby = dict(project=db.project.id, dataset=db.dataset.title),
-                             user_signature=True,maxtextlength =200)
+                                       db.intellectualright.licence_code,
+                                       db.publication.bibtex_key, db.publication.title,  
+                                       db.publication.google_scholar_cites, db.publication.impact_factor,
+                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                       db.authorship_approval.date_approval_given],
+                                       orderby = dict(project=db.project.title, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200, csv=False, paginate=35)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
 </pre>
 
@@ -1086,24 +1399,28 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 
 
 <pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[<span style="color: #2aa198;">'project'</span>, <span style="color: #2aa198;">'entity'</span>,<span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
                                                       ],
-                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                             fields = [
                                        db.dataset.shortname,
                                        db.dataset.id,
-                                       db.dataset.shortname,
-                                       db.dataset.creator,                                          
-                                       db.dataset.contact,
-                                       db.entity.entityname, db.entity.physical_distribution,
+                            
+                                       db.dataset.additional_metadata,                                          
+                                       db.dataset.contact_email,
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
-                                       db.intellectualright.licence_code],
-                             user_signature=True,maxtextlength =200)
+                                       db.intellectualright.licence_code,
+                                       db.publication.bibtex_key, db.publication.title,  
+                                       db.publication.google_scholar_cites, db.publication.impact_factor,
+                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                       db.authorship_approval.date_approval_given],
+                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-
 </pre>
 
 
@@ -1112,10 +1429,24 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 </div>
 
 <div id="outline-container-6-6" class="outline-3">
-<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage accessors or groups</h3>
+<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage all publications</h3>
 <div class="outline-text-3" id="text-6-6">
 
 
+
+
+<pre class="src src-R">def manage_publications():
+    grid = SQLFORM.smartgrid(db.publication,linked_tables=[<span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
+                                                      ],
+                             fields = [
+                                       db.publication.bibtex_key, db.publication.citation,  
+                                       db.publication.thesis_section, 
+                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                       db.authorship_approval.date_approval_given],
+                                       orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200)
+    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
+</pre>
 
 
 
@@ -1124,53 +1455,78 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 </div>
 
 <div id="outline-container-6-7" class="outline-3">
-<h3 id="sec-6-7"><span class="section-number-3">6.7</span> finesse the interface</h3>
+<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage accessors or groups</h3>
 <div class="outline-text-3" id="text-6-7">
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6-8" class="outline-3">
+<h3 id="sec-6-8"><span class="section-number-3">6.8</span> finesse the interface</h3>
+<div class="outline-text-3" id="text-6-8">
 
 <ul>
 <li>the following makes a home page
 </li>
 <li>also go to static/css/web2py.css and change line 33/34 text width to about 800px
 </li>
+<li>removed from just above instructions and replaced with if auth is logged after instructions.
+  {{if 'message' in globals():}}
+  &lt;h3&gt;{{=message}}&lt;/h3&gt;
+
+</li>
+<li>removed from bottom
+  {{block right<sub>sidebar</sub>}}
+  {{<code>A(T("Administrative Interface"), _href=URL('admin','default','index'), _class</code>'btn',
+       <sub>style</sub>='margin-top: 1em;')}}
+  {{end}}
+</li>
 </ul>
 
 
 
 
-<pre class="src src-markdown">{{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
+<pre class="src src-markdown">  {{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
+  
 
-{{if 'message' in globals():}}
-&lt;h3&gt;{{=message}}&lt;/h3&gt;
-
-&lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
+  &lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
+  &lt;li&gt;{{=T('To use the data inventory please register in top right corner.')}}&lt;/li&gt;
+  {{if auth.is<span style="color: #268bd2; font-style: italic;">_logged_</span>in():}}
 &lt;ol&gt;
-  &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
+    &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
+             A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
 <span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
-  &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
+    &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
            A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_datasets/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
+<span style="color: #268bd2; font-style: italic;">             _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The technical documentation for this application is at %s',
-           A('this link',
+             A('this link',
            <span style="color: #268bd2; font-style: italic;">_href=URL('static','index.html'))))}}&lt;/li&gt;</span>
-<span style="color: #268bd2; font-style: italic;">  &lt;li&gt;{{=XML(T('The links to other apps is at %s',</span>
+<span style="color: #268bd2; font-style: italic;">    &lt;li&gt;{{=XML(T('The links to other apps is at %s',</span>
 <span style="color: #268bd2; font-style: italic;">           A('this link',</span>
-<span style="color: #268bd2; font-style: italic;">           _href=URL('audio','default','index'))))}}&lt;/li&gt;</span>
+<span style="color: #268bd2; font-style: italic;">             _href=URL('audio','default','index'))))}}&lt;/li&gt;</span>
 <span style="color: #268bd2; font-style: italic;">&lt;/ol&gt;</span>
-<span style="color: #268bd2; font-style: italic;">{{elif 'content' in globals():}}</span>
+<span style="color: #268bd2; font-style: italic;">  {{elif 'content' in globals():}}</span>
 <span style="color: #268bd2; font-style: italic;">{{=content}}</span>
-<span style="color: #268bd2; font-style: italic;">{{else:}}</span>
+<span style="color: #268bd2; font-style: italic;">  {{else:}}</span>
 <span style="color: #268bd2; font-style: italic;">{{=BEAUTIFY(response._</span>vars)}}
-{{pass}}
+  {{pass}}
 
-{{block right_sidebar}}
-{{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
-     _style='margin-top: 1em;')}}
+  {{block right_sidebar}}
+{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
+       _style='margin-top: 1em;')}}
 {{end}}
-
+  
 </pre>
+
+
 
 
 
@@ -1228,6 +1584,149 @@ db.dataset.contact<span style="color: #268bd2; font-style: italic;">_email.requi
 
 
 </div>
+
+</div>
+
+<div id="outline-container-8-3" class="outline-3">
+<h3 id="sec-8-3"><span class="section-number-3">8.3</span> summary of EML fields for projects/datasets</h3>
+<div class="outline-text-3" id="text-8-3">
+
+
+</div>
+
+<div id="outline-container-8-3-1" class="outline-4">
+<h4 id="sec-8-3-1"><span class="section-number-4">8.3.1</span> head</h4>
+<div class="outline-text-4" id="text-8-3-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-3-2" class="outline-4">
+<h4 id="sec-8-3-2"><span class="section-number-4">8.3.2</span> dataset overview</h4>
+<div class="outline-text-4" id="text-8-3-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-3-3" class="outline-4">
+<h4 id="sec-8-3-3"><span class="section-number-4">8.3.3</span> umbrella project</h4>
+<div class="outline-text-4" id="text-8-3-3">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-3-4" class="outline-4">
+<h4 id="sec-8-3-4"><span class="section-number-4">8.3.4</span> dataset overview</h4>
+<div class="outline-text-4" id="text-8-3-4">
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-3-5" class="outline-4">
+<h4 id="sec-8-3-5"><span class="section-number-4">8.3.5</span> files entities overview</h4>
+<div class="outline-text-4" id="text-8-3-5">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-3-6" class="outline-4">
+<h4 id="sec-8-3-6"><span class="section-number-4">8.3.6</span> attributes</h4>
+<div class="outline-text-4" id="text-8-3-6">
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-8-4" class="outline-3">
+<h3 id="sec-8-4"><span class="section-number-3">8.4</span> short summary of EML fields for projects/datasets homepage</h3>
+<div class="outline-text-3" id="text-8-4">
+
+
+</div>
+
+<div id="outline-container-8-4-1" class="outline-4">
+<h4 id="sec-8-4-1"><span class="section-number-4">8.4.1</span> head</h4>
+<div class="outline-text-4" id="text-8-4-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-4-2" class="outline-4">
+<h4 id="sec-8-4-2"><span class="section-number-4">8.4.2</span> dataset overview</h4>
+<div class="outline-text-4" id="text-8-4-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-4-3" class="outline-4">
+<h4 id="sec-8-4-3"><span class="section-number-4">8.4.3</span> umbrella project</h4>
+<div class="outline-text-4" id="text-8-4-3">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-4-4" class="outline-4">
+<h4 id="sec-8-4-4"><span class="section-number-4">8.4.4</span> dataset overview</h4>
+<div class="outline-text-4" id="text-8-4-4">
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8-4-5" class="outline-4">
+<h4 id="sec-8-4-5"><span class="section-number-4">8.4.5</span> files entities overview</h4>
+<div class="outline-text-4" id="text-8-4-5">
+
+
+
+</div>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-9" class="outline-2">
+<h2 id="sec-9"><span class="section-number-2">9</span> deploy to gislibrary</h2>
+<div class="outline-text-2" id="text-9">
+
+<p>scp -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub> ivan@gislibrary.anu.edu.au:/var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py ~/Desktop/
+use ediff buffers then reload
+</p>
+
+
+<p>
+scp -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub>  db.py ivan@gislibrary.anu.edu.au:/home/ivan 
+</p>
+<p>
+log in and move it to the spot as sudo 
+ ssh -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub> ivan@gislibrary.anu.edu.au
+[ivan@gislibrary ~]$ sudo su
+mv /var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py db<sub>py</sub><sub>backup</sub><sub>20151018</sub>.txt
+[root@gislibrary ivan]# 
+mv db.py <i>var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models</i>
+chown w2p<sub>user</sub> /var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py
+</p>
 </div>
 </div>
 </div>
