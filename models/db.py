@@ -11,7 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = True)
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
+    fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -55,7 +56,7 @@ mail.settings.login = 'username:password'
 
 ## configure auth policy
 auth.settings.registration_requires_verification = False
-auth.settings.registration_requires_approval = False
+auth.settings.registration_requires_approval = True
 auth.settings.reset_password_requires_verification = True
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
@@ -91,7 +92,7 @@ comment= XML(T('The project places the data into its larger research context.  %
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
 ),
 Field('personnel_data_owner','string', 
-comment= XML(T('This is the data owner, and a compulsory field.  %s',
+comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
 ),
 Field('personnel_owner_organisationname','string', 
@@ -134,7 +135,7 @@ db.define_table(
 Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
 ),
-Field('title','text', comment = XML(T('Suggested structure is: [Project name (optional sub-project name)] [:] [Data type (such as experimental unit, observational unit, and/or measurement methods)] [,] [Geographic location] [,] [State] [,] [Country] [,] [Annual or seasonal tranches]. %s',
+Field('title','string', comment = XML(T('Structure eg: project, data type, location, temporal tranches. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
 ),
 Field('creator','string', comment='The name of the person, organization, or position who created the data'),
@@ -146,9 +147,9 @@ Field('studyextent' ,'text', comment="Both a specific sampling area and frequenc
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
 Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
-Field('methods_protocol' , 'text', comment="The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps)."),
-Field('sampling_desc' ,'text', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable."),
+Field('methods_protocol' , 'text', comment = XML(T('The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps). %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-9', scheme=True, host=True)))))),
+Field('sampling_desc' ,'text', comment = XML(T('Similar to a description of sampling procedures found in the methods section of a journal article. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-10', scheme=True, host=True)))))),
+Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
 Field('associated_party','text', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
@@ -160,15 +161,7 @@ Field('boundingcoordinates','string',
 comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
-Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
-Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
-Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
 Field('taxonomic_coverage','string', comment="List of scientific names."),
-Field('studyextent' ,'string', comment="Both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence)."),
-Field('sampling_desc' ,'string', comment="Similar to a description of sampling procedures found in the methods section of a journal article."),
-Field('method_steps','text', comment="EACH method step to implement the measurement protocols and set up the study."),
-Field('methods_protocol' ,'string', comment="Citation of protocols used to design the study."),
-Field('additional_metadata' ,'string', comment="Any additional metadata such as URL links to related webpages."),
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
@@ -177,7 +170,8 @@ comment = XML(T('Additional identifier that is used to label this dataset. This 
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
 Field('pubdate','date'),
-Field('access_rules','string', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
+Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
+Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 format = '%(shortname)s'
     )
@@ -267,10 +261,14 @@ db.define_table(
 db.define_table(
     'intellectualright',
     Field('dataset_id',db.dataset),
+    Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
+    Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
     Field('licence_text', 'string', comment = 'The name of the licence.'),
-    Field('special_conditions', 'string', comment = 'Any restrictions to be placed on the access or use')
+    Field('special_conditions', 'text', comment = 'Any restrictions to be placed on the access or use, especially the timeframe if this is limited.'),
+    Field('path_to_licence', 'string', comment = 'Optional.')
     )
     
 db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])
@@ -367,9 +365,11 @@ db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
 #### ONE (biblio) TO one (entity)
 db.define_table(
-    'bibliometric',
+    'publication',
     Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
+Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
@@ -381,19 +381,23 @@ Field('google_scholar_cites','integer'),
 Field('date_gs_cites_checked','date'),
 Field('web_of_science_cites','integer'),
 Field('date_wos_cites_checked','date'),
-Field('contribution','text')
+Field('contribution','text'),
+Field('thesis_section','string'),
+Field('thesis_context_statement','text'),
+Field('thesis_publication_status','string')
     )
 #### many approval_to_share TO one paper
 db.define_table(
-    'approval',
-    Field('bibliometric_id',db.bibliometric),
+    'authorship_approval',
+    Field('publication_id',db.publication),
 Field('name','string'),
 Field('email','string'),
 Field('organisation', 'string'),
 Field('date_request_sent','date'),
 Field('date_approval_given','date'),
 Field('times_contacted','integer'),
-Field('notes','text')
+Field('notes','text'),
+Field('extra_details', 'text')
     )
 db.define_table(
     'crosswalk',
