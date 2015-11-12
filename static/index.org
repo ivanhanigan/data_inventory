@@ -25,6 +25,10 @@
     
 
 
+** TODO add for codes
+- 040107 - Meteorology
+- 111706 Epidemiology
+
 * COMMENT Init
 ** COMMENT torun-code
 #+name:torun
@@ -2689,8 +2693,8 @@ response.include_files()
   dir()
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
-  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
-  knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  #knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
   
   #browseURL("data_deposit_form.html")
   # browseURL("EML_metadata_fields.html")
@@ -2699,7 +2703,7 @@ response.include_files()
 #+end_src
 
 #+RESULTS: go
-: EML_metadata_short.html
+: EML_metadata_fields.html
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -2984,7 +2988,12 @@ response.include_files()
   output: html_document
   ---
   
+  
+
   # Introduction
+
+  Date metadata document produced: `r Sys.Date()`.
+
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
@@ -2992,18 +3001,18 @@ response.include_files()
   library(sqldf)
   library(knitr)
   library(xtable)  
-  
-  #ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  #prj <- "Climatic and Agricultural Drought"
-  #dset <- "DROUGHT-BOM-GRIDS"
+
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  prj <- "Climate Change CSIRO ACCESS"
+  dset <- "CSIRO ACCESS NSW past and future 2100"
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
   #dset <- "noise_model_preliminary_results"
 
-  ch  <- connect2postgres2("data_inventory_air_pollution")
-  prj <- "Walkability"
-  dset <- "walkability_mayne"
+  #ch  <- connect2postgres2("data_inventory_air_pollution")
+  #prj <- "Walkability"
+  #dset <- "walkability_mayne"
 
 
   show_exemplar <- TRUE
@@ -3329,6 +3338,7 @@ response.include_files()
   output: html_document
   ---
   
+  Date metadata document produced: `r Sys.Date()`.
 
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
@@ -3338,17 +3348,17 @@ response.include_files()
   library(knitr)
   library(xtable)  
   
-  #ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  #prj <- "Climatic and Agricultural Drought"
-  #dset <- "DROUGHT-BOM-GRIDS"
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  prj <- "Climate Change CSIRO ACCESS"
+  dset <- "CSIRO ACCESS NSW past and future 2100"
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
   #dset <- "noise_model_preliminary_results"
 
-  ch  <- connect2postgres2("data_inventory_air_pollution")
-  prj <- "Noise_exposure_and_health"
-  dset <- "Noise_exposure_and_health"
+  #ch  <- connect2postgres2("data_inventory_air_pollution")
+  #prj <- "Neighbourhood_Exposures_for_Cohort_Studies"
+  #dset <- "Neighbourhood_exposures"
 
 
   show_exemplar <- T
@@ -3552,7 +3562,7 @@ response.include_files()
   'distribution_methods',
   'keywords',
   'licence_code',
-  'licence_text',
+  'licence_text','path_to_licence',
   'data_owner',
   'data_owner_contact',
   'special_conditions'
@@ -3569,7 +3579,8 @@ response.include_files()
 #+end_src
 
 *** files entities overview
-#+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
+EML_metadata_short.Rmd
+#+begin_src R :session *R* :tangle no :exports none :eval no :padline no
   
   # File / Entity level information 
   
