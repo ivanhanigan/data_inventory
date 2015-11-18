@@ -365,15 +365,24 @@ db.error.logged_by.requires = IS_NOT_EMPTY()
 db.error.date_logged.requires = IS_NOT_EMPTY()
 #### ONE (biblio) TO one (entity)
 db.define_table(
-    'publication',
-    Field('dataset_id',db.dataset),
+'publication',
+Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
+Field('key_results', 'text', comment = 'Include both effect estimates and uncertainty'),
+Field('background_to_study', 'string', comment = ''),
+Field('research_question', 'string', comment = ''),
+Field('study_extent', 'string', comment = ''),
+Field('outcomes','string', comment = ''),
+Field('exposures','string', comment = ''),
+Field('covariates','string', comment = 'Include covariates, effect modifiers, confounders and subgroups'),
+Field('method_protocol', 'text', comment = ''),
+Field('general_comments', 'text', comment = ''),
 Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
 Field('title','string'),
-Field('citation', 'string'),
 Field('year_published','integer'),
 Field('impact_factor','double'),
 Field('date_impact_factor_checked','date'),
@@ -385,7 +394,7 @@ Field('contribution','text'),
 Field('thesis_section','string'),
 Field('thesis_context_statement','text'),
 Field('thesis_publication_status','string')
-    )
+)
 #### many approval_to_share TO one paper
 db.define_table(
     'authorship_approval',
