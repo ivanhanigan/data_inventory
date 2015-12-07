@@ -1421,7 +1421,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.publication.google_scholar_cites, db.publication.impact_factor,
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
-                                         orderby = dict(project=db.project.title, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                                         orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200, csv=False, paginate=35)
       return dict(grid=grid)
 #+end_src  
