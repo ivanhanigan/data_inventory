@@ -517,7 +517,7 @@ TODO
 TODO
 **** COMMENT TODO contact
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
+      Field('contact','string', comment = 'A contact name for general enquiries.  This field defaults to creator.'),
       Field('contact_email','string', comment = 'An email address for general enquiries.'),
 #+end_src
 *** dataset abstract
@@ -673,7 +673,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
       )
   
   db.dataset.contact_email.requires = [IS_EMAIL()]
-  
+  db.dataset.creator.requires = [IS_NOT_EMPTY()]
       
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
      

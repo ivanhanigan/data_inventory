@@ -139,7 +139,7 @@ Field('title','string', comment = XML(T('Structure eg: project, data type, locat
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
 ),
 Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-Field('contact','string', comment = 'A contact name for general enquiries.  This field is COMPULSORY.'),
+Field('contact','string', comment = 'A contact name for general enquiries.  This field defaults to creator.'),
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
 Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
@@ -177,7 +177,7 @@ format = '%(shortname)s'
     )
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
-
+db.dataset.creator.requires = [IS_NOT_EMPTY()]
     
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
