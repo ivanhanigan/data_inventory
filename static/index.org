@@ -679,6 +679,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
      
 #+end_src
 
+
 *** COMMENT old dataset
 #+begin_src markdown :tangle no :exports reports :eval no :padline no
   
@@ -1444,7 +1445,9 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
   
 #+end_src
 
-** Form to manage all datasets
+** Form to manage all dataset
+** test autoenter creator in contact FAIL
+*** manage datasets
 #+name:manage datasets
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
   
@@ -1470,6 +1473,48 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200, csv=False, paginate=50)
+      return dict(grid=grid)
+#+end_src
+
+
+*** COMMENT auto fill contact
+#+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
+
+def my_form_processing(grid):
+    if grid.vars.contact == "":
+       grid.vars.contact = 'a test'
+
+#+end_src
+*** manage datasets test
+#+name:manage datasets
+#+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
+  
+  def manage_datasets():
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
+                                                        ],
+                               fields = [
+                                         db.dataset.shortname,
+                                         db.dataset.id,
+                              
+                                         db.dataset.additional_metadata,                                          
+                                         db.dataset.contact_email,
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                         db.attr.variable_name, db.attr.variable_definition,
+                                         db.accessrequest.accessdataset_id, 
+                                         db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.keyword.keyword,
+                                         db.intellectualright.licence_code,
+                                         db.publication.bibtex_key, db.publication.title,  
+                                         db.publication.google_scholar_cites, db.publication.impact_factor,
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
+      if grid.process(onvalidation=my_form_processing).accepted:
+          session.flash = 'record inserted'
+          redirect(URL())
+
       return dict(grid=grid)
 #+end_src
 
