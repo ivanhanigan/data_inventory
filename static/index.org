@@ -1571,6 +1571,10 @@ SELECT t1.*, t2.title
 
 ** finesse the interface
 - the following makes a home page
+- TODO note that the org chunk is messed up this means it won't tangle. 
+- also it implements a pre-approval process that may be overkill for general users
+
+
 - also go to static/css/web2py.css and change line 33/34 text width to about 800px
 - removed from just above instructions and replaced with if auth is logged after instructions.
   {{if 'message' in globals():}}
