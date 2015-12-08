@@ -11,8 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
-    ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = True)
+    ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_dbname", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')

@@ -256,8 +256,8 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
-      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
-      ##db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = True)
+      ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_dbname", fake_migrate_all = False)
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -1581,7 +1581,7 @@ SELECT t1.*, t2.title
   {{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
        _style='margin-top: 1em;')}}
   {{end}}
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
+# +begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/views/default/index.html :exports reports :eval no :padline
   {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
   
@@ -3703,21 +3703,3 @@ EML_metadata_short.Rmd
   
 #+end_src
 
-* deploy to gislibrary
-scp -i ~/tools/macpro_ssh/.ssh/id_rsa ivan@gislibrary.anu.edu.au:/var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py ~/Desktop/
-use ediff buffers then reload
-
-
-# TODO  this did not work for some unkown reason.  give up and do mods manually
-
-scp -i ~/tools/macpro_ssh/.ssh/id_rsa  db.py ivan@gislibrary.anu.edu.au:/home/ivan 
-
-log in and move it to the spot as sudo 
- ssh -i ~/tools/macpro_ssh/.ssh/id_rsa ivan@gislibrary.anu.edu.au
-[ivan@gislibrary ~]$ sudo su
-mv /var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py db_py_backup_20151018.txt
-[root@gislibrary ivan]# 
-mv db.py /var/www/html/web2py/applications/data_inventory_air_pollution/models/
-chown w2p_user /var/www/html/web2py/applications/data_inventory_air_pollution/models/db.py
-
-# rm ~/Desktop/db.py
