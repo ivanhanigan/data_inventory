@@ -734,16 +734,6 @@ db.define_table(
       Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
 #+end_src
 
-*** TODO temporal cov
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('entity_temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
-#+end_src
-
-*** eml/dataset/entity methods
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
-#+end_src
-
 *** eml/dataset/entity/physical/distribution
 - The PhysicalDistribution contains the information required for retrieving the resource.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution][EML online]]
@@ -757,6 +747,16 @@ comment= XML(T('Information required for retrieving the resource. %s',
 comment= XML(T('Additional Information about the storage of the resource, including backup regime. %s',    
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
       ),
+#+end_src
+
+*** TODO temporal cov
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entity_temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+#+end_src
+
+*** eml/dataset/entity methods
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 #+end_src
 *** COMMENT eml/dataset/entity num recs
 
@@ -1411,7 +1411,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 
                                          db.dataset.additional_metadata,                                          
                                          db.dataset.contact_email,
-                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution, 
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
@@ -1446,7 +1446,6 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 #+end_src
 
 ** Form to manage all dataset
-** test autoenter creator in contact FAIL
 *** manage datasets
 #+name:manage datasets
 #+begin_src R :session *R* :tangle ~/tools/web2py/applications/data_inventory/controllers/forms.py :exports reports :eval no :padline no
@@ -1476,6 +1475,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
       return dict(grid=grid)
 #+end_src
 
+
+** test autoenter creator in contact FAIL
 
 *** COMMENT auto fill contact
 #+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
