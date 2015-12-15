@@ -438,6 +438,14 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
+*** COMMENT relatedProject 
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('related_project','text', 
+      comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      ),
+#+end_src
+
 *** COMMENT end
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(title)s' 
