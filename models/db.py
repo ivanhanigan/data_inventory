@@ -123,6 +123,10 @@ Field('project_citation','text',
 comment= XML(T('Citations relevant to the design of the overarching project. %s', 
 A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
 ),
+Field('related_project','text', 
+comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
+A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+),
 format = '%(title)s' 
 )
   

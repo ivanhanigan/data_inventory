@@ -438,6 +438,13 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
+*** COMMENT relatedProject 
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('related_project','text', 
+      comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
+      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      ),
+#+end_src
 *** COMMENT end
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(title)s' 
@@ -2769,7 +2776,7 @@ response.include_files()
 #+end_src
 
 #+RESULTS: go
-: EML_metadata_fields.html
+: TRUE
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3706,3 +3713,134 @@ EML_metadata_short.Rmd
   
 #+end_src
 
+** data inventory report
+*** COMMENT go-code
+#+name:go
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  #### name:go ####
+  projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
+  setwd(projdir)
+  dir()
+  do_loops <- TRUE
+  rmarkdown::render("data_inventory.Rmd", "html_document")
+  dbDisconnect(ch)
+  #  browseURL("data_inventory.html")
+  
+#+end_src
+
+#+RESULTS: go
+: TRUE
+
+*** COMMENT RMD
+#+begin_src R :session *R* :tangle data_inventory.Rmd :exports none :eval no
+  ---
+  title: "Project and data inventory"
+  author: Ivan Hanigan
+  output:
+    html_document:
+       toc: true
+  ---
+  
+   
+  # Introduction
+  
+  - Updated: `r Sys.Date()`
+      
+  
+  # Data Inventory of Potential Data Sources  
+  
+  ```{r, echo = F, results = 'hide', warning=FALSE, message=FALSE }  
+  library(swishdbtools)
+  library(sqldf)
+  library(knitr)
+  library(xtable)  
+  ```
+  
+  ```{r, echo = F, results = 'asis'}
+  if(do_loops){
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  projects <- dbGetQuery(ch, "select title, project_abstract, personnel_data_owner
+  from project
+  order by title")
+  #print(projects$title)
+  for(i in 1:nrow(projects)){
+  #i = 14
+  prj <- projects[i,1]
+  txt <- sprintf('# %s\n\n', prj)
+  
+  ## txt <- paste(txt,
+  ##              sprintf("- Abstract: %s\n- Data Owner: %s\n",
+  ##                      projects[i,2],
+  ##                      projects[i,3]
+  ##                      ),
+  ##              sep = "")
+  cat(txt)
+    qc <- as.data.frame(t(projects[i,c("title", "personnel_data_owner", "project_abstract")]))
+    names(qc) <- c("metadata_field")
+    qc[,1] <- gsub("\n", " | ", qc[,1])
+    print(xtable(qc), include.rownames = T, type = "html")
+    cat("\n\n")
+    
+  
+  datasets <- dbGetQuery(ch,
+  sprintf("select t1.*
+  from dataset t1
+  join project t2
+  on t1.project_id = t2.id
+  where t2.title = '%s'", gsub("'", "\\'", prj))
+                         )
+  #str(datasets)
+  if(
+  nrow(datasets)==0
+  ) next
+  for(j in 1:nrow(datasets)){
+  #j = 1
+    dset <- datasets$shortname[j]
+  #print(dset)
+  txt <- sprintf('\n## %s\n\n', dset)
+    
+   
+  ## txt <- paste(txt,
+  ##              sprintf("- Dataset Abstract: %s\n- Creator: %s\n- Contact: %s\n\n",
+  ##                      datasets[j,"abstract"],
+  ##                      datasets[j,"creator"],
+  ##                      datasets[j,"contact"]                     
+  ##                      )
+  ##              , sep = "")
+  cat(txt)
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact", "abstract", "additional_metadata", "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", "access_rules")]))
+    names(qc) <- c("metadata_field")
+    qc[,1] <- gsub("\n", " | ", qc[,1])
+    print(xtable(qc), include.rownames = T, type = "html")
+    cat("\n\n")    
+  
+    #entities <- dbGetQuery(ch,
+    #sprintf("select t1.entityname, entitydescription, physical_distribution
+    #from entity t1
+    #join dataset t2
+    #on t1.dataset_id = t2.id
+    #where t2.shortname = '%s'", dset)
+    #                       )
+    # str(entities)
+  
+    #cat("\n### Files and Folders\n\n")
+    #print(xtable(entities), type = "html", include.rownames = F)
+  
+  ## for(k in 1:nrow(entities)){
+  ##   #k = 1
+  ##   ent <- entities[k,"entityname"]
+  ##   txt <- sprintf('\n### %s\n\n', ent)
+  ##   cat(txt)
+  ##   qc <- as.data.frame(t(entities[k,-c(1:2)]))
+  ##   names(qc) <- NULL
+  ##   qc[,1] <- gsub("\n", " | ", qc[,1])
+  ##   print(xtable(qc), include.rownames = T, type = "html")
+  ##   cat("\n\n")  
+  ## }
+  
+  }
+  }
+  } 
+  ```
+  
+#+end_src
