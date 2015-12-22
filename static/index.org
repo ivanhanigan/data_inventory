@@ -502,7 +502,7 @@ TODO
 **** COMMENT TODO shortname
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)),  _target='new')))
       ),
 #+end_src
 *** dataset title
@@ -1430,7 +1430,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                               user_signature=True,maxtextlength =200, csv=False, paginate=35)
+                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
       return dict(grid=grid)
 #+end_src  
 ** COMMENT deprecated manageproj-code
@@ -2766,8 +2766,8 @@ response.include_files()
   dir()
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
-  knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
-  #knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
   
   #browseURL("data_deposit_form.html")
   # browseURL("EML_metadata_fields.html")
@@ -3076,8 +3076,8 @@ response.include_files()
   library(xtable)  
 
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  prj <- "Climate Change CSIRO ACCESS"
-  dset <- "CSIRO ACCESS NSW past and future 2100"
+  prj <- "Air_Pollution_Monitoring_Stations_WA"
+  dset <- "AP_WA_19942012"
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
@@ -3088,7 +3088,7 @@ response.include_files()
   #dset <- "walkability_mayne"
 
 
-  show_exemplar <- TRUE
+  show_exemplar <- T
   ```
   
 #+end_src
@@ -3334,8 +3334,8 @@ response.include_files()
   #help_ent
   
   
-  #for(j in 1:nrow(dat_ent)){
-  j = 1
+  for(j in 1:nrow(dat_ent)){
+  #j = 1
   print(paste("#### File", j))
   ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
   ent_j$order <- 1:nrow(ent_j)
@@ -3357,7 +3357,7 @@ response.include_files()
   print(xtable(qc_ent2[,-2]), type = "html", include.rownames = F)
   }
   #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
-  #}
+  }
   
   
     
@@ -3367,7 +3367,7 @@ response.include_files()
 *** attributes
 #+begin_src R :session *R* :tangle EML_metadata_fields.Rmd :exports none :eval no :padline no
   
-  # Variables attributes
+  <!--# Variables attributes-->
   ```{r, echo = F, eval = T, results="asis"}
   dat <- sqldf(connection = ch,
     sprintf("select t1.* 
@@ -3412,7 +3412,7 @@ response.include_files()
   ---
   
   Date metadata document produced: `r Sys.Date()`.
-
+  
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
@@ -3421,19 +3421,22 @@ response.include_files()
   library(knitr)
   library(xtable)  
   
-  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  prj <- "Climate Change CSIRO ACCESS"
-  dset <- "CSIRO ACCESS NSW past and future 2100"
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")  
+  prj <- "Air pollution modelling: LUR_Western_Sydney"
+  dset <- "LUR_Western_Sydney_passive_samplers"  
+
+  #prj <- "Air_Pollution_Monitoring_Stations_WA"
+  #dset <- "AP_WA_19942012"
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
   #dset <- "noise_model_preliminary_results"
-
+  
   #ch  <- connect2postgres2("data_inventory_air_pollution")
   #prj <- "Neighbourhood_Exposures_for_Cohort_Studies"
   #dset <- "Neighbourhood_exposures"
-
-
+  
+  
   show_exemplar <- T
   ```
   
@@ -3441,7 +3444,7 @@ response.include_files()
 *** dataset overview
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   
-
+  
   ```{r, echo = F, eval = T, results="asis"}
   
   #### for each dataset
@@ -3468,7 +3471,7 @@ response.include_files()
     methods_protocol,
     sampling_desc,
     method_steps,
-
+  
     taxonomic_coverage,
     additionalinfo,
     alternateidentifier,
@@ -3635,7 +3638,7 @@ response.include_files()
   'distribution_methods',
   'keywords',
   'licence_code',
-  'licence_text','path_to_licence',
+  'licence_text','path_to_licence','licencee',
   'data_owner',
   'data_owner_contact',
   'special_conditions'
@@ -3653,7 +3656,7 @@ response.include_files()
 
 *** files entities overview
 EML_metadata_short.Rmd
-#+begin_src R :session *R* :tangle no :exports none :eval no :padline no
+#+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   
   # File / Entity level information 
   
@@ -3682,8 +3685,8 @@ EML_metadata_short.Rmd
   #help_ent
   
   
-  #for(j in 1:nrow(dat_ent)){
-  j = 1
+  for(j in 1:nrow(dat_ent)){
+  #j = 1
   print(paste("#### File", j))
   ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
   ent_j$order <- 1:nrow(ent_j)
@@ -3705,7 +3708,7 @@ EML_metadata_short.Rmd
   print(xtable(qc_ent2[-c(1,2),-2]), type = "html", include.rownames = F)
   }
   #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
-  #}
+  }
   
   
     
@@ -3787,7 +3790,7 @@ EML_metadata_short.Rmd
   from dataset t1
   join project t2
   on t1.project_id = t2.id
-  where t2.title = '%s'", gsub("'", "\\'", prj))
+  where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
                          )
   #str(datasets)
   if(
@@ -3842,5 +3845,109 @@ EML_metadata_short.Rmd
   }
   } 
   ```
+  
+#+end_src
+** identify-aquire-post-update-review procedures
+- doco for identified data are in a sep database so not to mess up clean inventory
+- once data aquisitioon has started transfer to the main data inventory
+*** COMMENT proj
+#+name:proj
+#+begin_src R :session *R* :tangle proj.R :exports none :eval no
+  #### name:proj ####
+  library(swishdbtools)
+  if(exists('ch_in'))   dbDisconnect(ch_in)
+  if(exists('ch_out'))   dbDisconnect(ch_out)
+  
+  remove_from_source  <- FALSE
+  #ch_in  <- connect2postgres2("data_inventory_noise")
+  #ch_in  <- connect2postgres2("data_inventory_air_pollution")
+  ch_in  <- connect2postgres2("data_inventory_hanigan_dev4")
+  # ch_out  <- connect2postgres2("data_inventory_hanigan_dev4")
+  ch_out  <- connect2postgres2("data_inventory_air_pollution")
+  
+  prj <- "Air pollution modelling: LUR_Western_Sydney"
+  dat <- dbGetQuery(ch_in,
+    sprintf("select *
+    from project t1
+    where t1.title = '%s'", prj)
+    )
+  dat
+  # check if proj title alread exists (a new id will be assigned)
+  qc <- dbGetQuery(ch_out,
+        sprintf("select * from project where title = '%s'", dat$title)
+        )
+  qc
+  
+  #### GO 
+  if(
+    nrow(qc) == 0
+    ){
+  dbWriteTable(ch_out, "foo", dat, row.names = F)
+  
+  # create inserts
+  namlist  <- paste(names(dat)[-1], sep = '', collapse = ", ")        
+  sql <- sprintf("insert into project (%s) select %s from foo",
+  namlist, namlist)  
+  cat(sql)
+  dbSendQuery(ch_out, sql)
+  dbRemoveTable(ch_out, "foo")
+  
+  datasets <- dbGetQuery(ch_in,
+    sprintf("select t1.*
+    from dataset t1
+    join project t2
+    on t1.project_id = t2.id
+    where t2.title = '%s'", gsub("'", "\\'", prj))
+                           )
+  datasets[,"shortname"]
+  dbWriteTable(ch_out, "foo", datasets, row.names = F)
+  # create inserts
+  newid <- dbGetQuery(ch_out, sprintf("select id from project where title = '%s'", dat$title))
+  namlist  <- paste(names(datasets)[-c(1)], sep = '', collapse = ", ")
+  namlist2  <- paste(names(datasets)[-c(1:2)], sep = '', collapse = ", ")
+  sql <- sprintf("insert into dataset (%s) select '%s', %s from foo",
+  namlist, newid, namlist2)  
+  cat(sql)
+  dbSendQuery(ch_out, sql)
+  dbRemoveTable(ch_out, "foo")
+  
+  #### Stopped halfway as need to loop over datasets
+  ## entities <- dbGetQuery(ch_in,
+  ## #                       cat(
+  ## sprintf("select t3.*
+  ##   from entity t3 join
+  ##   (select t1.*
+  ##   from dataset t1
+  ##   join project t2
+  ##   on t1.project_id = t2.id
+  ##   where t2.title = '%s') foo
+  ##   on t3.dataset_id = foo.id", gsub("'", "\\'", prj))
+  ##                          )
+  ## entities
+  ## dbWriteTable(ch_out, "foo", datasets, row.names = F)
+  ## # create inserts
+  ## newid <- dbGetQuery(ch_out, sprintf("select id from project where title = '%s'", dat$title))
+  ## newid
+  ## namlist  <- paste(names(datasets)[-c(1)], sep = '', collapse = ", ")
+  ## namlist2  <- paste(names(datasets)[-c(1:2)], sep = '', collapse = ", ")
+  ## sql <- sprintf("insert into dataset (%s) select '%s', %s from foo",
+  ## namlist, newid, namlist2)  
+  ## cat(sql)
+  ## dbSendQuery(ch_out, sql)
+  ## dbRemoveTable(ch_out, "foo")
+  
+  
+  
+  
+  
+  
+  if(remove_from_source){
+  dbSendQuery(ch_in, sprintf("delete from project where title = '%s'", dat$title))
+  }
+  
+  } else {
+    print("that title already exists")
+  }
+  
   
 #+end_src
