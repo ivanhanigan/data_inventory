@@ -1,6 +1,8 @@
 
 #### Data Inventory
 
+CC.BY
+
 1. A web2py app to help manage research data
 1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
 1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
