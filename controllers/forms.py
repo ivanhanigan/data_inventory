@@ -38,20 +38,20 @@ def access_dataset():
     records = SQLTABLE(db(accessing).select(),headers='fieldname:capitalize')
     return dict(form=form, records=records)
 def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
+    grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                       ],
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
-                                       db.dataset.id,
+
 
                                        db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
+
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution, 
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.keyword.keyword,
+
                                        db.intellectualright.licence_code,
                                        db.publication.bibtex_key, db.publication.title,  
                                        db.publication.google_scholar_cites, db.publication.impact_factor,
