@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2015-10-22T09:57+1100"/>
+<meta name="generated" content="2016-01-11T15:11+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -147,6 +147,7 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#sec-3-1">3.1 set up web2py</a></li>
 <li><a href="#sec-3-2">3.2 the web2py database example</a></li>
+<li><a href="#sec-3-3">3.3 installer</a></li>
 </ul>
 </li>
 <li><a href="#sec-4">4 Design the database</a>
@@ -208,38 +209,18 @@ for the JavaScript code in this tag.
 <li><a href="#sec-6-2">6.2 Top Menu</a></li>
 <li><a href="#sec-6-3">6.3 Access a dataset</a></li>
 <li><a href="#sec-6-4">6.4 Main form ties it all together (manage projects)</a></li>
-<li><a href="#sec-6-5">6.5 Form to manage all datasets</a></li>
-<li><a href="#sec-6-6">6.6 Form to manage all publications</a></li>
-<li><a href="#sec-6-7">6.7 Form to manage accessors or groups</a></li>
-<li><a href="#sec-6-8">6.8 finesse the interface</a></li>
+<li><a href="#sec-6-5">6.5 Form to manage all dataset</a></li>
+<li><a href="#sec-6-6">6.6 test autoenter creator in contact FAIL</a>
+<ul>
+<li><a href="#sec-6-6-1">6.6.1 manage datasets</a></li>
+<li><a href="#sec-6-6-2">6.6.2 manage datasets test</a></li>
 </ul>
 </li>
-<li><a href="#sec-7">7 backups</a></li>
-<li><a href="#sec-8">8 ETL</a>
-<ul>
-<li><a href="#sec-8-1">8.1 summary of data for ETL</a></li>
-<li><a href="#sec-8-2">8.2 load transformed</a></li>
-<li><a href="#sec-8-3">8.3 summary of EML fields for projects/datasets</a>
-<ul>
-<li><a href="#sec-8-3-1">8.3.1 head</a></li>
-<li><a href="#sec-8-3-2">8.3.2 dataset overview</a></li>
-<li><a href="#sec-8-3-3">8.3.3 umbrella project</a></li>
-<li><a href="#sec-8-3-4">8.3.4 dataset overview</a></li>
-<li><a href="#sec-8-3-5">8.3.5 files entities overview</a></li>
-<li><a href="#sec-8-3-6">8.3.6 attributes</a></li>
+<li><a href="#sec-6-7">6.7 Form to manage all publications</a></li>
+<li><a href="#sec-6-8">6.8 Form to manage accessors or groups</a></li>
+<li><a href="#sec-6-9">6.9 finesse the interface</a></li>
 </ul>
 </li>
-<li><a href="#sec-8-4">8.4 short summary of EML fields for projects/datasets homepage</a>
-<ul>
-<li><a href="#sec-8-4-1">8.4.1 head</a></li>
-<li><a href="#sec-8-4-2">8.4.2 dataset overview</a></li>
-<li><a href="#sec-8-4-3">8.4.3 umbrella project</a></li>
-<li><a href="#sec-8-4-4">8.4.4 dataset overview</a></li>
-<li><a href="#sec-8-4-5">8.4.5 files entities overview</a></li>
-</ul></li>
-</ul>
-</li>
-<li><a href="#sec-9">9 deploy to gislibrary</a></li>
 </ul>
 </div>
 </div>
@@ -303,7 +284,7 @@ for the JavaScript code in this tag.
         &lt;intellectualright&gt;
         &lt;methods&gt; 
         &lt;coverage&gt;
-        &lt;dataTableerrors&gt;
+        &lt;dataTable&gt;
             &lt;entityName&gt;
             &lt;entityDescription&gt;                
             &lt;physical&gt;
@@ -501,6 +482,16 @@ For more information about the EML dataTable type (especially its attributes) se
 <li>Our implementation also utilises the PostgreSQL database which should be installed separately
 </li>
 </ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> installer</h3>
+<div class="outline-text-3" id="text-3-3">
+
+
 
 </div>
 </div>
@@ -726,6 +717,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML online</a>
 </li>
 </ul>
+
+
 
 
 
@@ -1361,26 +1354,26 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 <pre class="src src-R">def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
+    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
                                                       ],
                              fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
                                        db.dataset.shortname,
-                                       db.dataset.id,
+
 
                                        db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
+
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
-                                       db.keyword.keyword,
+
                                        db.intellectualright.licence_code,
                                        db.publication.bibtex_key, db.publication.title,  
                                        db.publication.google_scholar_cites, db.publication.impact_factor,
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
-                                       orderby = dict(project=db.project.title, dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                                       orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
                              user_signature=True,maxtextlength =200, csv=False, paginate=35)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
 </pre>
@@ -1392,8 +1385,23 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </div>
 
 <div id="outline-container-6-5" class="outline-3">
-<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Form to manage all datasets</h3>
+<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Form to manage all dataset</h3>
 <div class="outline-text-3" id="text-6-5">
+
+</div>
+
+</div>
+
+<div id="outline-container-6-6" class="outline-3">
+<h3 id="sec-6-6"><span class="section-number-3">6.6</span> test autoenter creator in contact FAIL</h3>
+<div class="outline-text-3" id="text-6-6">
+
+
+</div>
+
+<div id="outline-container-6-6-1" class="outline-4">
+<h4 id="sec-6-6-1"><span class="section-number-4">6.6.1</span> manage datasets</h4>
+<div class="outline-text-4" id="text-6-6-1">
 
 
 
@@ -1424,13 +1432,57 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </pre>
 
 
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6-6-2" class="outline-4">
+<h4 id="sec-6-6-2"><span class="section-number-4">6.6.2</span> manage datasets test</h4>
+<div class="outline-text-4" id="text-6-6-2">
+
+
+
+
+<pre class="src src-R">def manage_datasets():
+    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
+                                                      ],
+                             fields = [
+                                       db.dataset.shortname,
+                                       db.dataset.id,
+                            
+                                       db.dataset.additional_metadata,                                          
+                                       db.dataset.contact_email,
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                       db.attr.variable_name, db.attr.variable_definition,
+                                       db.accessrequest.accessdataset_id, 
+                                       db.accessrequest.dataset_id,
+                                       db.accessrequest.title, 
+                                       db.keyword.keyword,
+                                       db.intellectualright.licence_code,
+                                       db.publication.bibtex_key, db.publication.title,  
+                                       db.publication.google_scholar_cites, db.publication.impact_factor,
+                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                       db.authorship_approval.date_approval_given],
+                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
+    <span style="color: #859900; font-weight: bold;">if</span> grid.process(onvalidation=my_form_processing).accepted:
+        session.flash = <span style="color: #2aa198;">'record inserted'</span>
+        redirect(URL())
+
+    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
+</pre>
+
+
+</div>
 </div>
 
 </div>
 
-<div id="outline-container-6-6" class="outline-3">
-<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Form to manage all publications</h3>
-<div class="outline-text-3" id="text-6-6">
+<div id="outline-container-6-7" class="outline-3">
+<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage all publications</h3>
+<div class="outline-text-3" id="text-6-7">
 
 
 
@@ -1454,25 +1506,34 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-7" class="outline-3">
-<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage accessors or groups</h3>
-<div class="outline-text-3" id="text-6-7">
-
-
-
-
-
-</div>
-
-</div>
-
 <div id="outline-container-6-8" class="outline-3">
-<h3 id="sec-6-8"><span class="section-number-3">6.8</span> finesse the interface</h3>
+<h3 id="sec-6-8"><span class="section-number-3">6.8</span> Form to manage accessors or groups</h3>
 <div class="outline-text-3" id="text-6-8">
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6-9" class="outline-3">
+<h3 id="sec-6-9"><span class="section-number-3">6.9</span> finesse the interface</h3>
+<div class="outline-text-3" id="text-6-9">
 
 <ul>
 <li>the following makes a home page
 </li>
+<li>TODO note that the org chunk is messed up this means it won't tangle. 
+</li>
+<li>also it implements a pre-approval process that may be overkill for general users
+</li>
+</ul>
+
+
+
+<ul>
 <li>also go to static/css/web2py.css and change line 33/34 text width to about 800px
 </li>
 <li>removed from just above instructions and replaced with if auth is logged after instructions.
@@ -1488,245 +1549,63 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </li>
 </ul>
 
-
-
-
-<pre class="src src-markdown">  {{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
+<p>  {{left<sub>sidebar</sub><sub>enabled</sub>,right<sub>sidebar</sub><sub>enabled</sub>=False,('message' in globals())}}
 {{extend 'layout.html'}}
-  
+</p>
 
+<p>
   &lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
   &lt;li&gt;{{=T('To use the data inventory please register in top right corner.')}}&lt;/li&gt;
-  {{if auth.is<span style="color: #268bd2; font-style: italic;">_logged_</span>in():}}
+  {{if auth.is<sub>logged</sub><sub>in</sub>():}}
 &lt;ol&gt;
     &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-             A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
+             A('%(application)s/forms/manage<sub>projects</sub>/'%request,
+           <sub>href</sub>=URL('forms','manage<sub>projects'</sub>))))}}&lt;/li&gt;
     &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
-           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_datasets/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">             _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
+           A('%(application)s/forms/manage<sub>datasets</sub>/'%request,
+             <sub>href</sub>=URL('forms','manage<sub>datasets'</sub>))))}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The technical documentation for this application is at %s',
              A('this link',
-           <span style="color: #268bd2; font-style: italic;">_href=URL('static','index.html'))))}}&lt;/li&gt;</span>
-<span style="color: #268bd2; font-style: italic;">    &lt;li&gt;{{=XML(T('The links to other apps is at %s',</span>
-<span style="color: #268bd2; font-style: italic;">           A('this link',</span>
-<span style="color: #268bd2; font-style: italic;">             _href=URL('audio','default','index'))))}}&lt;/li&gt;</span>
-<span style="color: #268bd2; font-style: italic;">&lt;/ol&gt;</span>
-<span style="color: #268bd2; font-style: italic;">  {{elif 'content' in globals():}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=content}}</span>
-<span style="color: #268bd2; font-style: italic;">  {{else:}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=BEAUTIFY(response._</span>vars)}}
+           <sub>href</sub>=URL('static','index.html'))))}}&lt;/li&gt;
+    &lt;li&gt;{{=XML(T('The links to other apps is at %s',
+           A('this link',
+             <sub>href</sub>=URL('audio','default','index'))))}}&lt;/li&gt;
+&lt;/ol&gt;
+  {{elif 'content' in globals():}}
+{{=content}}
+  {{else:}}
+{{=BEAUTIFY(response.<sub>vars</sub>)}}
   {{pass}}
-
-  {{block right_sidebar}}
-{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
-       _style='margin-top: 1em;')}}
+</p>
+<p>
+  {{block right<sub>sidebar</sub>}}
+{{<code>A(T("About this site"), _href=URL('static', 'index.html'), _class</code>'btn',
+       <sub>style</sub>='margin-top: 1em;')}}
 {{end}}
-  
-</pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-7" class="outline-2">
-<h2 id="sec-7"><span class="section-number-2">7</span> backups</h2>
-<div class="outline-text-2" id="text-7">
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8" class="outline-2">
-<h2 id="sec-8"><span class="section-number-2">8</span> ETL</h2>
-<div class="outline-text-2" id="text-8">
-
-
-
-
-</div>
-
-<div id="outline-container-8-1" class="outline-3">
-<h3 id="sec-8-1"><span class="section-number-3">8.1</span> summary of data for ETL</h3>
-<div class="outline-text-3" id="text-8-1">
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-2" class="outline-3">
-<h3 id="sec-8-2"><span class="section-number-3">8.2</span> load transformed</h3>
-<div class="outline-text-3" id="text-8-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3" class="outline-3">
-<h3 id="sec-8-3"><span class="section-number-3">8.3</span> summary of EML fields for projects/datasets</h3>
-<div class="outline-text-3" id="text-8-3">
-
-
-</div>
-
-<div id="outline-container-8-3-1" class="outline-4">
-<h4 id="sec-8-3-1"><span class="section-number-4">8.3.1</span> head</h4>
-<div class="outline-text-4" id="text-8-3-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-2" class="outline-4">
-<h4 id="sec-8-3-2"><span class="section-number-4">8.3.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-3-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-3" class="outline-4">
-<h4 id="sec-8-3-3"><span class="section-number-4">8.3.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-8-3-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-4" class="outline-4">
-<h4 id="sec-8-3-4"><span class="section-number-4">8.3.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-3-4">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-5" class="outline-4">
-<h4 id="sec-8-3-5"><span class="section-number-4">8.3.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-8-3-5">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-6" class="outline-4">
-<h4 id="sec-8-3-6"><span class="section-number-4">8.3.6</span> attributes</h4>
-<div class="outline-text-4" id="text-8-3-6">
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-8-4" class="outline-3">
-<h3 id="sec-8-4"><span class="section-number-3">8.4</span> short summary of EML fields for projects/datasets homepage</h3>
-<div class="outline-text-3" id="text-8-4">
-
-
-</div>
-
-<div id="outline-container-8-4-1" class="outline-4">
-<h4 id="sec-8-4-1"><span class="section-number-4">8.4.1</span> head</h4>
-<div class="outline-text-4" id="text-8-4-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-2" class="outline-4">
-<h4 id="sec-8-4-2"><span class="section-number-4">8.4.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-4-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-3" class="outline-4">
-<h4 id="sec-8-4-3"><span class="section-number-4">8.4.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-8-4-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-4" class="outline-4">
-<h4 id="sec-8-4-4"><span class="section-number-4">8.4.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-4-4">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-5" class="outline-4">
-<h4 id="sec-8-4-5"><span class="section-number-4">8.4.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-8-4-5">
-
-
-
-</div>
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-9" class="outline-2">
-<h2 id="sec-9"><span class="section-number-2">9</span> deploy to gislibrary</h2>
-<div class="outline-text-2" id="text-9">
-
-<p>scp -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub> ivan@gislibrary.anu.edu.au:/var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py ~/Desktop/
-use ediff buffers then reload
 </p>
 
+</div>
 
-<p>
-scp -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub>  db.py ivan@gislibrary.anu.edu.au:/home/ivan 
-</p>
-<p>
-log in and move it to the spot as sudo 
- ssh -i ~/tools/macpro<sub>ssh</sub>/.ssh/id<sub>rsa</sub> ivan@gislibrary.anu.edu.au
-[ivan@gislibrary ~]$ sudo su
-mv /var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py db<sub>py</sub><sub>backup</sub><sub>20151018</sub>.txt
-[root@gislibrary ivan]# 
-mv db.py <i>var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models</i>
-chown w2p<sub>user</sub> /var/www/html/web2py/applications/data<sub>inventory</sub><sub>air</sub><sub>pollution</sub>/models/db.py
-</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
 </div>
 </div>
 </div>

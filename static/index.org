@@ -116,7 +116,7 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <intellectualright>
             <methods> 
             <coverage>
-            <dataTableerrors>
+            <dataTable>
                 <entityName>
                 <entityDescription>                
                 <physical>
@@ -2786,7 +2786,7 @@ response.include_files()
 
 #+end_src
 
-* backups
+* COMMENT backups
 ** COMMENT backup-code
 #+name:backup
 #+begin_src R :session *R* :tangle no :exports none :eval yes
@@ -2825,7 +2825,7 @@ response.include_files()
 
 #+RESULTS: pgdump
 
-* ETL
+* COMMENT ETL
 ** COMMENT go-code
 #+name:go
 #+begin_src R :session *R* :tangle no :exports none :eval yes
