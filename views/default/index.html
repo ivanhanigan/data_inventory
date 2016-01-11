@@ -16,10 +16,7 @@
            _href=URL('forms','manage_datasets'))))}}</li>
   <li>{{=XML(T('The technical documentation for this application is at %s',
            A('this link',
-           _href=URL('static','index.html'))))}}</li>
-  <li>{{=XML(T('The links to other apps is at %s',
-           A('this link',
-           _href=URL('audio','default','index'))))}}</li>
+           _href=URL('static','index.html'), _target='new')))}}</li>
 </ol>
 {{elif 'content' in globals():}}
 {{=content}}
