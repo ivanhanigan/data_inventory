@@ -50,20 +50,33 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 ** COMMENT README.md-code
 #+name:README.md
 #+begin_src R :session *R* :tangle ../README.md :exports none :eval no
-#### Data Inventory
-
-1. A web2py app to help manage research data
-1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
-1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
-1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
-
-To use:
-
-1. Download web2py http://www.web2py.com/init/default/download 
-1. Put all the files into your web2py/applications as 'data_inventory'
-1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
-1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
-
+  #### Data Inventory
+  
+  Licence: CC-BY
+  
+  ## About
+  
+  1. A web2py app to help manage research data
+  1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
+  1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
+  1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
+  
+  ## To install:
+  
+  ```{r}
+  setwd("~")
+  download("https://github.com/ivanhanigan/data_inventory/blob/master/static/install.R", 
+           "install.R", mode = "wb")
+  source("install.R")
+  ```
+  
+  ### or alternatively
+  
+  1. Download web2py http://www.web2py.com/init/default/download 
+  1. Put all the files into your web2py/applications as 'data_inventory'
+  1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
+  1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
+  
 #+end_src
 * Introduction
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
@@ -218,9 +231,37 @@ This is where Morpho and other EML tools come into their own.  Our
 #+begin_src R :session *R* :tangle install.R :exports none :eval no
 #### name:install ####
 # download web2py
+LinuxOperatingSystem <- function(){
+    if(length(grep('linux',sessionInfo()[[1]]$os)) == 1)
+    {
+      #print('Linux')
+      os <- 'linux' 
+      OsLinux <- TRUE
+    }else if (length(grep('ming',sessionInfo()[[1]]$os)) == 1)
+    {
+      #print('Windows')
+      os <- 'windows'
+      OsLinux <- FALSE
+    }else
+    {
+      # don't know, do more tests
+      print('Non linux or windows os detected. Assume linux-alike.')
+      os <- 'linux?'
+      OsLinux <- TRUE
+    }
+   
+    return (OsLinux)
+  }
+if(LinuxOperatingSystem){
 download.file("http://web2py.com/examples/static/web2py_src.zip", 
               destfile = "~/web2py_src.zip", mode = "wb")
 unzip("~/web2py_src.zip")
+} else {
+download.file("http://web2py.com/examples/static/web2py_win.zip", 
+              destfile = "~/web2py_win.zip", mode = "wb")
+unzip("~/web2py_win.zip")
+}
+
 setwd("~/web2py/applications/")
 if(!require(downloader)) install.packages("downloader"); require(downloader)
 download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
