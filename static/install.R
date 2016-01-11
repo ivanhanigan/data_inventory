@@ -33,7 +33,7 @@ unzip("~/web2py_win.zip")
 }
 
 setwd("~/web2py/applications/")
-download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
+downloader::download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
          "temp.zip", mode = "wb")
 unzip("temp.zip")
 file.rename("data_inventory-master", "data_inventory")
