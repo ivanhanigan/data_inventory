@@ -212,6 +212,29 @@ This is where Morpho and other EML tools come into their own.  Our
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
+** installer
+*** COMMENT install
+#+name:install
+#+begin_src R :session *R* :tangle install.R :exports none :eval no
+#### name:install ####
+# download web2py
+download.file("http://web2py.com/examples/static/web2py_src.zip", 
+              destfile = "~/web2py_src.zip", mode = "wb")
+unzip("~/web2py_src.zip")
+setwd("~/web2py/applications/")
+if(!require(downloader)) install.packages("downloader"); require(downloader)
+download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
+         "temp.zip", mode = "wb")
+dir()
+unzip("temp.zip")
+file.rename("data_inventory-master", "data_inventory")
+setwd("~/web2py/")
+#dir()
+system("python ~/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181")
+#not working go todir and dbl clik then enter pwrd then browse 
+browseURL("http://127.0.0.1:8181/data_inventory")
+#+end_src
+
 * Design the database 
 ** Create a new database
 - create a new postgres database using the following  code
