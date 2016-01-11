@@ -270,13 +270,13 @@ This is where Morpho and other EML tools come into their own.  Our
   file.rename("data_inventory-master", "data_inventory")
   setwd("~/web2py/")
   #dir()
-  browseURL("http://127.0.0.1:8181/data_inventory")  
+
   if(LinuxOperatingSystem()){
-    system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181")
+    system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   } else {
-    system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181")
+    system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   }
-  
+  browseURL("http://127.0.0.1:8181/data_inventory")    
 
 #+end_src
 
