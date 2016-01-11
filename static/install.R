@@ -22,7 +22,7 @@ LinuxOperatingSystem <- function(){
    
     return (OsLinux)
   }
-if(LinuxOperatingSystem){
+if(LinuxOperatingSystem()){
 download.file("http://web2py.com/examples/static/web2py_src.zip", 
               destfile = "~/web2py_src.zip", mode = "wb")
 unzip("~/web2py_src.zip")
@@ -39,11 +39,9 @@ unzip("temp.zip")
 file.rename("data_inventory-master", "data_inventory")
 setwd("~/web2py/")
 #dir()
-
-if(LinuxOperatingSystem){
+browseURL("http://127.0.0.1:8181/data_inventory")  
+if(LinuxOperatingSystem()){
   system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181")
 } else {
   system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181")
 }
-
-browseURL("http://127.0.0.1:8181/data_inventory")
