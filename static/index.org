@@ -1680,9 +1680,6 @@ SELECT t1.*, t2.title
   <li>{{=XML(T('The technical documentation for this application is at %s',
              A('this link',
            _href=URL('static','index.html'))))}}</li>
-    <li>{{=XML(T('The links to other apps is at %s',
-           A('this link',
-             _href=URL('audio','default','index'))))}}</li>
 </ol>
   {{elif 'content' in globals():}}
 {{=content}}
