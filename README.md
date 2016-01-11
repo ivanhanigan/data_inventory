@@ -14,6 +14,7 @@ Licence: CC-BY
 
 ```{r}
 setwd("~")
+if(!require(downloader)) install.packages("downloader"); require(downloader)
 download("https://github.com/ivanhanigan/data_inventory/blob/master/static/install.R", 
          "install.R", mode = "wb")
 source("install.R")

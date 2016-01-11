@@ -33,14 +33,17 @@ unzip("~/web2py_win.zip")
 }
 
 setwd("~/web2py/applications/")
-if(!require(downloader)) install.packages("downloader"); require(downloader)
 download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
          "temp.zip", mode = "wb")
-dir()
 unzip("temp.zip")
 file.rename("data_inventory-master", "data_inventory")
 setwd("~/web2py/")
 #dir()
-system("python ~/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181")
-#not working go todir and dbl clik then enter pwrd then browse 
+
+if(LinuxOperatingSystem){
+  system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181")
+} else {
+  system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181")
+}
+
 browseURL("http://127.0.0.1:8181/data_inventory")
