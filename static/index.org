@@ -1412,7 +1412,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
   def manage_projects():
       grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                         ],
-                               fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                               fields = [db.project.title, db.project.personnel_data_owner,
                                          db.dataset.shortname,
 
 
@@ -2762,21 +2762,28 @@ response.include_files()
   #### name:go ####
   library(rmarkdown)
   library(knitr)
+  library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
+  prj <-  "Air_Pollution_Monitoring_Stations_NSW" #"Air pollution modelling: LUR_Western_Sydney" # "Air pollution from biomass smoke"
+  dset <- "AP_monitor_NSW_2014_2015" # "LUR_Western_Sydney_passive_samplers"  # "biomass_smoke_events_database"
+  # walkability_osm  
+  
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
   knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
-  
+  outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
+  outfile
+  file.rename("EML_metadata_short.html", outfile)
   #browseURL("data_deposit_form.html")
   # browseURL("EML_metadata_fields.html")
-  # browseURL("EML_metadata_short.html")
+  #browseURL(outfile)
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
 #+RESULTS: go
-: 0
+: TRUE
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3422,8 +3429,6 @@ response.include_files()
   library(xtable)  
   
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")  
-  prj <- "Air pollution modelling: LUR_Western_Sydney"
-  dset <- "LUR_Western_Sydney_passive_samplers"  
 
   #prj <- "Air_Pollution_Monitoring_Stations_WA"
   #dset <- "AP_WA_19942012"
@@ -3847,12 +3852,320 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
-** identify-aquire-post-update-review procedures
+* check in/check out
+** checkout from child to master when master not exists
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  require(swishdbtools)
+  ch_source <- connect2postgres2("data_inventory_air_pollution_local")  
+  ch_target <- connect2postgres2("data_inventory_hanigan_dev4")  
+  tbls <- pgListTables(ch_source, "public")
+  tbls$no <- 1:nrow(tbls)
+  tbls
+  #tbls[c(1:4,9,12:21),1]
+  #tbls <- tbls[c(1:4,9,12:21),1]
+  
+  # get the project id
+  proj <- "Walkability"
+  proj_dat  <- dbGetQuery(ch_source,
+                          paste("select * from project where title like '%",proj,"%'", sep = "")
+                          )
+  pid  <- proj_dat$id
+  proj_dat
+  # check not existing
+  nrow_target  <- dbGetQuery(ch_target,
+                             paste("select * from project where title like '%",proj,"%'", sep = "")
+                             )
+  nrow_target
+  # if OK then write and return the new pid
+  if(
+    nrow(nrow_target) == 0
+    ){
+  dbWriteTable(ch_target, "project_insert", proj_dat)
+  dbSendQuery(ch_target,
+              "INSERT INTO project(
+              title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project)
+              select title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project
+              from project_insert")
+  pid2 <- dbGetQuery(ch_target,
+                     paste("select id from project where title like '%",proj,"%'", sep = "")
+                     )
+  dbRemoveTable(ch_target, "project_insert")  
+  } else {
+    print("already exists!")
+  }
+  
+  
+  # get datasets
+  dsets  <- dbGetQuery(ch_source,
+                       paste("select * from dataset where project_id = ",pid, sep = "")
+                       )
+  dsets
+  
+  # recursively walk back up from attr and licence
+  # we are not using publs at the moment for UCRH, but that is future
+  # possible
+  tbls
+  ##                relname nspname no
+  ## 18       accessdataset  public  1
+  ## 16            accessor  public  2
+  ## 17       accessrequest  public  3
+  ## 20            approval  public  4
+  ## 21                attr  public  5
+  ## 3             auth_cas  public  6
+  ## 2           auth_event  public  7
+  ## 1           auth_group  public  8
+  ## 22     auth_membership  public  9
+  ## 14 authorship_approval  public 10
+  ## 5      auth_permission  public 11
+  ## 10           auth_user  public 12
+  ## 4         bibliometric  public 13
+  ## 13           checklist  public 14
+  ## 7            crosswalk  public 15
+  ## 8           crosswalk2  public 16
+  ## 23             dataset  public 17
+  ## 6               entity  public 18
+  ## 9                error  public 19
+  ## 11   intellectualright  public 20
+  ## 12             keyword  public 21
+  ## 19             project  public 22
+  ## 24         publication  public 23
+  ## 15     thesaurus_ltern  public 24
+  
+  # loop over dsets
+  dsets[1,]
+  for(i in 2:nrow(dsets)){
+  #i = 1
+    # grab d_id for use when extracting from entity and licence
+    d_id <- dsets$id[i]
+    d_id
+  
+  dbWriteTable(ch_target, "dataset_insert", dsets[i,])
+  dbSendQuery(ch_target,
+              paste(
+              "INSERT INTO dataset(
+              project_id, shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods)
+              select ",pid2, ", shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods
+              from dataset_insert", sep = "")
+              )
+  d_id2 <- dbGetQuery(ch_target,
+                     "select max(id) from dataset"
+                     )
+  d_id2
+  dbRemoveTable(ch_target, "dataset_insert")  
+  
+  #tbls_todo <- c("entity","intellectualright")  
+  #for(tbl_i in tbls_todo){
+  #  tbl_i = tbls_todo[1]
+  tbl_i <- "entity"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  todo_i
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO entity(
+              dataset_id, entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange)
+              select ",d_id2,", entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  
+  tbl_i <- "intellectualright"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  todo_i
+  if(nrow(todo_i) > 0){  
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO intellectualright(
+              dataset_id, licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee)            
+              select ",d_id2,", licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  }
+  }
+#+end_src
+** checkout from master to child, replaces child
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  require(swishdbtools)
+  ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
+  ch_target <- connect2postgres2("data_inventory_air_pollution_local")  
+  tbls <- pgListTables(ch_source, "public")
+  tbls$no <- 1:nrow(tbls)
+  tbls
+  #tbls[c(1:4,9,12:21),1]
+  #tbls <- tbls[c(1:4,9,12:21),1]
+  
+  # get the project id
+  proj <- "Western"
+  proj_dat  <- dbGetQuery(ch_source,
+                          paste("select * from project where title like '%",proj,"%'", sep = "")
+                          )
+  pid  <- proj_dat$id
+  t(proj_dat)
+  # check not existing
+  nrow_target  <- dbGetQuery(ch_target,
+                             paste("select * from project where title like '%",proj,"%'", sep = "")
+                             )
+  nrow_target
+  # if OK then write and return the new pid
+  if(
+    nrow(nrow_target) == 0
+    ){
+  dbWriteTable(ch_target, "project_insert", proj_dat)
+  dbSendQuery(ch_target,
+              "INSERT INTO project(
+              title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project)
+              select title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project
+              from project_insert")
+  pid2 <- dbGetQuery(ch_target,
+                     paste("select id from project where title like '%",proj,"%'", sep = "")
+                     )
+  dbRemoveTable(ch_target, "project_insert")  
+  } else {
+    print("already exists!")
+  }
+  
+  
+  # get datasets
+  dsets  <- dbGetQuery(ch_source,
+                       paste("select * from dataset where project_id = ",pid[1,1], sep = "")
+                       )
+  dsets
+  
+  # recursively walk back up from attr and licence
+  # we are not using publs at the moment for UCRH, but that is future
+  # possible
+  tbls
+  ##                relname nspname no
+  ## 18       accessdataset  public  1
+  ## 16            accessor  public  2
+  ## 17       accessrequest  public  3
+  ## 20            approval  public  4
+  ## 21                attr  public  5
+  ## 3             auth_cas  public  6
+  ## 2           auth_event  public  7
+  ## 1           auth_group  public  8
+  ## 22     auth_membership  public  9
+  ## 14 authorship_approval  public 10
+  ## 5      auth_permission  public 11
+  ## 10           auth_user  public 12
+  ## 4         bibliometric  public 13
+  ## 13           checklist  public 14
+  ## 7            crosswalk  public 15
+  ## 8           crosswalk2  public 16
+  ## 23             dataset  public 17
+  ## 6               entity  public 18
+  ## 9                error  public 19
+  ## 11   intellectualright  public 20
+  ## 12             keyword  public 21
+  ## 19             project  public 22
+  ## 24         publication  public 23
+  ## 15     thesaurus_ltern  public 24
+  
+  # loop over dsets
+  dsets[1,]
+  for(i in 1:nrow(dsets)){
+  i = 1
+    # grab d_id for use when extracting from entity and licence
+    d_id <- dsets$id[i]
+    d_id
+  
+  dbWriteTable(ch_target, "dataset_insert", dsets[i,])
+  dbSendQuery(ch_target,
+              paste(
+              "INSERT INTO dataset(
+              project_id, shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods)
+              select ",pid2, ", shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods
+              from dataset_insert", sep = "")
+              )
+  d_id2 <- dbGetQuery(ch_target,
+                     "select max(id) from dataset"
+                     )
+  d_id2
+  dbRemoveTable(ch_target, "dataset_insert")  
+  
+  #tbls_todo <- c("entity","intellectualright")  
+  #for(tbl_i in tbls_todo){
+  #  tbl_i = tbls_todo[1]
+  tbl_i <- "entity"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  todo_i
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO entity(
+              dataset_id, entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange)
+              select ",d_id2,", entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  
+  tbl_i <- "intellectualright"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  todo_i
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO intellectualright(
+              dataset_id, licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee)            
+              select ",d_id2,", licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  
+  #}
+#+end_src
+** DEPRECATED identify-aquire-post-update-review procedures
 - doco for identified data are in a sep database so not to mess up clean inventory
 - once data aquisitioon has started transfer to the main data inventory
 *** COMMENT proj
 #+name:proj
-#+begin_src R :session *R* :tangle proj.R :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:proj ####
   library(swishdbtools)
   if(exists('ch_in'))   dbDisconnect(ch_in)

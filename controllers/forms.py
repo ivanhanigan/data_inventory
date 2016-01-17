@@ -40,7 +40,7 @@ def access_dataset():
 def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                       ],
-                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                             fields = [db.project.title, db.project.personnel_data_owner,
                                        db.dataset.shortname,
 
 
