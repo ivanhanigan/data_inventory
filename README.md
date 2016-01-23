@@ -1,12 +1,26 @@
 
 #### Data Inventory
 
+Licence: CC-BY
+
+## About
+
 1. A web2py app to help manage research data
 1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
 1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
 1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
 
-To use:
+## To install using R:
+
+```{r}
+setwd("~")
+if(!require(downloader)) install.packages("downloader"); require(downloader)
+download("https://raw.githubusercontent.com/ivanhanigan/data_inventory/master/static/install.R",
+         "install.R", mode = "wb")
+source("install.R")
+```
+
+### or alternatively do a manual install
 
 1. Download web2py http://www.web2py.com/init/default/download 
 1. Put all the files into your web2py/applications as 'data_inventory'

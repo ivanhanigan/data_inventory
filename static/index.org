@@ -50,20 +50,34 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 ** COMMENT README.md-code
 #+name:README.md
 #+begin_src R :session *R* :tangle ../README.md :exports none :eval no
-#### Data Inventory
-
-1. A web2py app to help manage research data
-1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
-1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
-1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
-
-To use:
-
-1. Download web2py http://www.web2py.com/init/default/download 
-1. Put all the files into your web2py/applications as 'data_inventory'
-1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
-1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
-
+  #### Data Inventory
+  
+  Licence: CC-BY
+  
+  ## About
+  
+  1. A web2py app to help manage research data
+  1. Designed for the Ecology discipline, using Ecological Metadata Language standard concepts
+  1. Can run as simple standalone desktop app using sqlite or shared on a postgres server for concurrent access by a team
+  1. Highly customised for the Oz Long Term Ecological Research Network Data Portal's needs
+  
+  ## To install using R:
+  
+  ```{r}
+  setwd("~")
+  if(!require(downloader)) install.packages("downloader"); require(downloader)
+  download("https://raw.githubusercontent.com/ivanhanigan/data_inventory/master/static/install.R",
+           "install.R", mode = "wb")
+  source("install.R")
+  ```
+  
+  ### or alternatively do a manual install
+  
+  1. Download web2py http://www.web2py.com/init/default/download 
+  1. Put all the files into your web2py/applications as 'data_inventory'
+  1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
+  1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
+  
 #+end_src
 * Introduction
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
@@ -102,7 +116,7 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <intellectualright>
             <methods> 
             <coverage>
-            <dataTableerrors>
+            <dataTable>
                 <entityName>
                 <entityDescription>                
                 <physical>
@@ -212,6 +226,60 @@ This is where Morpho and other EML tools come into their own.  Our
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
+** installer
+*** COMMENT install
+#+name:install
+#+begin_src R :session *R* :tangle install.R :exports none :eval no
+  #### name:install ####
+  # download web2py
+  LinuxOperatingSystem <- function(){
+      if(length(grep('linux',sessionInfo()[[1]]$os)) == 1)
+      {
+        #print('Linux')
+        os <- 'linux' 
+        OsLinux <- TRUE
+      }else if (length(grep('ming',sessionInfo()[[1]]$os)) == 1)
+      {
+        #print('Windows')
+        os <- 'windows'
+        OsLinux <- FALSE
+      }else
+      {
+        # don't know, do more tests
+        print('Non linux or windows os detected. Assume linux-alike.')
+        os <- 'linux?'
+        OsLinux <- TRUE
+      }
+     
+      return (OsLinux)
+    }
+  if(LinuxOperatingSystem()){
+  download.file("http://web2py.com/examples/static/web2py_src.zip", 
+                destfile = "~/web2py_src.zip", mode = "wb")
+  unzip("~/web2py_src.zip")
+  } else {
+  download.file("http://web2py.com/examples/static/web2py_win.zip", 
+                destfile = "~/web2py_win.zip", mode = "wb")
+  unzip("~/web2py_win.zip")
+  }
+  
+  setwd("~/web2py/applications/")
+  downloader::download("https://github.com/ivanhanigan/data_inventory/archive/master.zip", 
+           "temp.zip", mode = "wb")
+  unzip("temp.zip")
+  file.rename("data_inventory-master", "data_inventory")
+  setwd("~/web2py/")
+  #dir()
+
+  if(LinuxOperatingSystem()){
+    system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181", wait = F)
+  } else {
+    system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181", wait = F)
+  }
+  browseURL("http://127.0.0.1:8181/data_inventory")    
+
+#+end_src
+
 * Design the database 
 ** Create a new database
 - create a new postgres database using the following  code
@@ -445,6 +513,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
+
 *** COMMENT end
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(title)s' 
@@ -1609,10 +1678,7 @@ SELECT t1.*, t2.title
              _href=URL('forms','manage_datasets'))))}}</li>
   <li>{{=XML(T('The technical documentation for this application is at %s',
              A('this link',
-           _href=URL('static','index.html'))))}}</li>
-    <li>{{=XML(T('The links to other apps is at %s',
-           A('this link',
-             _href=URL('audio','default','index'))))}}</li>
+           _href=URL('static','index.html'), _target='new')))}}</li>
 </ol>
   {{elif 'content' in globals():}}
 {{=content}}
@@ -2765,10 +2831,11 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <-  "Air_Pollution_Monitoring_Stations_NSW" #"Air pollution modelling: LUR_Western_Sydney" # "Air pollution from biomass smoke"
-  dset <- "AP_monitor_NSW_2014_2015" # "LUR_Western_Sydney_passive_samplers"  # "biomass_smoke_events_database"
+  prj <- "Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney" # "Air pollution from biomass smoke" "Air_Pollution_Monitoring_Stations_NSW" #
+  dset <- "ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
-  
+  entities <- F
+  show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
@@ -3442,7 +3509,7 @@ response.include_files()
   #dset <- "Neighbourhood_exposures"
   
   
-  show_exemplar <- T
+  #show_exemplar <- T
   ```
   
 #+end_src
@@ -3666,7 +3733,7 @@ EML_metadata_short.Rmd
   # File / Entity level information 
   
   ```{r, echo = F, eval = T, results="asis"}
-    
+  if(entities){  
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
   dat_ent <- dbGetQuery(ch,
@@ -3679,7 +3746,7 @@ EML_metadata_short.Rmd
   join entity t3
   on t2.id = t3.dataset_id
   where t1.title = '%s'
-  and t2.shortname = '%s'", prj, dset),
+  and t2.shortname = '%s'", prj, dset)
   )
   # head(dat_ent)
   
@@ -3716,7 +3783,9 @@ EML_metadata_short.Rmd
   }
   
   
-    
+  } else {
+  print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = "html", include.rownames = F)
+  }   
   ```
   
 #+end_src
@@ -3865,9 +3934,9 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Walkability"
+  proj <- "SEIFA"
   proj_dat  <- dbGetQuery(ch_source,
-                          paste("select * from project where title like '%",proj,"%'", sep = "")
+                          paste("select * from project where title = '",proj,"'", sep = "")
                           )
   pid  <- proj_dat$id
   proj_dat
@@ -3891,7 +3960,7 @@ EML_metadata_short.Rmd
               project_citation, related_project
               from project_insert")
   pid2 <- dbGetQuery(ch_target,
-                     paste("select id from project where title like '%",proj,"%'", sep = "")
+                     paste("select id from project where title = '",proj,"'", sep = "")
                      )
   dbRemoveTable(ch_target, "project_insert")  
   } else {
@@ -3937,7 +4006,8 @@ EML_metadata_short.Rmd
   
   # loop over dsets
   dsets[1,]
-  for(i in 2:nrow(dsets)){
+  dsets[,1:3]
+  for(i in 1:nrow(dsets)){
   #i = 1
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
@@ -4006,8 +4076,9 @@ EML_metadata_short.Rmd
   dbRemoveTable(ch_target, "to_insert")
   }
   }
+  # NOW MANUALLY REMOVE THE SOURCE VERSION SO THAT MASTER IS NOW IN TARGET DB
 #+end_src
-** checkout from master to child, replaces child
+** checkout from master to child, assumes you want to replace child (and manually removed it)
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   require(swishdbtools)
   ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
@@ -4019,15 +4090,15 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Western"
+  proj <- "CTM_CSIRO"
   proj_dat  <- dbGetQuery(ch_source,
-                          paste("select * from project where title like '%",proj,"%'", sep = "")
+                          paste("select * from project where title = '",proj,"'", sep = "")
                           )
   pid  <- proj_dat$id
   t(proj_dat)
   # check not existing
   nrow_target  <- dbGetQuery(ch_target,
-                             paste("select * from project where title like '%",proj,"%'", sep = "")
+                             paste("select * from project where title = '",proj,"'", sep = "")
                              )
   nrow_target
   # if OK then write and return the new pid
@@ -4037,15 +4108,15 @@ EML_metadata_short.Rmd
   dbWriteTable(ch_target, "project_insert", proj_dat)
   dbSendQuery(ch_target,
               "INSERT INTO project(
-              title, personnel_data_owner, personnel_owner_organisationname, 
+              id, title, personnel_data_owner, personnel_owner_organisationname, 
               personnel, funding, project_abstract, studyareadescription, project_established, 
               project_citation, related_project)
-              select title, personnel_data_owner, personnel_owner_organisationname, 
+              select id, title, personnel_data_owner, personnel_owner_organisationname, 
               personnel, funding, project_abstract, studyareadescription, project_established, 
               project_citation, related_project
               from project_insert")
   pid2 <- dbGetQuery(ch_target,
-                     paste("select id from project where title like '%",proj,"%'", sep = "")
+                     paste("select id from project where title = '",proj,"'", sep = "")
                      )
   dbRemoveTable(ch_target, "project_insert")  
   } else {
@@ -4055,9 +4126,9 @@ EML_metadata_short.Rmd
   
   # get datasets
   dsets  <- dbGetQuery(ch_source,
-                       paste("select * from dataset where project_id = ",pid[1,1], sep = "")
+                       paste("select * from dataset where project_id = ",pid, sep = "")
                        )
-  dsets
+  dsets[,1:3]
   
   # recursively walk back up from attr and licence
   # we are not using publs at the moment for UCRH, but that is future
@@ -4091,8 +4162,8 @@ EML_metadata_short.Rmd
   
   # loop over dsets
   dsets[1,]
-  for(i in 1:nrow(dsets)){
-  i = 1
+  for(i in 2:nrow(dsets)){
+  #i = 1
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
     d_id
@@ -4101,13 +4172,13 @@ EML_metadata_short.Rmd
   dbSendQuery(ch_target,
               paste(
               "INSERT INTO dataset(
-              project_id, shortname, creator, contact, contact_email, abstract, 
+              id, project_id, shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
               method_steps, additional_metadata, additionalinfo, alternateidentifier, 
               pubdate, metadataprovider, title, access_rules, sampling_desc, 
               studyextent, associated_party, methods_protocol, distribution_methods)
-              select ",pid2, ", shortname, creator, contact, contact_email, abstract, 
+              select id, project_id, shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
               method_steps, additional_metadata, additionalinfo, alternateidentifier, 
@@ -4115,10 +4186,10 @@ EML_metadata_short.Rmd
               studyextent, associated_party, methods_protocol, distribution_methods
               from dataset_insert", sep = "")
               )
-  d_id2 <- dbGetQuery(ch_target,
-                     "select max(id) from dataset"
-                     )
-  d_id2
+  ## d_id2 <- dbGetQuery(ch_target,
+  ##                    "select max(id) from dataset"
+  ##                    )
+  ## d_id2
   dbRemoveTable(ch_target, "dataset_insert")  
   
   #tbls_todo <- c("entity","intellectualright")  
@@ -4132,10 +4203,10 @@ EML_metadata_short.Rmd
   dbWriteTable(ch_target, "to_insert", todo_i)
   dbSendQuery(ch_target,
               paste("INSERT INTO entity(
-              dataset_id, entityname, entitydescription, entity_methods, 
+              id, dataset_id, entityname, entitydescription, entity_methods, 
               physical_distribution, physical_distribution_additionalinfo, 
               numberofrecords, entity_temporalcoverage_daterange)
-              select ",d_id2,", entityname, entitydescription, entity_methods, 
+              select id, dataset_id, entityname, entitydescription, entity_methods, 
               physical_distribution, physical_distribution_additionalinfo, 
               numberofrecords, entity_temporalcoverage_daterange
               from to_insert", sep = "")
@@ -4147,18 +4218,30 @@ EML_metadata_short.Rmd
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
                     )
   todo_i
+  if(nrow(todo_i) > 0){    
   dbWriteTable(ch_target, "to_insert", todo_i)
   dbSendQuery(ch_target,
               paste("INSERT INTO intellectualright(
-              dataset_id, licence_code, licence_text, path_to_licence, 
+              id, dataset_id, licence_code, licence_text, path_to_licence, 
               data_owner_contact, data_owner, special_conditions, licencee)            
-              select ",d_id2,", licence_code, licence_text, path_to_licence, 
+              select id, dataset_id, licence_code, licence_text, path_to_licence, 
               data_owner_contact, data_owner, special_conditions, licencee
               from to_insert", sep = "")
               )
   dbRemoveTable(ch_target, "to_insert")
+  }
+  }
   
-  #}
+  # are the sequences out of sync?
+  for(tabi in tbls$relname){
+    maxi <- dbGetQuery(ch_target, sprintf("select max(id) from %s", tabi))
+    print(data.frame(table = tabi, max = maxi))
+  }
+  for(tabi in tbls$relname){
+    maxi <- dbGetQuery(ch_source, sprintf("select max(id) from %s", tabi))
+    print(data.frame(table = tabi, max = maxi))  
+  }
+  
 #+end_src
 ** DEPRECATED identify-aquire-post-update-review procedures
 - doco for identified data are in a sep database so not to mess up clean inventory
