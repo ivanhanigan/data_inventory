@@ -567,11 +567,17 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('project_id',db.project),
 #+end_src
 *** dataset shortname
-TODO
+A concise name, eg. vernal-data-1999.
+The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
+
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName
+
+
 **** COMMENT TODO shortname
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)),  _target='new')))
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-1', scheme=True, host=True)),  _target='new')))
       ),
 #+end_src
 *** dataset title
@@ -702,10 +708,16 @@ If possible also details of the sequence of planned analyses, with statistical m
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('taxonomic_coverage','string', comment="List of scientific names."),
 #+end_src
-*** TODO dataset additional info
+*** additional info
+Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
+
+- EML Standard: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo
+- Local Link: http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo
+
+**** COMMENT codes
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
       ),
 #+end_src
 *** TODO dataset alternateidentifier
@@ -719,12 +731,13 @@ If possible also details of the sequence of planned analyses, with statistical m
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
 #+end_src
-*** TODO access_rules (ie ethics required)
+*** TODO access rules 
+for instance are ethics protocol details required?
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 #+end_src
-*** TODO distribution_method
+*** TODO distribution method
 **** ideas
 new field = dataset/distribution_methods
 The methods of distribution used for others to access the software, data, and documentation.

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2016-01-26T16:16+1100"/>
+<meta name="generated" content="2016-02-06T10:42+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -184,11 +184,11 @@ for the JavaScript code in this tag.
 <li><a href="#sec-5-2-12">5.2.12 dataset Geographic</a></li>
 <li><a href="#sec-5-2-13">5.2.13 dataset bounding coords</a></li>
 <li><a href="#sec-5-2-14">5.2.14 dataset taxo cov</a></li>
-<li><a href="#sec-5-2-15">5.2.15 dataset additional info</a></li>
+<li><a href="#sec-5-2-15">5.2.15 additional info</a></li>
 <li><a href="#sec-5-2-16">5.2.16 dataset alternateidentifier</a></li>
 <li><a href="#sec-5-2-17">5.2.17 dataset pubdate</a></li>
-<li><a href="#sec-5-2-18">5.2.18 access<sub>rules</sub> (ie ethics required)</a></li>
-<li><a href="#sec-5-2-19">5.2.19 distribution<sub>method</sub></a></li>
+<li><a href="#sec-5-2-18">5.2.18 access rules</a></li>
+<li><a href="#sec-5-2-19">5.2.19 distribution method</a></li>
 <li><a href="#sec-5-2-20">5.2.20 metadataprovider</a></li>
 </ul>
 </li>
@@ -781,8 +781,19 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> dataset shortname</h4>
 <div class="outline-text-4" id="text-5-2-1">
 
-<p>TODO
+<p>A concise name, eg. vernal-data-1999.
+The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
 </p>
+<ul>
+<li><a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName</a>
+</li>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName</a>
+</li>
+</ul>
+
+
+
+
 </div>
 
 </div>
@@ -1036,16 +1047,19 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-5-2-15" class="outline-4">
-<h4 id="sec-5-2-15"><span class="section-number-4">5.2.15</span> <span class="todo TODO">TODO</span> dataset additional info</h4>
+<h4 id="sec-5-2-15"><span class="section-number-4">5.2.15</span> additional info</h4>
 <div class="outline-text-4" id="text-5-2-15">
 
+<p>Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
+</p>
+<ul>
+<li>EML Standard: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
+</li>
+<li>Local Link: <a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
+</li>
+</ul>
 
 
-
-<pre class="src src-markdown">  Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-  ),
-</pre>
 
 </div>
 
@@ -1083,10 +1097,11 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-5-2-18" class="outline-4">
-<h4 id="sec-5-2-18"><span class="section-number-4">5.2.18</span> <span class="todo TODO">TODO</span> access<sub>rules</sub> (ie ethics required)</h4>
+<h4 id="sec-5-2-18"><span class="section-number-4">5.2.18</span> <span class="todo TODO">TODO</span> access rules</h4>
 <div class="outline-text-4" id="text-5-2-18">
 
-
+<p>for instance are ethics protocol details required?
+</p>
 
 
 
@@ -1098,7 +1113,7 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-5-2-19" class="outline-4">
-<h4 id="sec-5-2-19"><span class="section-number-4">5.2.19</span> <span class="todo TODO">TODO</span> distribution<sub>method</sub></h4>
+<h4 id="sec-5-2-19"><span class="section-number-4">5.2.19</span> <span class="todo TODO">TODO</span> distribution method</h4>
 <div class="outline-text-4" id="text-5-2-19">
 
 <ul>

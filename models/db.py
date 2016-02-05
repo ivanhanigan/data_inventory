@@ -137,7 +137,7 @@ db.define_table(
     'dataset',
     Field('project_id',db.project),
 Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)),  _target='new')))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-1', scheme=True, host=True)),  _target='new')))
 ),
 Field('title','string', comment = XML(T('Structure eg: project, data type, location, temporal tranches. %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
@@ -166,8 +166,8 @@ comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add a
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
 Field('taxonomic_coverage','string', comment="List of scientific names."),
-Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
   ),
 Field('alternateidentifier','string',
 comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
