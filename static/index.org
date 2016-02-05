@@ -2791,8 +2791,9 @@ response.include_files()
   tbls <- pgListTables(ch, "public")
   tbls$no <- 1:nrow(tbls)
   tbls
-  tbls[c(1:4,9,12:21),1]
-  tbls <- tbls[c(1:4,9,12:21),1]
+  #tbls[c(1:4,9,12:21),1]
+  #tbls <- tbls[c(1:4,9,12:21),1]
+  tbls <- tbls[,1]
   for(tbl_i in tbls){
   #  tbl_i = tbls[1]
   dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))
@@ -2831,21 +2832,26 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney" # "Air pollution from biomass smoke" "Air_Pollution_Monitoring_Stations_NSW" #
-  dset <- "ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
+  prj <- "Biomass_Smoke_Validated_Events"
+    #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
+  dset <- "biomass_smoke_events_database"
+  #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
-  entities <- F
+  entities <- T
   show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
+  #browseURL("data_deposit_form.html")
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_fields.html")
   knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_short.html")
+  
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   outfile
   file.rename("EML_metadata_short.html", outfile)
-  #browseURL("data_deposit_form.html")
-  # browseURL("EML_metadata_fields.html")
-  #browseURL(outfile)
+  browseURL(outfile)
+  
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
@@ -3923,7 +3929,7 @@ EML_metadata_short.Rmd
 #+end_src
 * check in/check out
 ** checkout from child to master when master not exists
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch_source <- connect2postgres2("data_inventory_air_pollution_local")  
   ch_target <- connect2postgres2("data_inventory_hanigan_dev4")  
@@ -3934,7 +3940,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "SEIFA"
+  proj <- "Biomass_Smoke_Validated_Events"
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
@@ -3964,7 +3970,10 @@ EML_metadata_short.Rmd
                      )
   dbRemoveTable(ch_target, "project_insert")  
   } else {
-    print("already exists!")
+    pid2  <- dbGetQuery(ch_target,
+                             paste("select id from project where title like '%",proj,"%'", sep = "")
+                             )
+    sprintf("already exists! and Proj ID is %s", pid2)
   }
   
   
@@ -3972,7 +3981,7 @@ EML_metadata_short.Rmd
   dsets  <- dbGetQuery(ch_source,
                        paste("select * from dataset where project_id = ",pid, sep = "")
                        )
-  dsets
+  dsets[,1:4]
   
   # recursively walk back up from attr and licence
   # we are not using publs at the moment for UCRH, but that is future
@@ -4008,13 +4017,14 @@ EML_metadata_short.Rmd
   dsets[1,]
   dsets[,1:3]
   for(i in 1:nrow(dsets)){
-  #i = 1
+  #i = 2
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
     d_id
   
   dbWriteTable(ch_target, "dataset_insert", dsets[i,])
   dbSendQuery(ch_target,
+              #cat(
               paste(
               "INSERT INTO dataset(
               project_id, shortname, creator, contact, contact_email, abstract, 
@@ -4045,6 +4055,7 @@ EML_metadata_short.Rmd
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
                     )
   todo_i
+  if(nrow(todo_i) > 0){    
   dbWriteTable(ch_target, "to_insert", todo_i)
   dbSendQuery(ch_target,
               paste("INSERT INTO entity(
@@ -4057,7 +4068,7 @@ EML_metadata_short.Rmd
               from to_insert", sep = "")
               )
   dbRemoveTable(ch_target, "to_insert")
-  
+  }
   tbl_i <- "intellectualright"
   todo_i <- dbGetQuery(ch_source,
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
@@ -4079,7 +4090,7 @@ EML_metadata_short.Rmd
   # NOW MANUALLY REMOVE THE SOURCE VERSION SO THAT MASTER IS NOW IN TARGET DB
 #+end_src
 ** checkout from master to child, assumes you want to replace child (and manually removed it)
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
   ch_target <- connect2postgres2("data_inventory_air_pollution_local")  
