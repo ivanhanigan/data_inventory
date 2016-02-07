@@ -454,7 +454,9 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
 #+end_src
-*** COMMENT funding-code
+*** funding-code
+- Significant funding sources under which the data has been collected over the lifespan of the project
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('funding', 'text',
       comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
@@ -492,25 +494,32 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       ),
 #+end_src
 
-*** COMMENT project_established
+*** project established
+- Commencement date of overarching research project as a specific date or year
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('project_established','date', 
       comment= XML(T('Commencement date of overarching research project as a specific date or year. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
-*** COMMENT project citation
+*** citation
+- Citations relevant to the design of the overarching project
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('project_citation','text', 
       comment= XML(T('Citations relevant to the design of the overarching project. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
-*** COMMENT relatedProject 
+*** relatedProject
+- A recursive link to another project. This allows projects to be nested under one another
+
+**** COMMENT code 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('related_project','text', 
       comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
       ),
 #+end_src
 

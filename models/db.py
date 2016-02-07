@@ -125,7 +125,7 @@ A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, 
 ),
 Field('related_project','text', 
 comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
 ),
 format = '%(title)s' 
 )

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2016-02-07T14:21+1100"/>
+<meta name="generated" content="2016-02-07T21:41+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -145,8 +145,12 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#sec-2-1-1">2.1.1 eml/dataset/project/title</a></li>
 <li><a href="#sec-2-1-2">2.1.2 eml/dataset/project/personnel</a></li>
-<li><a href="#sec-2-1-3">2.1.3 eml/dataset/project/abstract</a></li>
-<li><a href="#sec-2-1-4">2.1.4 eml/dataset/project/studyAreaDescription</a></li>
+<li><a href="#sec-2-1-3">2.1.3 funding-code</a></li>
+<li><a href="#sec-2-1-4">2.1.4 eml/dataset/project/abstract</a></li>
+<li><a href="#sec-2-1-5">2.1.5 eml/dataset/project/studyAreaDescription</a></li>
+<li><a href="#sec-2-1-6">2.1.6 project established</a></li>
+<li><a href="#sec-2-1-7">2.1.7 citation</a></li>
+<li><a href="#sec-2-1-8">2.1.8 relatedProject</a></li>
 </ul>
 </li>
 <li><a href="#sec-2-2">2.2 Dataset</a>
@@ -470,7 +474,6 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True,
 ),
 </pre>
 
-
 </li>
 </ul>
 </div>
@@ -478,8 +481,22 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True,
 </div>
 
 <div id="outline-container-2-1-3" class="outline-4">
-<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> eml/dataset/project/abstract</h4>
+<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> funding-code</h4>
 <div class="outline-text-4" id="text-2-1-3">
+
+<ul>
+<li>Significant funding sources under which the data has been collected over the lifespan of the project
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-4" class="outline-4">
+<h4 id="sec-2-1-4"><span class="section-number-4">2.1.4</span> eml/dataset/project/abstract</h4>
+<div class="outline-text-4" id="text-2-1-4">
 
 <p>The following information is used to create the LTERN Data Portal record for each Data Package:
 Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
@@ -510,9 +527,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-2-1-4" class="outline-4">
-<h4 id="sec-2-1-4"><span class="section-number-4">2.1.4</span> eml/dataset/project/studyAreaDescription</h4>
-<div class="outline-text-4" id="text-2-1-4">
+<div id="outline-container-2-1-5" class="outline-4">
+<h4 id="sec-2-1-5"><span class="section-number-4">2.1.5</span> eml/dataset/project/studyAreaDescription</h4>
+<div class="outline-text-4" id="text-2-1-5">
 
 <ul>
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML online</a>
@@ -521,6 +538,46 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 
+</div>
+
+</div>
+
+<div id="outline-container-2-1-6" class="outline-4">
+<h4 id="sec-2-1-6"><span class="section-number-4">2.1.6</span> project established</h4>
+<div class="outline-text-4" id="text-2-1-6">
+
+<ul>
+<li>Commencement date of overarching research project as a specific date or year
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-7" class="outline-4">
+<h4 id="sec-2-1-7"><span class="section-number-4">2.1.7</span> citation</h4>
+<div class="outline-text-4" id="text-2-1-7">
+
+<ul>
+<li>Citations relevant to the design of the overarching project
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-1-8" class="outline-4">
+<h4 id="sec-2-1-8"><span class="section-number-4">2.1.8</span> relatedProject</h4>
+<div class="outline-text-4" id="text-2-1-8">
+
+<ul>
+<li>A recursive link to another project. This allows projects to be nested under one another
+</li>
+</ul>
 
 
 
