@@ -83,13 +83,13 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
 - The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
 - This article describes an approach to use a relational database with web-based forms (using the web2py framework) and helper functions (written in the R and SQL languages) 
-* The Ecological Metadata Language (EML)
+** The Ecological Metadata Language (EML)
 The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
-** COMMENT snip
+*** COMMENT snip
 - We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
 - We added some things like metadataProvider, but this is optional
 
-** XML 
+*** XML 
 A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
 
 
@@ -125,12 +125,12 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <additionalLinks>
   
 #+end_src
-** A schematic diagram of the EML modules
+*** A schematic diagram of the EML modules
 In the figure below the EML hierarchy of modules is shown graphically. An EML metadata document contains a dataset module that allows the grouping of one or more data entities linked together by particular integrity constraints to form a Data Package.  The project module places the dataset that is being documented into its larger research context, and optionally allows multiple related Data Packages to be linked. The mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines).
 
 [[file:./images/EML_project.png]]
 
-** The parts of an EML document 
+*** The parts of an EML document 
 In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
   abstract and keywords as well as one or more data entities, such as
@@ -149,7 +149,7 @@ In EML, the term dataset refers to one or more data
 
  Below is a brief description of the way we interpret the components of an EML dataset
 
-*** Datasets
+**** Datasets
 Dataset is the top level of the EML.  The miminum necessary to
 produce a valid EML document is <title>, <creator>, <contract>. But
 one can't tell very much with just a title and a name.  Our aim is to
@@ -166,7 +166,7 @@ For more information about the general EML descriptions see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html
 
 For more detailed information about the EML-dataset module see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html
-*** Projects
+**** Projects
 The project module is optional, but in many cases highly desirable as
 this provides an overall description of the larger-scale project or
 research context with which that dataset is associated.  For example
@@ -179,7 +179,7 @@ The project module is recursive in that it provides an overall description of th
 For more information about the EML-dataset module see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html
 
-*** Data Entity
+**** Data Entity
 As stated earlier, a dataset consists of one or more data entities,
 and the most common data entity is a <dataTable>. A data table is
 something that looks like a matrix with rows for observations and
@@ -200,20 +200,20 @@ In addition to datatables, people using database applications may also
 
 For more information about types of EML-entities see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 
-*** Attributes
+**** Attributes
 An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
 
 For more information about the EML dataTable type (especially its attributes) see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute
 
-** COMMENT snip 
+*** COMMENT snip 
 This is where Morpho and other EML tools come into their own.  Our
   database solution might be useful as an initial stage of data
   documentation, to be further refined using specialised EML tools
 
-* web2py 
-** set up web2py 
+** COMMENT web2py 
+*** set up web2py 
 - Web2py comes packaged up with everything it needs to run on a system (just needs python)
 - run this using:
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
@@ -221,13 +221,13 @@ This is where Morpho and other EML tools come into their own.  Our
     python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 #+end_src
 
-** the web2py database example
+*** the web2py database example
 - once the web server is running the example can be visited at this link:
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
-** installer
-*** COMMENT install
+*** installer
+**** COMMENT install
 #+name:install
 #+begin_src R :session *R* :tangle install.R :exports none :eval no
   #### name:install ####
@@ -280,8 +280,8 @@ This is where Morpho and other EML tools come into their own.  Our
 
 #+end_src
 
-* Design the database 
-** Create a new database
+** COMMENT Design the database 
+*** Create a new database
 - create a new postgres database using the following  code
 #+name:create.db
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
@@ -293,16 +293,16 @@ This is where Morpho and other EML tools come into their own.  Our
   grant all on schema public to w2p_user;
   \q
 #+end_src
-** Create a new web2py application
+*** Create a new web2py application
 - this will create a directory in the applications folder of the web2py home directory
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
   cd ~/tools/web2py 
   python ./web2py.py -S data_inventory
 #+end_src
 
-** relational model
+*** relational model
 - The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
-** defaults for models/db.py
+*** defaults for models/db.py
 - the database tables are set up in the models/db.py file that comes with default settings
 - The first bit to change is the db reference from SQLite to postgres
 - also note that "#if request.is\_local else []" will allow using as a server
@@ -397,8 +397,8 @@ This is where Morpho and other EML tools come into their own.  Our
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-* Define our tables
-The following sections show the definitions LTERN used to create the data inventory
+* Definitions and tips for each metadata field
+The following sections show the definitions used to create the data inventory:
 ** Project Information and Data Owners
 - The EML Project module is used to place the dataset that is being documented into its larger research context.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html][EML online]]
@@ -416,7 +416,7 @@ The following sections show the definitions LTERN used to create the data invent
       'project',
 #+end_src
 *** eml/dataset/project/title
-LTERN's suggested structure is either:
+The suggested structure is either:
 - the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
 - a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
@@ -627,7 +627,6 @@ TODO
       Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
 #+end_src
 
-
 *** dataset methods protocol
 **** general EML methods module info
 - http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html
@@ -719,12 +718,12 @@ If possible also details of the sequence of planned analyses, with statistical m
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
 #+end_src
-*** TODO access_rules (ie ethics required)
+*** TODO access rules (ie ethics required)
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 #+end_src
-*** TODO distribution_method
+*** TODO distribution method
 **** ideas
 new field = dataset/distribution_methods
 The methods of distribution used for others to access the software, data, and documentation.
@@ -1088,7 +1087,7 @@ Field('thesis_publication_status','string')
      
 #+end_src
 *** COMMENT R bibtex-code
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:R bibtex ####
   # if using postgres
   library(rpostgrestools)
@@ -1251,7 +1250,6 @@ Field('thesis_publication_status','string')
   
 #+end_src
 
-
 ** COMMENT coauthors approvals (and journal copyright controls)
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
 
@@ -1270,7 +1268,7 @@ Field('extra_details', 'text')
     )
      
 #+end_src
-* Design User Interface
+* COMMENT Design User Interface
 ** Defaults for controllers/default.py
 - Following the example in the documentation 
 
@@ -2782,10 +2780,10 @@ response.include_files()
 
 #+end_src
 
-* backups
+* COMMENT backups
 ** COMMENT backup-code
 #+name:backup
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch <- connect2postgres2("data_inventory_hanigan_dev4")  
   tbls <- pgListTables(ch, "public")
@@ -2821,10 +2819,10 @@ response.include_files()
 
 #+RESULTS: pgdump
 
-* ETL
+* COMMENT ETL
 ** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:go ####
   library(rmarkdown)
   library(knitr)
@@ -3793,7 +3791,7 @@ EML_metadata_short.Rmd
 ** data inventory report
 *** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:go ####
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
@@ -3921,9 +3919,9 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
-* check in/check out
+* COMMENT check in/check out
 ** checkout from child to master when master not exists
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch_source <- connect2postgres2("data_inventory_air_pollution_local")  
   ch_target <- connect2postgres2("data_inventory_hanigan_dev4")  
@@ -4079,7 +4077,7 @@ EML_metadata_short.Rmd
   # NOW MANUALLY REMOVE THE SOURCE VERSION SO THAT MASTER IS NOW IN TARGET DB
 #+end_src
 ** checkout from master to child, assumes you want to replace child (and manually removed it)
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
   ch_target <- connect2postgres2("data_inventory_air_pollution_local")  

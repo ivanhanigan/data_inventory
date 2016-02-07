@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2016-01-11T15:11+1100"/>
+<meta name="generated" content="2016-02-07T14:12+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -129,96 +129,114 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1 Introduction</a></li>
-<li><a href="#sec-2">2 The Ecological Metadata Language (EML)</a>
+<li><a href="#sec-1">1 Introduction</a>
 <ul>
-<li><a href="#sec-2-1">2.1 XML</a></li>
-<li><a href="#sec-2-2">2.2 A schematic diagram of the EML modules</a></li>
-<li><a href="#sec-2-3">2.3 The parts of an EML document</a>
+<li><a href="#sec-1-1">1.1 The Ecological Metadata Language (EML)</a>
 <ul>
-<li><a href="#sec-2-3-1">2.3.1 Datasets</a></li>
-<li><a href="#sec-2-3-2">2.3.2 Projects</a></li>
-<li><a href="#sec-2-3-3">2.3.3 Data Entity</a></li>
-<li><a href="#sec-2-3-4">2.3.4 Attributes</a></li>
+<li><a href="#sec-1-1-1">1.1.1 XML</a></li>
+<li><a href="#sec-1-1-2">1.1.2 A schematic diagram of the EML modules</a></li>
+<li><a href="#sec-1-1-3">1.1.3 The parts of an EML document</a></li>
 </ul></li>
 </ul>
 </li>
-<li><a href="#sec-3">3 web2py</a>
+<li><a href="#sec-2">2 Definitons and tips for each metadata field</a>
 <ul>
-<li><a href="#sec-3-1">3.1 set up web2py</a></li>
-<li><a href="#sec-3-2">3.2 the web2py database example</a></li>
-<li><a href="#sec-3-3">3.3 installer</a></li>
+<li><a href="#sec-2-1">2.1 Project Information and Data Owners</a>
+<ul>
+<li><a href="#sec-2-1-1">2.1.1 eml/dataset/project/title</a></li>
+<li><a href="#sec-2-1-2">2.1.2 eml/dataset/project/personnel</a></li>
+<li><a href="#sec-2-1-3">2.1.3 eml/dataset/project/abstract</a></li>
+<li><a href="#sec-2-1-4">2.1.4 eml/dataset/project/studyAreaDescription</a></li>
 </ul>
 </li>
-<li><a href="#sec-4">4 Design the database</a>
+<li><a href="#sec-2-2">2.2 Dataset</a>
 <ul>
-<li><a href="#sec-4-1">4.1 Create a new database</a></li>
-<li><a href="#sec-4-2">4.2 Create a new web2py application</a></li>
-<li><a href="#sec-4-3">4.3 relational model</a></li>
-<li><a href="#sec-4-4">4.4 defaults for models/db.py</a></li>
+<li><a href="#sec-2-2-1">2.2.1 dataset shortname</a></li>
+<li><a href="#sec-2-2-2">2.2.2 dataset title</a></li>
+<li><a href="#sec-2-2-3">2.2.3 dataset creator</a></li>
+<li><a href="#sec-2-2-4">2.2.4 dataset contact</a></li>
+<li><a href="#sec-2-2-5">2.2.5 dataset abstract</a></li>
+<li><a href="#sec-2-2-6">2.2.6 dataset additional metadata links</a></li>
+<li><a href="#sec-2-2-7">2.2.7 dataset methods/studyextent</a></li>
+<li><a href="#sec-2-2-8">2.2.8 dataset temporal coverage</a></li>
+<li><a href="#sec-2-2-9">2.2.9 dataset methods protocol</a></li>
+<li><a href="#sec-2-2-10">2.2.10 dataset sampling description</a></li>
+<li><a href="#sec-2-2-11">2.2.11 dataset method steps</a></li>
+<li><a href="#sec-2-2-12">2.2.12 dataset Geographic</a></li>
+<li><a href="#sec-2-2-13">2.2.13 dataset bounding coords</a></li>
+<li><a href="#sec-2-2-14">2.2.14 dataset taxo cov</a></li>
+<li><a href="#sec-2-2-15">2.2.15 dataset additional info</a></li>
+<li><a href="#sec-2-2-16">2.2.16 dataset alternateidentifier</a></li>
+<li><a href="#sec-2-2-17">2.2.17 dataset pubdate</a></li>
+<li><a href="#sec-2-2-18">2.2.18 access<sub>rules</sub> (ie ethics required)</a></li>
+<li><a href="#sec-2-2-19">2.2.19 distribution<sub>method</sub></a></li>
+<li><a href="#sec-2-2-20">2.2.20 metadataprovider</a></li>
 </ul>
 </li>
-<li><a href="#sec-5">5 Define our tables</a>
+<li><a href="#sec-2-3">2.3 Data Entity (dataTable)</a>
 <ul>
-<li><a href="#sec-5-1">5.1 Project Information and Data Owners</a>
-<ul>
-<li><a href="#sec-5-1-1">5.1.1 eml/dataset/project/title</a></li>
-<li><a href="#sec-5-1-2">5.1.2 eml/dataset/project/personnel</a></li>
-<li><a href="#sec-5-1-3">5.1.3 eml/dataset/project/abstract</a></li>
-<li><a href="#sec-5-1-4">5.1.4 eml/dataset/project/studyAreaDescription</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-2">5.2 Dataset</a>
-<ul>
-<li><a href="#sec-5-2-1">5.2.1 dataset shortname</a></li>
-<li><a href="#sec-5-2-2">5.2.2 dataset title</a></li>
-<li><a href="#sec-5-2-3">5.2.3 dataset creator</a></li>
-<li><a href="#sec-5-2-4">5.2.4 dataset contact</a></li>
-<li><a href="#sec-5-2-5">5.2.5 dataset abstract</a></li>
-<li><a href="#sec-5-2-6">5.2.6 dataset additional metadata links</a></li>
-<li><a href="#sec-5-2-7">5.2.7 dataset methods/studyextent</a></li>
-<li><a href="#sec-5-2-8">5.2.8 dataset temporal coverage</a></li>
-<li><a href="#sec-5-2-9">5.2.9 dataset methods protocol</a></li>
-<li><a href="#sec-5-2-10">5.2.10 dataset sampling description</a></li>
-<li><a href="#sec-5-2-11">5.2.11 dataset method steps</a></li>
-<li><a href="#sec-5-2-12">5.2.12 dataset Geographic</a></li>
-<li><a href="#sec-5-2-13">5.2.13 dataset bounding coords</a></li>
-<li><a href="#sec-5-2-14">5.2.14 dataset taxo cov</a></li>
-<li><a href="#sec-5-2-15">5.2.15 dataset additional info</a></li>
-<li><a href="#sec-5-2-16">5.2.16 dataset alternateidentifier</a></li>
-<li><a href="#sec-5-2-17">5.2.17 dataset pubdate</a></li>
-<li><a href="#sec-5-2-18">5.2.18 access<sub>rules</sub> (ie ethics required)</a></li>
-<li><a href="#sec-5-2-19">5.2.19 distribution<sub>method</sub></a></li>
-<li><a href="#sec-5-2-20">5.2.20 metadataprovider</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-3">5.3 Data Entity (dataTable)</a>
-<ul>
-<li><a href="#sec-5-3-1">5.3.1 eml/dataset/entity/id</a></li>
-<li><a href="#sec-5-3-2">5.3.2 eml/dataset/entity/name</a></li>
-<li><a href="#sec-5-3-3">5.3.3 eml/dataset/entity/description</a></li>
-<li><a href="#sec-5-3-4">5.3.4 temporal cov</a></li>
-<li><a href="#sec-5-3-5">5.3.5 eml/dataset/entity methods</a></li>
-<li><a href="#sec-5-3-6">5.3.6 eml/dataset/entity/physical/distribution</a></li>
+<li><a href="#sec-2-3-1">2.3.1 eml/dataset/entity/id</a></li>
+<li><a href="#sec-2-3-2">2.3.2 eml/dataset/entity/name</a></li>
+<li><a href="#sec-2-3-3">2.3.3 eml/dataset/entity/description</a></li>
+<li><a href="#sec-2-3-4">2.3.4 eml/dataset/entity/physical/distribution</a></li>
+<li><a href="#sec-2-3-5">2.3.5 temporal cov</a></li>
+<li><a href="#sec-2-3-6">2.3.6 eml/dataset/entity methods</a></li>
 </ul></li>
 </ul>
 </li>
-<li><a href="#sec-6">6 Design User Interface</a>
+<li><a href="#sec-3">3 Design User Interface</a>
 <ul>
-<li><a href="#sec-6-1">6.1 Defaults for controllers/default.py</a></li>
-<li><a href="#sec-6-2">6.2 Top Menu</a></li>
-<li><a href="#sec-6-3">6.3 Access a dataset</a></li>
-<li><a href="#sec-6-4">6.4 Main form ties it all together (manage projects)</a></li>
-<li><a href="#sec-6-5">6.5 Form to manage all dataset</a></li>
-<li><a href="#sec-6-6">6.6 test autoenter creator in contact FAIL</a>
+<li><a href="#sec-3-1">3.1 Defaults for controllers/default.py</a></li>
+<li><a href="#sec-3-2">3.2 Top Menu</a></li>
+<li><a href="#sec-3-3">3.3 Access a dataset</a></li>
+<li><a href="#sec-3-4">3.4 Main form ties it all together (manage projects)</a></li>
+<li><a href="#sec-3-5">3.5 Form to manage all dataset</a>
 <ul>
-<li><a href="#sec-6-6-1">6.6.1 manage datasets</a></li>
-<li><a href="#sec-6-6-2">6.6.2 manage datasets test</a></li>
+<li><a href="#sec-3-5-1">3.5.1 manage datasets</a></li>
 </ul>
 </li>
-<li><a href="#sec-6-7">6.7 Form to manage all publications</a></li>
-<li><a href="#sec-6-8">6.8 Form to manage accessors or groups</a></li>
-<li><a href="#sec-6-9">6.9 finesse the interface</a></li>
+<li><a href="#sec-3-6">3.6 test autoenter creator in contact FAIL</a>
+<ul>
+<li><a href="#sec-3-6-1">3.6.1 manage datasets test</a></li>
+</ul>
+</li>
+<li><a href="#sec-3-7">3.7 Form to manage all publications</a></li>
+<li><a href="#sec-3-8">3.8 Form to manage accessors or groups</a></li>
+<li><a href="#sec-3-9">3.9 finesse the interface</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 backups</a></li>
+<li><a href="#sec-5">5 ETL</a>
+<ul>
+<li><a href="#sec-5-1">5.1 summary of data for ETL</a></li>
+<li><a href="#sec-5-2">5.2 load transformed</a></li>
+<li><a href="#sec-5-3">5.3 summary of EML fields for projects/datasets</a>
+<ul>
+<li><a href="#sec-5-3-1">5.3.1 head</a></li>
+<li><a href="#sec-5-3-2">5.3.2 dataset overview</a></li>
+<li><a href="#sec-5-3-3">5.3.3 umbrella project</a></li>
+<li><a href="#sec-5-3-4">5.3.4 dataset overview</a></li>
+<li><a href="#sec-5-3-5">5.3.5 files entities overview</a></li>
+<li><a href="#sec-5-3-6">5.3.6 attributes</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">5.4 short summary of EML fields for projects/datasets homepage</a>
+<ul>
+<li><a href="#sec-5-4-1">5.4.1 head</a></li>
+<li><a href="#sec-5-4-2">5.4.2 dataset overview</a></li>
+<li><a href="#sec-5-4-3">5.4.3 umbrella project</a></li>
+<li><a href="#sec-5-4-4">5.4.4 dataset overview</a></li>
+<li><a href="#sec-5-4-5">5.4.5 files entities overview</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-5">5.5 data inventory report</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 check in/check out</a>
+<ul>
+<li><a href="#sec-6-1">6.1 checkout from child to master when master not exists</a></li>
+<li><a href="#sec-6-2">6.2 checkout from master to child, assumes you want to replace child (and manually removed it)</a></li>
+<li><a href="#sec-6-3">6.3 DEPRECATED identify-aquire-post-update-review procedures</a></li>
 </ul>
 </li>
 </ul>
@@ -234,17 +252,16 @@ for the JavaScript code in this tag.
 </li>
 <li>The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
 </li>
-<li>This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
+<li>This article describes an approach to use a relational database with web-based forms (using the web2py framework) and helper functions (written in the R and SQL languages) 
 </li>
 </ul>
 
-</div>
 
 </div>
 
-<div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> The Ecological Metadata Language (EML)</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> The Ecological Metadata Language (EML)</h3>
+<div class="outline-text-3" id="text-1-1">
 
 <p>The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (<a href="https://knb.ecoinformatics.org/#tools/eml">https://knb.ecoinformatics.org/#tools/eml</a>).  KNB is a subproject of  Ecoinformatics.org (<a href="http://ecoinformatics.org/">http://ecoinformatics.org/</a>).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
 </p>
@@ -252,9 +269,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-2-1" class="outline-3">
-<h3 id="sec-2-1"><span class="section-number-3">2.1</span> XML</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-1-1-1" class="outline-4">
+<h4 id="sec-1-1-1"><span class="section-number-4">1.1.1</span> XML</h4>
+<div class="outline-text-4" id="text-1-1-1">
 
 <p>A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
 </p>
@@ -298,9 +315,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-2-2" class="outline-3">
-<h3 id="sec-2-2"><span class="section-number-3">2.2</span> A schematic diagram of the EML modules</h3>
-<div class="outline-text-3" id="text-2-2">
+<div id="outline-container-1-1-2" class="outline-4">
+<h4 id="sec-1-1-2"><span class="section-number-4">1.1.2</span> A schematic diagram of the EML modules</h4>
+<div class="outline-text-4" id="text-1-1-2">
 
 <p>In the figure below the EML hierarchy of modules is shown graphically. An EML metadata document contains a dataset module that allows the grouping of one or more data entities linked together by particular integrity constraints to form a Data Package.  The project module places the dataset that is being documented into its larger research context, and optionally allows multiple related Data Packages to be linked. The mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines).
 </p>
@@ -311,9 +328,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-2-3" class="outline-3">
-<h3 id="sec-2-3"><span class="section-number-3">2.3</span> The parts of an EML document</h3>
-<div class="outline-text-3" id="text-2-3">
+<div id="outline-container-1-1-3" class="outline-4">
+<h4 id="sec-1-1-3"><span class="section-number-4">1.1.3</span> The parts of an EML document</h4>
+<div class="outline-text-4" id="text-1-1-3">
 
 <p>In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
@@ -336,20 +353,15 @@ In EML, the term dataset refers to one or more data
 <p>
  Below is a brief description of the way we interpret the components of an EML dataset
 </p>
-
-</div>
-
-<div id="outline-container-2-3-1" class="outline-4">
-<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> Datasets</h4>
-<div class="outline-text-4" id="text-2-3-1">
-
-<p>Dataset is the top level of the EML.  The miminum necessary to
+<ul>
+<li id="sec-1-1-3-1">Datasets<br/>
+Dataset is the top level of the EML.  The miminum necessary to
 produce a valid EML document is &lt;title&gt;, &lt;creator&gt;, &lt;contract&gt;. But
 one can't tell very much with just a title and a name.  Our aim is to
 create an EML document that contains enough information about the data
 and research to make funding agencies happy and give other ecologists
 something to work with.
-</p>
+
 <p>
 Datasets may include one or more data entities such as data tables and spatial images along with associated metadata, but inclusion of data entities are not mandatory. The dataset module enables entities which are linked together to be grouped logically.  LTERN groups entities into a single dataset using a range of integrity constraints such as the use of a specific sampling structure or monitoring theme employed over a discrete temporal and geographic range.
 In the context of the work undertaken by the LTERN Data Portal Team, the term dataset is sometimes used interchangeably with the term “data package”, however it should be recognised that these are not exactly the same.  The dataset module is a part of an EML document which forms the basis for a data package.  
@@ -363,20 +375,16 @@ For more information about the general EML descriptions see:
 </p>
 <p>
 For more detailed information about the EML-dataset module see: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html</a>
-</p></div>
-
-</div>
-
-<div id="outline-container-2-3-2" class="outline-4">
-<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> Projects</h4>
-<div class="outline-text-4" id="text-2-3-2">
-
-<p>The project module is optional, but in many cases highly desirable as
+</p></li>
+</ul>
+<ul>
+<li id="sec-1-1-3-2">Projects<br/>
+The project module is optional, but in many cases highly desirable as
 this provides an overall description of the larger-scale project or
 research context with which that dataset is associated.  For example
 it might be an entire Longterm Ecological Research Network (LTER)
 site, or an individual project at an LTER site.
-</p>
+
 <p>
 The EML “project” module of the EML enables data packages to be grouped logically together. The project module is primarily used by LTERN to identify the Data Owner and the source of funding.
 The project module is recursive in that it provides an overall description of the larger-scale project or research context for the specific project with which that data package is associated.  Information in the project tag of the EML include detailed descriptions of the aims and objectives of the research, funding sources, personnel and a description of the study area.  This module also includes content on the study and sampling design and the methods employed during the research.  As an example, a project might comprise an entire Long Term Ecological Research Network (LTERN) plot network or an individual project at an LTERN site.
@@ -385,19 +393,15 @@ The project module is recursive in that it provides an overall description of th
 For more information about the EML-dataset module see:
 <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html</a>
 </p>
-</div>
-
-</div>
-
-<div id="outline-container-2-3-3" class="outline-4">
-<h4 id="sec-2-3-3"><span class="section-number-4">2.3.3</span> Data Entity</h4>
-<div class="outline-text-4" id="text-2-3-3">
-
-<p>As stated earlier, a dataset consists of one or more data entities,
+</li>
+</ul>
+<ul>
+<li id="sec-1-1-3-3">Data Entity<br/>
+As stated earlier, a dataset consists of one or more data entities,
 and the most common data entity is a &lt;dataTable&gt;. A data table is
 something that looks like a matrix with rows for observations and
 columns for variables
-</p>
+
 <p>
 In addition to datatables, people using database applications may also
   produce a &lt;view&gt; from a database management system or a
@@ -415,190 +419,41 @@ In addition to datatables, people using database applications may also
 <p>
 For more information about types of EML-entities see: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115</a>
 </p>
-</div>
-
-</div>
-
-<div id="outline-container-2-3-4" class="outline-4">
-<h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> Attributes</h4>
-<div class="outline-text-4" id="text-2-3-4">
-
-<p>An attribute or as it is sometime referred to, variable, in this
+</li>
+</ul>
+<ul>
+<li id="sec-1-1-3-4">Attributes<br/>
+An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
-</p>
+
 <p>
 For more information about the EML dataTable type (especially its attributes) see:
 <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute</a>
 </p>
 
 
-</div>
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> web2py</h2>
-<div class="outline-text-2" id="text-3">
 
 
-</div>
 
-<div id="outline-container-3-1" class="outline-3">
-<h3 id="sec-3-1"><span class="section-number-3">3.1</span> set up web2py</h3>
-<div class="outline-text-3" id="text-3-1">
-
-<ul>
-<li>Web2py comes packaged up with everything it needs to run on a system (just needs python)
-</li>
-<li>run this using:
 </li>
 </ul>
-
-
-
-
-<pre class="src src-sh"><span style="color: #586e75;">#### </span><span style="color: #586e75;">Code:</span>
-    python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
-</pre>
-
-
 </div>
-
-</div>
-
-<div id="outline-container-3-2" class="outline-3">
-<h3 id="sec-3-2"><span class="section-number-3">3.2</span> the web2py database example</h3>
-<div class="outline-text-3" id="text-3-2">
-
-<ul>
-<li>once the web server is running the example can be visited at this link:
-</li>
-<li><a href="http://127.0.0.1:8181/examples/default/examples#database\_examples">http://127.0.0.1:8181/examples/default/examples#database_examples</a>
-</li>
-<li>The default configuration of web2py uses the SQLite database engine
-</li>
-<li>Our implementation also utilises the PostgreSQL database which should be installed separately
-</li>
-</ul>
-
-</div>
-
-</div>
-
-<div id="outline-container-3-3" class="outline-3">
-<h3 id="sec-3-3"><span class="section-number-3">3.3</span> installer</h3>
-<div class="outline-text-3" id="text-3-3">
-
-
-
 </div>
 </div>
 
 </div>
 
-<div id="outline-container-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Design the database</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Definitons and tips for each metadata field</h2>
+<div class="outline-text-2" id="text-2">
 
-
-</div>
-
-<div id="outline-container-4-1" class="outline-3">
-<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Create a new database</h3>
-<div class="outline-text-3" id="text-4-1">
-
-<ul>
-<li>create a new postgres database using the following  code
-</li>
-</ul>
-
-
-
-
-<pre class="src src-sh">sudo su
-su - postgres 
-createdb data_inventory
-psql -d data_inventory
-CREATE ROLE w2p_user LOGIN PASSWORD <span style="color: #2aa198;">'xpassword'</span>;
-grant all on schema public to w2p_user;
-\q
-</pre>
-
-</div>
-
-</div>
-
-<div id="outline-container-4-2" class="outline-3">
-<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Create a new web2py application</h3>
-<div class="outline-text-3" id="text-4-2">
-
-<ul>
-<li>this will create a directory in the applications folder of the web2py home directory
-</li>
-</ul>
-
-
-
-
-<pre class="src src-sh"><span style="color: #268bd2; font-style: italic;">cd</span> ~/tools/web2py 
-python ./web2py.py -S data_inventory
-</pre>
-
-
-</div>
-
-</div>
-
-<div id="outline-container-4-3" class="outline-3">
-<h3 id="sec-4-3"><span class="section-number-3">4.3</span> relational model</h3>
-<div class="outline-text-3" id="text-4-3">
-
-<ul>
-<li>The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
-</li>
-</ul>
-
-</div>
-
-</div>
-
-<div id="outline-container-4-4" class="outline-3">
-<h3 id="sec-4-4"><span class="section-number-3">4.4</span> defaults for models/db.py</h3>
-<div class="outline-text-3" id="text-4-4">
-
-<ul>
-<li>the database tables are set up in the models/db.py file that comes with default settings
-</li>
-<li>The first bit to change is the db reference from SQLite to postgres
-</li>
-<li>also note that "#if request.is_local else []" will allow using as a server
-</li>
-<li>Then add new table definitions down the bottom.  
-</li>
-<li>Here we added projects, datasets, datatables and attributes.
-</li>
-</ul>
-
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Define our tables</h2>
-<div class="outline-text-2" id="text-5">
-
-<p>The following sections show the definitions LTERN used to create the data inventory
+<p>The following sections show the definitions used to create the data inventory:
 </p>
 </div>
 
-<div id="outline-container-5-1" class="outline-3">
-<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Project Information and Data Owners</h3>
-<div class="outline-text-3" id="text-5-1">
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Project Information and Data Owners</h3>
+<div class="outline-text-3" id="text-2-1">
 
 <ul>
 <li>The EML Project module is used to place the dataset that is being documented into its larger research context.
@@ -620,9 +475,9 @@ python ./web2py.py -S data_inventory
 
 </div>
 
-<div id="outline-container-5-1-1" class="outline-4">
-<h4 id="sec-5-1-1"><span class="section-number-4">5.1.1</span> eml/dataset/project/title</h4>
-<div class="outline-text-4" id="text-5-1-1">
+<div id="outline-container-2-1-1" class="outline-4">
+<h4 id="sec-2-1-1"><span class="section-number-4">2.1.1</span> eml/dataset/project/title</h4>
+<div class="outline-text-4" id="text-2-1-1">
 
 <p>LTERN's suggested structure is either:
 </p><ul>
@@ -641,9 +496,9 @@ python ./web2py.py -S data_inventory
 
 </div>
 
-<div id="outline-container-5-1-2" class="outline-4">
-<h4 id="sec-5-1-2"><span class="section-number-4">5.1.2</span> eml/dataset/project/personnel</h4>
-<div class="outline-text-4" id="text-5-1-2">
+<div id="outline-container-2-1-2" class="outline-4">
+<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> eml/dataset/project/personnel</h4>
+<div class="outline-text-4" id="text-2-1-2">
 
 <p>In EML the Data Owner is able to be shown at various points on the xpath.  
 LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
@@ -659,7 +514,7 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 
 
 <ul>
-<li id="sec-5-1-2-1">personnel general<br/>
+<li id="sec-2-1-2-1">personnel general<br/>
 
 
 
@@ -676,9 +531,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True,
 
 </div>
 
-<div id="outline-container-5-1-3" class="outline-4">
-<h4 id="sec-5-1-3"><span class="section-number-4">5.1.3</span> eml/dataset/project/abstract</h4>
-<div class="outline-text-4" id="text-5-1-3">
+<div id="outline-container-2-1-3" class="outline-4">
+<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> eml/dataset/project/abstract</h4>
+<div class="outline-text-4" id="text-2-1-3">
 
 <p>The following information is used to create the LTERN Data Portal record for each Data Package:
 Complete this section of the contextual metadata last. In that way you can collate the key facts from the rest of the metadata elements – the ‘quick touch’ approach.
@@ -709,9 +564,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-1-4" class="outline-4">
-<h4 id="sec-5-1-4"><span class="section-number-4">5.1.4</span> eml/dataset/project/studyAreaDescription</h4>
-<div class="outline-text-4" id="text-5-1-4">
+<div id="outline-container-2-1-4" class="outline-4">
+<h4 id="sec-2-1-4"><span class="section-number-4">2.1.4</span> eml/dataset/project/studyAreaDescription</h4>
+<div class="outline-text-4" id="text-2-1-4">
 
 <ul>
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription">EML online</a>
@@ -732,17 +587,17 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2" class="outline-3">
-<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Dataset</h3>
-<div class="outline-text-3" id="text-5-2">
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Dataset</h3>
+<div class="outline-text-3" id="text-2-2">
 
 
 
 </div>
 
-<div id="outline-container-5-2-1" class="outline-4">
-<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> dataset shortname</h4>
-<div class="outline-text-4" id="text-5-2-1">
+<div id="outline-container-2-2-1" class="outline-4">
+<h4 id="sec-2-2-1"><span class="section-number-4">2.2.1</span> dataset shortname</h4>
+<div class="outline-text-4" id="text-2-2-1">
 
 <p>TODO
 </p>
@@ -750,9 +605,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-2" class="outline-4">
-<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> dataset title</h4>
-<div class="outline-text-4" id="text-5-2-2">
+<div id="outline-container-2-2-2" class="outline-4">
+<h4 id="sec-2-2-2"><span class="section-number-4">2.2.2</span> dataset title</h4>
+<div class="outline-text-4" id="text-2-2-2">
 
 <p>TODO
 </p>
@@ -760,9 +615,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-3" class="outline-4">
-<h4 id="sec-5-2-3"><span class="section-number-4">5.2.3</span> dataset creator</h4>
-<div class="outline-text-4" id="text-5-2-3">
+<div id="outline-container-2-2-3" class="outline-4">
+<h4 id="sec-2-2-3"><span class="section-number-4">2.2.3</span> dataset creator</h4>
+<div class="outline-text-4" id="text-2-2-3">
 
 <p>TODO
 </p>
@@ -770,9 +625,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-4" class="outline-4">
-<h4 id="sec-5-2-4"><span class="section-number-4">5.2.4</span> dataset contact</h4>
-<div class="outline-text-4" id="text-5-2-4">
+<div id="outline-container-2-2-4" class="outline-4">
+<h4 id="sec-2-2-4"><span class="section-number-4">2.2.4</span> dataset contact</h4>
+<div class="outline-text-4" id="text-2-2-4">
 
 <p>TODO
 </p>
@@ -780,9 +635,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-5" class="outline-4">
-<h4 id="sec-5-2-5"><span class="section-number-4">5.2.5</span> dataset abstract</h4>
-<div class="outline-text-4" id="text-5-2-5">
+<div id="outline-container-2-2-5" class="outline-4">
+<h4 id="sec-2-2-5"><span class="section-number-4">2.2.5</span> dataset abstract</h4>
+<div class="outline-text-4" id="text-2-2-5">
 
 <p>This should be brief but include:
 </p><ul>
@@ -800,9 +655,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-6" class="outline-4">
-<h4 id="sec-5-2-6"><span class="section-number-4">5.2.6</span> dataset additional metadata links</h4>
-<div class="outline-text-4" id="text-5-2-6">
+<div id="outline-container-2-2-6" class="outline-4">
+<h4 id="sec-2-2-6"><span class="section-number-4">2.2.6</span> dataset additional metadata links</h4>
+<div class="outline-text-4" id="text-2-2-6">
 
 <p>TODO
 </p>
@@ -810,9 +665,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-7" class="outline-4">
-<h4 id="sec-5-2-7"><span class="section-number-4">5.2.7</span> dataset methods/studyextent</h4>
-<div class="outline-text-4" id="text-5-2-7">
+<div id="outline-container-2-2-7" class="outline-4">
+<h4 id="sec-2-2-7"><span class="section-number-4">2.2.7</span> dataset methods/studyextent</h4>
+<div class="outline-text-4" id="text-2-2-7">
 
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent</a>
@@ -826,9 +681,9 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-8" class="outline-4">
-<h4 id="sec-5-2-8"><span class="section-number-4">5.2.8</span> dataset temporal coverage</h4>
-<div class="outline-text-4" id="text-5-2-8">
+<div id="outline-container-2-2-8" class="outline-4">
+<h4 id="sec-2-2-8"><span class="section-number-4">2.2.8</span> dataset temporal coverage</h4>
+<div class="outline-text-4" id="text-2-2-8">
 
 
 
@@ -836,12 +691,12 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 </div>
 
-<div id="outline-container-5-2-9" class="outline-4">
-<h4 id="sec-5-2-9"><span class="section-number-4">5.2.9</span> dataset methods protocol</h4>
-<div class="outline-text-4" id="text-5-2-9">
+<div id="outline-container-2-2-9" class="outline-4">
+<h4 id="sec-2-2-9"><span class="section-number-4">2.2.9</span> dataset methods protocol</h4>
+<div class="outline-text-4" id="text-2-2-9">
 
 <ul>
-<li id="sec-5-2-9-1">general EML methods module info<br/>
+<li id="sec-2-2-9-1">general EML methods module info<br/>
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html</a>
 </li>
@@ -856,7 +711,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 </li>
 </ul>
 <ul>
-<li id="sec-5-2-9-2">Recommendations for protocol<br/>
+<li id="sec-2-2-9-2">Recommendations for protocol<br/>
 The protocol information can be captured in two places of EML
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html</a>
@@ -912,9 +767,9 @@ If possible also details of the sequence of planned analyses, with statistical m
 
 </div>
 
-<div id="outline-container-5-2-10" class="outline-4">
-<h4 id="sec-5-2-10"><span class="section-number-4">5.2.10</span> dataset sampling description</h4>
-<div class="outline-text-4" id="text-5-2-10">
+<div id="outline-container-2-2-10" class="outline-4">
+<h4 id="sec-2-2-10"><span class="section-number-4">2.2.10</span> dataset sampling description</h4>
+<div class="outline-text-4" id="text-2-2-10">
 
 <ul>
 <li>Similar to a description of sampling procedures found in the methods section of a journal article.
@@ -927,9 +782,9 @@ If possible also details of the sequence of planned analyses, with statistical m
 
 </div>
 
-<div id="outline-container-5-2-11" class="outline-4">
-<h4 id="sec-5-2-11"><span class="section-number-4">5.2.11</span> dataset method steps</h4>
-<div class="outline-text-4" id="text-5-2-11">
+<div id="outline-container-2-2-11" class="outline-4">
+<h4 id="sec-2-2-11"><span class="section-number-4">2.2.11</span> dataset method steps</h4>
+<div class="outline-text-4" id="text-2-2-11">
 
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep</a>
@@ -950,9 +805,9 @@ If possible also details of the sequence of planned analyses, with statistical m
 
 </div>
 
-<div id="outline-container-5-2-12" class="outline-4">
-<h4 id="sec-5-2-12"><span class="section-number-4">5.2.12</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
-<div class="outline-text-4" id="text-5-2-12">
+<div id="outline-container-2-2-12" class="outline-4">
+<h4 id="sec-2-2-12"><span class="section-number-4">2.2.12</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
+<div class="outline-text-4" id="text-2-2-12">
 
 
 
@@ -967,9 +822,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-13" class="outline-4">
-<h4 id="sec-5-2-13"><span class="section-number-4">5.2.13</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
-<div class="outline-text-4" id="text-5-2-13">
+<div id="outline-container-2-2-13" class="outline-4">
+<h4 id="sec-2-2-13"><span class="section-number-4">2.2.13</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
+<div class="outline-text-4" id="text-2-2-13">
 
 
 
@@ -984,9 +839,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-14" class="outline-4">
-<h4 id="sec-5-2-14"><span class="section-number-4">5.2.14</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
-<div class="outline-text-4" id="text-5-2-14">
+<div id="outline-container-2-2-14" class="outline-4">
+<h4 id="sec-2-2-14"><span class="section-number-4">2.2.14</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
+<div class="outline-text-4" id="text-2-2-14">
 
 
 
@@ -998,9 +853,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-15" class="outline-4">
-<h4 id="sec-5-2-15"><span class="section-number-4">5.2.15</span> <span class="todo TODO">TODO</span> dataset additional info</h4>
-<div class="outline-text-4" id="text-5-2-15">
+<div id="outline-container-2-2-15" class="outline-4">
+<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> <span class="todo TODO">TODO</span> dataset additional info</h4>
+<div class="outline-text-4" id="text-2-2-15">
 
 
 
@@ -1014,9 +869,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-16" class="outline-4">
-<h4 id="sec-5-2-16"><span class="section-number-4">5.2.16</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
-<div class="outline-text-4" id="text-5-2-16">
+<div id="outline-container-2-2-16" class="outline-4">
+<h4 id="sec-2-2-16"><span class="section-number-4">2.2.16</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
+<div class="outline-text-4" id="text-2-2-16">
 
 
 
@@ -1031,9 +886,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-17" class="outline-4">
-<h4 id="sec-5-2-17"><span class="section-number-4">5.2.17</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
-<div class="outline-text-4" id="text-5-2-17">
+<div id="outline-container-2-2-17" class="outline-4">
+<h4 id="sec-2-2-17"><span class="section-number-4">2.2.17</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
+<div class="outline-text-4" id="text-2-2-17">
 
 
 
@@ -1045,9 +900,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-18" class="outline-4">
-<h4 id="sec-5-2-18"><span class="section-number-4">5.2.18</span> <span class="todo TODO">TODO</span> access<sub>rules</sub> (ie ethics required)</h4>
-<div class="outline-text-4" id="text-5-2-18">
+<div id="outline-container-2-2-18" class="outline-4">
+<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> access<sub>rules</sub> (ie ethics required)</h4>
+<div class="outline-text-4" id="text-2-2-18">
 
 
 
@@ -1060,12 +915,12 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-5-2-19" class="outline-4">
-<h4 id="sec-5-2-19"><span class="section-number-4">5.2.19</span> <span class="todo TODO">TODO</span> distribution<sub>method</sub></h4>
-<div class="outline-text-4" id="text-5-2-19">
+<div id="outline-container-2-2-19" class="outline-4">
+<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> distribution<sub>method</sub></h4>
+<div class="outline-text-4" id="text-2-2-19">
 
 <ul>
-<li id="sec-5-2-19-1">ideas<br/>
+<li id="sec-2-2-19-1">ideas<br/>
 new field = dataset/distribution<sub>methods</sub>
 The methods of distribution used for others to access the software, data, and documentation.
 
@@ -1086,7 +941,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </p></li>
 </ul>
 <ul>
-<li id="sec-5-2-19-2">code<br/>
+<li id="sec-2-2-19-2">code<br/>
 
 
 
@@ -1099,9 +954,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-2-20" class="outline-4">
-<h4 id="sec-5-2-20"><span class="section-number-4">5.2.20</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
-<div class="outline-text-4" id="text-5-2-20">
+<div id="outline-container-2-2-20" class="outline-4">
+<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
+<div class="outline-text-4" id="text-2-2-20">
 
 
 
@@ -1118,9 +973,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-3" class="outline-3">
-<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Data Entity (dataTable)</h3>
-<div class="outline-text-3" id="text-5-3">
+<div id="outline-container-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Data Entity (dataTable)</h3>
+<div class="outline-text-3" id="text-2-3">
 
 <ul>
 <li>The entity level is for data files, tables, shapefiles, photos etc.  
@@ -1137,18 +992,18 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-3-1" class="outline-4">
-<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> eml/dataset/entity/id</h4>
-<div class="outline-text-4" id="text-5-3-1">
+<div id="outline-container-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> eml/dataset/entity/id</h4>
+<div class="outline-text-4" id="text-2-3-1">
 
 
 </div>
 
 </div>
 
-<div id="outline-container-5-3-2" class="outline-4">
-<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> eml/dataset/entity/name</h4>
-<div class="outline-text-4" id="text-5-3-2">
+<div id="outline-container-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> eml/dataset/entity/name</h4>
+<div class="outline-text-4" id="text-2-3-2">
 
 
 
@@ -1160,9 +1015,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-3-3" class="outline-4">
-<h4 id="sec-5-3-3"><span class="section-number-4">5.3.3</span> eml/dataset/entity/description</h4>
-<div class="outline-text-4" id="text-5-3-3">
+<div id="outline-container-2-3-3" class="outline-4">
+<h4 id="sec-2-3-3"><span class="section-number-4">2.3.3</span> eml/dataset/entity/description</h4>
+<div class="outline-text-4" id="text-2-3-3">
 
 
 
@@ -1175,9 +1030,26 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-3-4" class="outline-4">
-<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> <span class="todo TODO">TODO</span> temporal cov</h4>
-<div class="outline-text-4" id="text-5-3-4">
+<div id="outline-container-2-3-4" class="outline-4">
+<h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> eml/dataset/entity/physical/distribution</h4>
+<div class="outline-text-4" id="text-2-3-4">
+
+<ul>
+<li>The PhysicalDistribution contains the information required for retrieving the resource.
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution">EML online</a>
+</li>
+</ul>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-3-5" class="outline-4">
+<h4 id="sec-2-3-5"><span class="section-number-4">2.3.5</span> <span class="todo TODO">TODO</span> temporal cov</h4>
+<div class="outline-text-4" id="text-2-3-5">
 
 
 
@@ -1190,9 +1062,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-5-3-5" class="outline-4">
-<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> eml/dataset/entity methods</h4>
-<div class="outline-text-4" id="text-5-3-5">
+<div id="outline-container-2-3-6" class="outline-4">
+<h4 id="sec-2-3-6"><span class="section-number-4">2.3.6</span> eml/dataset/entity methods</h4>
+<div class="outline-text-4" id="text-2-3-6">
 
 
 
@@ -1201,23 +1073,6 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </pre>
 
 
-</div>
-
-</div>
-
-<div id="outline-container-5-3-6" class="outline-4">
-<h4 id="sec-5-3-6"><span class="section-number-4">5.3.6</span> eml/dataset/entity/physical/distribution</h4>
-<div class="outline-text-4" id="text-5-3-6">
-
-<ul>
-<li>The PhysicalDistribution contains the information required for retrieving the resource.
-</li>
-<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution">EML online</a>
-</li>
-</ul>
-
-
-
 
 
 
@@ -1237,16 +1092,16 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> Design User Interface</h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Design User Interface</h2>
+<div class="outline-text-2" id="text-3">
 
 
 </div>
 
-<div id="outline-container-6-1" class="outline-3">
-<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Defaults for controllers/default.py</h3>
-<div class="outline-text-3" id="text-6-1">
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Defaults for controllers/default.py</h3>
+<div class="outline-text-3" id="text-3-1">
 
 <ul>
 <li>Following the example in the documentation 
@@ -1259,9 +1114,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Top Menu</h3>
-<div class="outline-text-3" id="text-6-2">
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Top Menu</h3>
+<div class="outline-text-3" id="text-3-2">
 
 <ul>
 <li>From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
@@ -1287,9 +1142,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-3" class="outline-3">
-<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Access a dataset</h3>
-<div class="outline-text-3" id="text-6-3">
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Access a dataset</h3>
+<div class="outline-text-3" id="text-3-3">
 
 <ul>
 <li>Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
@@ -1346,9 +1201,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-4" class="outline-3">
-<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Main form ties it all together (manage projects)</h3>
-<div class="outline-text-3" id="text-6-4">
+<div id="outline-container-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Main form ties it all together (manage projects)</h3>
+<div class="outline-text-3" id="text-3-4">
 
 
 
@@ -1356,7 +1211,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 <pre class="src src-R">def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
                                                       ],
-                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                             fields = [db.project.title, db.project.personnel_data_owner,
                                        db.dataset.shortname,
 
 
@@ -1374,7 +1229,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
                                        orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=35)
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
     <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
 </pre>
 
@@ -1384,24 +1239,16 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-5" class="outline-3">
-<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Form to manage all dataset</h3>
-<div class="outline-text-3" id="text-6-5">
-
-</div>
-
-</div>
-
-<div id="outline-container-6-6" class="outline-3">
-<h3 id="sec-6-6"><span class="section-number-3">6.6</span> test autoenter creator in contact FAIL</h3>
-<div class="outline-text-3" id="text-6-6">
+<div id="outline-container-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Form to manage all dataset</h3>
+<div class="outline-text-3" id="text-3-5">
 
 
 </div>
 
-<div id="outline-container-6-6-1" class="outline-4">
-<h4 id="sec-6-6-1"><span class="section-number-4">6.6.1</span> manage datasets</h4>
-<div class="outline-text-4" id="text-6-6-1">
+<div id="outline-container-3-5-1" class="outline-4">
+<h4 id="sec-3-5-1"><span class="section-number-4">3.5.1</span> manage datasets</h4>
+<div class="outline-text-4" id="text-3-5-1">
 
 
 
@@ -1433,14 +1280,23 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-
+</div>
 </div>
 
 </div>
 
-<div id="outline-container-6-6-2" class="outline-4">
-<h4 id="sec-6-6-2"><span class="section-number-4">6.6.2</span> manage datasets test</h4>
-<div class="outline-text-4" id="text-6-6-2">
+<div id="outline-container-3-6" class="outline-3">
+<h3 id="sec-3-6"><span class="section-number-3">3.6</span> test autoenter creator in contact FAIL</h3>
+<div class="outline-text-3" id="text-3-6">
+
+
+
+
+</div>
+
+<div id="outline-container-3-6-1" class="outline-4">
+<h4 id="sec-3-6-1"><span class="section-number-4">3.6.1</span> manage datasets test</h4>
+<div class="outline-text-4" id="text-3-6-1">
 
 
 
@@ -1480,9 +1336,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-7" class="outline-3">
-<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage all publications</h3>
-<div class="outline-text-3" id="text-6-7">
+<div id="outline-container-3-7" class="outline-3">
+<h3 id="sec-3-7"><span class="section-number-3">3.7</span> Form to manage all publications</h3>
+<div class="outline-text-3" id="text-3-7">
 
 
 
@@ -1506,9 +1362,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-8" class="outline-3">
-<h3 id="sec-6-8"><span class="section-number-3">6.8</span> Form to manage accessors or groups</h3>
-<div class="outline-text-3" id="text-6-8">
+<div id="outline-container-3-8" class="outline-3">
+<h3 id="sec-3-8"><span class="section-number-3">3.8</span> Form to manage accessors or groups</h3>
+<div class="outline-text-3" id="text-3-8">
 
 
 
@@ -1518,22 +1374,16 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-6-9" class="outline-3">
-<h3 id="sec-6-9"><span class="section-number-3">6.9</span> finesse the interface</h3>
-<div class="outline-text-3" id="text-6-9">
+<div id="outline-container-3-9" class="outline-3">
+<h3 id="sec-3-9"><span class="section-number-3">3.9</span> finesse the interface</h3>
+<div class="outline-text-3" id="text-3-9">
 
 <ul>
 <li>the following makes a home page
 </li>
-<li>TODO note that the org chunk is messed up this means it won't tangle. 
+<li>TODO the indenting is stuffed in the index chunk
+
 </li>
-<li>also it implements a pre-approval process that may be overkill for general users
-</li>
-</ul>
-
-
-
-<ul>
 <li>also go to static/css/web2py.css and change line 33/34 text width to about 800px
 </li>
 <li>removed from just above instructions and replaced with if auth is logged after instructions.
@@ -1549,60 +1399,268 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </li>
 </ul>
 
-<p>  {{left<sub>sidebar</sub><sub>enabled</sub>,right<sub>sidebar</sub><sub>enabled</sub>=False,('message' in globals())}}
-{{extend 'layout.html'}}
-</p>
 
-<p>
+
+
+<pre class="src src-markdown">  {{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+  
+
   &lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
   &lt;li&gt;{{=T('To use the data inventory please register in top right corner.')}}&lt;/li&gt;
-  {{if auth.is<sub>logged</sub><sub>in</sub>():}}
+  {{if auth.is<span style="color: #268bd2; font-style: italic;">_logged_</span>in():}}
 &lt;ol&gt;
     &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-             A('%(application)s/forms/manage<sub>projects</sub>/'%request,
-           <sub>href</sub>=URL('forms','manage<sub>projects'</sub>))))}}&lt;/li&gt;
+             A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
+<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
     &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
-           A('%(application)s/forms/manage<sub>datasets</sub>/'%request,
-             <sub>href</sub>=URL('forms','manage<sub>datasets'</sub>))))}}&lt;/li&gt;
+           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_datasets/'%request,</span>
+<span style="color: #268bd2; font-style: italic;">             _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
   &lt;li&gt;{{=XML(T('The technical documentation for this application is at %s',
              A('this link',
-           <sub>href</sub>=URL('static','index.html'))))}}&lt;/li&gt;
-    &lt;li&gt;{{=XML(T('The links to other apps is at %s',
-           A('this link',
-             <sub>href</sub>=URL('audio','default','index'))))}}&lt;/li&gt;
-&lt;/ol&gt;
-  {{elif 'content' in globals():}}
-{{=content}}
-  {{else:}}
-{{=BEAUTIFY(response.<sub>vars</sub>)}}
+           <span style="color: #268bd2; font-style: italic;">_href=URL('static','index.html'), _target='new')))}}&lt;/li&gt;</span>
+<span style="color: #268bd2; font-style: italic;">&lt;/ol&gt;</span>
+<span style="color: #268bd2; font-style: italic;">  {{elif 'content' in globals():}}</span>
+<span style="color: #268bd2; font-style: italic;">{{=content}}</span>
+<span style="color: #268bd2; font-style: italic;">  {{else:}}</span>
+<span style="color: #268bd2; font-style: italic;">{{=BEAUTIFY(response._</span>vars)}}
   {{pass}}
-</p>
-<p>
-  {{block right<sub>sidebar</sub>}}
-{{<code>A(T("About this site"), _href=URL('static', 'index.html'), _class</code>'btn',
-       <sub>style</sub>='margin-top: 1em;')}}
+
+  {{block right_sidebar}}
+{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
+       _style='margin-top: 1em;')}}
 {{end}}
-</p>
+  
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
 
 </div>
 
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> backups</h2>
+<div class="outline-text-2" id="text-4">
 
 
 
 
 
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> ETL</h2>
+<div class="outline-text-2" id="text-5">
 
 
 
 
+</div>
+
+<div id="outline-container-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> summary of data for ETL</h3>
+<div class="outline-text-3" id="text-5-1">
 
 
 
 
+</div>
+
+</div>
+
+<div id="outline-container-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> load transformed</h3>
+<div class="outline-text-3" id="text-5-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> summary of EML fields for projects/datasets</h3>
+<div class="outline-text-3" id="text-5-3">
+
+
+</div>
+
+<div id="outline-container-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> head</h4>
+<div class="outline-text-4" id="text-5-3-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-2" class="outline-4">
+<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> dataset overview</h4>
+<div class="outline-text-4" id="text-5-3-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-3" class="outline-4">
+<h4 id="sec-5-3-3"><span class="section-number-4">5.3.3</span> umbrella project</h4>
+<div class="outline-text-4" id="text-5-3-3">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-4" class="outline-4">
+<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> dataset overview</h4>
+<div class="outline-text-4" id="text-5-3-4">
 
 
 
+</div>
+
+</div>
+
+<div id="outline-container-5-3-5" class="outline-4">
+<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> files entities overview</h4>
+<div class="outline-text-4" id="text-5-3-5">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3-6" class="outline-4">
+<h4 id="sec-5-3-6"><span class="section-number-4">5.3.6</span> attributes</h4>
+<div class="outline-text-4" id="text-5-3-6">
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> short summary of EML fields for projects/datasets homepage</h3>
+<div class="outline-text-3" id="text-5-4">
+
+
+</div>
+
+<div id="outline-container-5-4-1" class="outline-4">
+<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> head</h4>
+<div class="outline-text-4" id="text-5-4-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-4-2" class="outline-4">
+<h4 id="sec-5-4-2"><span class="section-number-4">5.4.2</span> dataset overview</h4>
+<div class="outline-text-4" id="text-5-4-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-4-3" class="outline-4">
+<h4 id="sec-5-4-3"><span class="section-number-4">5.4.3</span> umbrella project</h4>
+<div class="outline-text-4" id="text-5-4-3">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-4-4" class="outline-4">
+<h4 id="sec-5-4-4"><span class="section-number-4">5.4.4</span> dataset overview</h4>
+<div class="outline-text-4" id="text-5-4-4">
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5-4-5" class="outline-4">
+<h4 id="sec-5-4-5"><span class="section-number-4">5.4.5</span> files entities overview</h4>
+<div class="outline-text-4" id="text-5-4-5">
+
+<p>EML<sub>metadata</sub><sub>short</sub>.Rmd
+</p>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5-5" class="outline-3">
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> data inventory report</h3>
+<div class="outline-text-3" id="text-5-5">
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> check in/check out</h2>
+<div class="outline-text-2" id="text-6">
+
+
+</div>
+
+<div id="outline-container-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> checkout from child to master when master not exists</h3>
+<div class="outline-text-3" id="text-6-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> checkout from master to child, assumes you want to replace child (and manually removed it)</h3>
+<div class="outline-text-3" id="text-6-2">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> DEPRECATED identify-aquire-post-update-review procedures</h3>
+<div class="outline-text-3" id="text-6-3">
+
+<ul>
+<li>doco for identified data are in a sep database so not to mess up clean inventory
+</li>
+<li>once data aquisitioon has started transfer to the main data inventory
+</li>
+</ul>
 
 
 </div>
