@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2016-02-07T14:12+1100"/>
+<meta name="generated" content="2016-02-07T14:21+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -139,7 +139,7 @@ for the JavaScript code in this tag.
 </ul></li>
 </ul>
 </li>
-<li><a href="#sec-2">2 Definitons and tips for each metadata field</a>
+<li><a href="#sec-2">2 Definitions and tips for each metadata field</a>
 <ul>
 <li><a href="#sec-2-1">2.1 Project Information and Data Owners</a>
 <ul>
@@ -165,11 +165,11 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-2-12">2.2.12 dataset Geographic</a></li>
 <li><a href="#sec-2-2-13">2.2.13 dataset bounding coords</a></li>
 <li><a href="#sec-2-2-14">2.2.14 dataset taxo cov</a></li>
-<li><a href="#sec-2-2-15">2.2.15 dataset additional info</a></li>
+<li><a href="#sec-2-2-15">2.2.15 additional info</a></li>
 <li><a href="#sec-2-2-16">2.2.16 dataset alternateidentifier</a></li>
 <li><a href="#sec-2-2-17">2.2.17 dataset pubdate</a></li>
-<li><a href="#sec-2-2-18">2.2.18 access<sub>rules</sub> (ie ethics required)</a></li>
-<li><a href="#sec-2-2-19">2.2.19 distribution<sub>method</sub></a></li>
+<li><a href="#sec-2-2-18">2.2.18 access rules</a></li>
+<li><a href="#sec-2-2-19">2.2.19 distribution method</a></li>
 <li><a href="#sec-2-2-20">2.2.20 metadataprovider</a></li>
 </ul>
 </li>
@@ -181,62 +181,8 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-3-4">2.3.4 eml/dataset/entity/physical/distribution</a></li>
 <li><a href="#sec-2-3-5">2.3.5 temporal cov</a></li>
 <li><a href="#sec-2-3-6">2.3.6 eml/dataset/entity methods</a></li>
-</ul></li>
 </ul>
 </li>
-<li><a href="#sec-3">3 Design User Interface</a>
-<ul>
-<li><a href="#sec-3-1">3.1 Defaults for controllers/default.py</a></li>
-<li><a href="#sec-3-2">3.2 Top Menu</a></li>
-<li><a href="#sec-3-3">3.3 Access a dataset</a></li>
-<li><a href="#sec-3-4">3.4 Main form ties it all together (manage projects)</a></li>
-<li><a href="#sec-3-5">3.5 Form to manage all dataset</a>
-<ul>
-<li><a href="#sec-3-5-1">3.5.1 manage datasets</a></li>
-</ul>
-</li>
-<li><a href="#sec-3-6">3.6 test autoenter creator in contact FAIL</a>
-<ul>
-<li><a href="#sec-3-6-1">3.6.1 manage datasets test</a></li>
-</ul>
-</li>
-<li><a href="#sec-3-7">3.7 Form to manage all publications</a></li>
-<li><a href="#sec-3-8">3.8 Form to manage accessors or groups</a></li>
-<li><a href="#sec-3-9">3.9 finesse the interface</a></li>
-</ul>
-</li>
-<li><a href="#sec-4">4 backups</a></li>
-<li><a href="#sec-5">5 ETL</a>
-<ul>
-<li><a href="#sec-5-1">5.1 summary of data for ETL</a></li>
-<li><a href="#sec-5-2">5.2 load transformed</a></li>
-<li><a href="#sec-5-3">5.3 summary of EML fields for projects/datasets</a>
-<ul>
-<li><a href="#sec-5-3-1">5.3.1 head</a></li>
-<li><a href="#sec-5-3-2">5.3.2 dataset overview</a></li>
-<li><a href="#sec-5-3-3">5.3.3 umbrella project</a></li>
-<li><a href="#sec-5-3-4">5.3.4 dataset overview</a></li>
-<li><a href="#sec-5-3-5">5.3.5 files entities overview</a></li>
-<li><a href="#sec-5-3-6">5.3.6 attributes</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-4">5.4 short summary of EML fields for projects/datasets homepage</a>
-<ul>
-<li><a href="#sec-5-4-1">5.4.1 head</a></li>
-<li><a href="#sec-5-4-2">5.4.2 dataset overview</a></li>
-<li><a href="#sec-5-4-3">5.4.3 umbrella project</a></li>
-<li><a href="#sec-5-4-4">5.4.4 dataset overview</a></li>
-<li><a href="#sec-5-4-5">5.4.5 files entities overview</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-5">5.5 data inventory report</a></li>
-</ul>
-</li>
-<li><a href="#sec-6">6 check in/check out</a>
-<ul>
-<li><a href="#sec-6-1">6.1 checkout from child to master when master not exists</a></li>
-<li><a href="#sec-6-2">6.2 checkout from master to child, assumes you want to replace child (and manually removed it)</a></li>
-<li><a href="#sec-6-3">6.3 DEPRECATED identify-aquire-post-update-review procedures</a></li>
 </ul>
 </li>
 </ul>
@@ -444,7 +390,7 @@ For more information about the EML dataTable type (especially its attributes) se
 </div>
 
 <div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Definitons and tips for each metadata field</h2>
+<h2 id="sec-2"><span class="section-number-2">2</span> Definitions and tips for each metadata field</h2>
 <div class="outline-text-2" id="text-2">
 
 <p>The following sections show the definitions used to create the data inventory:
@@ -479,7 +425,7 @@ For more information about the EML dataTable type (especially its attributes) se
 <h4 id="sec-2-1-1"><span class="section-number-4">2.1.1</span> eml/dataset/project/title</h4>
 <div class="outline-text-4" id="text-2-1-1">
 
-<p>LTERN's suggested structure is either:
+<p>The suggested structure is either:
 </p><ul>
 <li>the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
 </li>
@@ -599,8 +545,19 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 <h4 id="sec-2-2-1"><span class="section-number-4">2.2.1</span> dataset shortname</h4>
 <div class="outline-text-4" id="text-2-2-1">
 
-<p>TODO
+<p>A concise name, eg. vernal-data-1999.
+The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
 </p>
+<ul>
+<li><a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName</a>
+</li>
+<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName</a>
+</li>
+</ul>
+
+
+
+
 </div>
 
 </div>
@@ -854,16 +811,19 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-2-2-15" class="outline-4">
-<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> <span class="todo TODO">TODO</span> dataset additional info</h4>
+<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> additional info</h4>
 <div class="outline-text-4" id="text-2-2-15">
 
+<p>Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
+</p>
+<ul>
+<li>EML Standard: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
+</li>
+<li>Local Link: <a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
+</li>
+</ul>
 
 
-
-<pre class="src src-markdown">  Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
-  ),
-</pre>
 
 </div>
 
@@ -901,10 +861,11 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-2-2-18" class="outline-4">
-<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> access<sub>rules</sub> (ie ethics required)</h4>
+<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> access rules</h4>
 <div class="outline-text-4" id="text-2-2-18">
 
-
+<p>for instance are ethics protocol details required?
+</p>
 
 
 
@@ -916,7 +877,7 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-2-2-19" class="outline-4">
-<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> distribution<sub>method</sub></h4>
+<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> distribution method</h4>
 <div class="outline-text-4" id="text-2-2-19">
 
 <ul>
@@ -1086,357 +1047,6 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-</div>
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Design User Interface</h2>
-<div class="outline-text-2" id="text-3">
-
-
-</div>
-
-<div id="outline-container-3-1" class="outline-3">
-<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Defaults for controllers/default.py</h3>
-<div class="outline-text-3" id="text-3-1">
-
-<ul>
-<li>Following the example in the documentation 
-</li>
-</ul>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-2" class="outline-3">
-<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Top Menu</h3>
-<div class="outline-text-3" id="text-3-2">
-
-<ul>
-<li>From example 30 we get a simple user registration form. SQLFORM takes a table and returns the corresponding entry form with validators, etc. 
-</li>
-<li>The response.menu on top is just a variable used by the layout to make the navigation menu for all functions in this controller.
-</li>
-</ul>
-
-
-
-
-<pre class="src src-R">response.menu = [[<span style="color: #2aa198;">'Inventory Home'</span>, False, URL(<span style="color: #2aa198;">'data_inventory'</span>,<span style="color: #2aa198;">'default'</span>,<span style="color: #2aa198;">'index'</span>)],
-                 [<span style="color: #2aa198;">'Manage Projects'</span>, False, URL(<span style="color: #2aa198;">'manage_projects'</span>)],
-                 [<span style="color: #2aa198;">'Manage Datasets'</span>, False, URL(<span style="color: #2aa198;">'manage_datasets'</span>)],
-                 [<span style="color: #2aa198;">'Manage Accessors or Groups'</span>, False, URL(<span style="color: #2aa198;">'manage_accessors_or_groups'</span>)],
-                 [<span style="color: #2aa198;">'Set Access to a Dataset'</span>, False, URL(<span style="color: #2aa198;">'access_dataset'</span>)],
-                 [<span style="color: #2aa198;">'Documentation'</span>, False, XML(URL(<span style="color: #2aa198;">'static'</span>,<span style="color: #2aa198;">'index.html'</span>, scheme=True, host=True))]]
-</pre>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-3" class="outline-3">
-<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Access a dataset</h3>
-<div class="outline-text-3" id="text-3-3">
-
-<ul>
-<li>Modified Example 32 from a sophisticated form that  checks the accessor  and the dataset are in the database and updates the corresponding record or inserts a new access. This version just adds another access record for each request.
-</li>
-<li>removed           
-</li>
-<li>title=form.vars.title
-</li>
-</ul>
-
-
-
-
-<pre class="src src-R">def access_dataset():
-    form = SQLFORM.factory(
-        Field(<span style="color: #2aa198;">'accessdataset_id'</span>,requires=IS_IN_DB(db,db.accessdataset.id,<span style="color: #2aa198;">'%(name)s'</span>)),
-        Field(<span style="color: #2aa198;">'dataset_id'</span>,requires=IS_IN_DB(db,db.dataset.id,<span style="color: #2aa198;">'%(shortname)s'</span>)),
-        Field(<span style="color: #2aa198;">'title'</span>,<span style="color: #2aa198;">'string'</span>,requires=IS_NOT_EMPTY()),
-        Field(<span style="color: #2aa198;">'description'</span>,<span style="color: #2aa198;">'text'</span>,requires=IS_NOT_EMPTY()),
-        Field(<span style="color: #2aa198;">'begin_date'</span>,<span style="color: #2aa198;">'date'</span>),
-        Field(<span style="color: #2aa198;">'end_date'</span>,<span style="color: #2aa198;">'date'</span>)).process()
-
-    
-    <span style="color: #859900; font-weight: bold;">if</span> form.accepted:
-        <span style="color: #586e75;"># </span><span style="color: #586e75;">get previous access for same dataset</span>
-        access = db((db.accessrequest.accessdataset_id == form.vars.accessdataset_id)&amp;
-            (db.accessrequest.dataset_id==form.vars.dataset_id)).select().first()
-
-        db.accessrequest.insert(accessdataset_id=form.vars.accessdataset_id,
-                         dataset_id=form.vars.dataset_id,
-                         title=form.vars.title,
-                         description=form.vars.description,
-                         begin_date =form.vars.begin_date,
-                         end_date   =form.vars.end_date
-                         )
-
-        response.flash = <span style="color: #2aa198;">'dataset accessed!'</span>
-    elif form.errors:
-        response.flash = <span style="color: #2aa198;">'invalid values in form!'</span>
-
-    
-    <span style="color: #586e75;"># </span><span style="color: #586e75;">now get a list of all accesses</span>
-    accessing = (db.accessdataset.id==db.accessrequest.accessdataset_id)&amp;(db.dataset.id==db.accessrequest.dataset_id)
-    records = SQLTABLE(db(accessing).select(),headers=<span style="color: #2aa198;">'fieldname:capitalize'</span>)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(form=form, records=records)
-
-
-</pre>
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-4" class="outline-3">
-<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Main form ties it all together (manage projects)</h3>
-<div class="outline-text-3" id="text-3-4">
-
-
-
-
-<pre class="src src-R">def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [db.project.title, db.project.personnel_data_owner,
-                                       db.dataset.shortname,
-
-
-                                       db.dataset.additional_metadata,                                          
-
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-5" class="outline-3">
-<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Form to manage all dataset</h3>
-<div class="outline-text-3" id="text-3-5">
-
-
-</div>
-
-<div id="outline-container-3-5-1" class="outline-4">
-<h4 id="sec-3-5-1"><span class="section-number-4">3.5.1</span> manage datasets</h4>
-<div class="outline-text-4" id="text-3-5-1">
-
-
-
-
-<pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.dataset.shortname,
-                                       db.dataset.id,
-                            
-                                       db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-                                       db.keyword.keyword,
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-3-6" class="outline-3">
-<h3 id="sec-3-6"><span class="section-number-3">3.6</span> test autoenter creator in contact FAIL</h3>
-<div class="outline-text-3" id="text-3-6">
-
-
-
-
-</div>
-
-<div id="outline-container-3-6-1" class="outline-4">
-<h4 id="sec-3-6-1"><span class="section-number-4">3.6.1</span> manage datasets test</h4>
-<div class="outline-text-4" id="text-3-6-1">
-
-
-
-
-<pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.dataset.shortname,
-                                       db.dataset.id,
-                            
-                                       db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-                                       db.keyword.keyword,
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">if</span> grid.process(onvalidation=my_form_processing).accepted:
-        session.flash = <span style="color: #2aa198;">'record inserted'</span>
-        redirect(URL())
-
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-3-7" class="outline-3">
-<h3 id="sec-3-7"><span class="section-number-3">3.7</span> Form to manage all publications</h3>
-<div class="outline-text-3" id="text-3-7">
-
-
-
-
-<pre class="src src-R">def manage_publications():
-    grid = SQLFORM.smartgrid(db.publication,linked_tables=[<span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.publication.bibtex_key, db.publication.citation,  
-                                       db.publication.thesis_section, 
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-8" class="outline-3">
-<h3 id="sec-3-8"><span class="section-number-3">3.8</span> Form to manage accessors or groups</h3>
-<div class="outline-text-3" id="text-3-8">
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-3-9" class="outline-3">
-<h3 id="sec-3-9"><span class="section-number-3">3.9</span> finesse the interface</h3>
-<div class="outline-text-3" id="text-3-9">
-
-<ul>
-<li>the following makes a home page
-</li>
-<li>TODO the indenting is stuffed in the index chunk
-
-</li>
-<li>also go to static/css/web2py.css and change line 33/34 text width to about 800px
-</li>
-<li>removed from just above instructions and replaced with if auth is logged after instructions.
-  {{if 'message' in globals():}}
-  &lt;h3&gt;{{=message}}&lt;/h3&gt;
-
-</li>
-<li>removed from bottom
-  {{block right<sub>sidebar</sub>}}
-  {{<code>A(T("Administrative Interface"), _href=URL('admin','default','index'), _class</code>'btn',
-       <sub>style</sub>='margin-top: 1em;')}}
-  {{end}}
-</li>
-</ul>
-
-
-
-
-<pre class="src src-markdown">  {{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
-{{extend 'layout.html'}}
-  
-
-  &lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
-  &lt;li&gt;{{=T('To use the data inventory please register in top right corner.')}}&lt;/li&gt;
-  {{if auth.is<span style="color: #268bd2; font-style: italic;">_logged_</span>in():}}
-&lt;ol&gt;
-    &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
-  &lt;li&gt;{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-             A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
-    &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
-           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_datasets/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">             _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
-  &lt;li&gt;{{=XML(T('The technical documentation for this application is at %s',
-             A('this link',
-           <span style="color: #268bd2; font-style: italic;">_href=URL('static','index.html'), _target='new')))}}&lt;/li&gt;</span>
-<span style="color: #268bd2; font-style: italic;">&lt;/ol&gt;</span>
-<span style="color: #268bd2; font-style: italic;">  {{elif 'content' in globals():}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=content}}</span>
-<span style="color: #268bd2; font-style: italic;">  {{else:}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=BEAUTIFY(response._</span>vars)}}
-  {{pass}}
-
-  {{block right_sidebar}}
-{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
-       _style='margin-top: 1em;')}}
-{{end}}
-  
-</pre>
-
-
-
-
 
 
 
@@ -1449,220 +1059,15 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> backups</h2>
-<div class="outline-text-2" id="text-4">
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> ETL</h2>
-<div class="outline-text-2" id="text-5">
-
-
-
-
-</div>
-
-<div id="outline-container-5-1" class="outline-3">
-<h3 id="sec-5-1"><span class="section-number-3">5.1</span> summary of data for ETL</h3>
-<div class="outline-text-3" id="text-5-1">
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2" class="outline-3">
-<h3 id="sec-5-2"><span class="section-number-3">5.2</span> load transformed</h3>
-<div class="outline-text-3" id="text-5-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3" class="outline-3">
-<h3 id="sec-5-3"><span class="section-number-3">5.3</span> summary of EML fields for projects/datasets</h3>
-<div class="outline-text-3" id="text-5-3">
-
-
-</div>
-
-<div id="outline-container-5-3-1" class="outline-4">
-<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> head</h4>
-<div class="outline-text-4" id="text-5-3-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-2" class="outline-4">
-<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-5-3-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-3" class="outline-4">
-<h4 id="sec-5-3-3"><span class="section-number-4">5.3.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-5-3-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-4" class="outline-4">
-<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-5-3-4">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-5" class="outline-4">
-<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-5-3-5">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-6" class="outline-4">
-<h4 id="sec-5-3-6"><span class="section-number-4">5.3.6</span> attributes</h4>
-<div class="outline-text-4" id="text-5-3-6">
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-5-4" class="outline-3">
-<h3 id="sec-5-4"><span class="section-number-3">5.4</span> short summary of EML fields for projects/datasets homepage</h3>
-<div class="outline-text-3" id="text-5-4">
-
-
-</div>
-
-<div id="outline-container-5-4-1" class="outline-4">
-<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> head</h4>
-<div class="outline-text-4" id="text-5-4-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-4-2" class="outline-4">
-<h4 id="sec-5-4-2"><span class="section-number-4">5.4.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-5-4-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-4-3" class="outline-4">
-<h4 id="sec-5-4-3"><span class="section-number-4">5.4.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-5-4-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-4-4" class="outline-4">
-<h4 id="sec-5-4-4"><span class="section-number-4">5.4.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-5-4-4">
 
 
 
-</div>
-
-</div>
-
-<div id="outline-container-5-4-5" class="outline-4">
-<h4 id="sec-5-4-5"><span class="section-number-4">5.4.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-5-4-5">
-
-<p>EML<sub>metadata</sub><sub>short</sub>.Rmd
-</p>
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-5-5" class="outline-3">
-<h3 id="sec-5-5"><span class="section-number-3">5.5</span> data inventory report</h3>
-<div class="outline-text-3" id="text-5-5">
-
-
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> check in/check out</h2>
-<div class="outline-text-2" id="text-6">
-
-
-</div>
-
-<div id="outline-container-6-1" class="outline-3">
-<h3 id="sec-6-1"><span class="section-number-3">6.1</span> checkout from child to master when master not exists</h3>
-<div class="outline-text-3" id="text-6-1">
 
 
-</div>
-
-</div>
-
-<div id="outline-container-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> checkout from master to child, assumes you want to replace child (and manually removed it)</h3>
-<div class="outline-text-3" id="text-6-2">
 
 
-</div>
 
 </div>
-
-<div id="outline-container-6-3" class="outline-3">
-<h3 id="sec-6-3"><span class="section-number-3">6.3</span> DEPRECATED identify-aquire-post-update-review procedures</h3>
-<div class="outline-text-3" id="text-6-3">
-
-<ul>
-<li>doco for identified data are in a sep database so not to mess up clean inventory
-</li>
-<li>once data aquisitioon has started transfer to the main data inventory
-</li>
-</ul>
-
-
 </div>
 </div>
 </div>

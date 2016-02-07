@@ -40,7 +40,7 @@ def access_dataset():
 def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                       ],
-                             fields = [db.project.title,db.project.id,db.project.personnel_data_owner,
+                             fields = [db.project.title, db.project.personnel_data_owner,
                                        db.dataset.shortname,
 
 
@@ -58,7 +58,7 @@ def manage_projects():
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
                                        orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=35)
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
     return dict(grid=grid)
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'

@@ -1,30 +1,30 @@
 
 {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
+  
 
-{{if 'message' in globals():}}
-<h3>{{=message}}</h3>
-
-<h4>{{=T('Instructions')}}</h4>
+  <h4>{{=T('Instructions')}}</h4>
+  <li>{{=T('To use the data inventory please register in top right corner.')}}</li>
+  {{if auth.is_logged_in():}}
 <ol>
-  <li>{{=T('You are using the data inventory')}}</li>
+    <li>{{=T('You are using the data inventory')}}</li>
   <li>{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-           A('%(application)s/forms/manage_projects/'%request,
+             A('%(application)s/forms/manage_projects/'%request,
            _href=URL('forms','manage_projects'))))}}</li>
-  <li>{{=XML(T('The main tool for managing datasets is at %s',
+    <li>{{=XML(T('The main tool for managing datasets is at %s',
            A('%(application)s/forms/manage_datasets/'%request,
-           _href=URL('forms','manage_datasets'))))}}</li>
+             _href=URL('forms','manage_datasets'))))}}</li>
   <li>{{=XML(T('The technical documentation for this application is at %s',
-           A('this link',
+             A('this link',
            _href=URL('static','index.html'), _target='new')))}}</li>
 </ol>
-{{elif 'content' in globals():}}
+  {{elif 'content' in globals():}}
 {{=content}}
-{{else:}}
+  {{else:}}
 {{=BEAUTIFY(response._vars)}}
-{{pass}}
+  {{pass}}
 
-{{block right_sidebar}}
-{{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
-     _style='margin-top: 1em;')}}
+  {{block right_sidebar}}
+{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
+       _style='margin-top: 1em;')}}
 {{end}}

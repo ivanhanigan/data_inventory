@@ -212,8 +212,8 @@ This is where Morpho and other EML tools come into their own.  Our
   database solution might be useful as an initial stage of data
   documentation, to be further refined using specialised EML tools
 
-** COMMENT web2py 
-*** set up web2py 
+* COMMENT web2py 
+** set up web2py 
 - Web2py comes packaged up with everything it needs to run on a system (just needs python)
 - run this using:
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
@@ -221,13 +221,13 @@ This is where Morpho and other EML tools come into their own.  Our
     python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 #+end_src
 
-*** the web2py database example
+** the web2py database example
 - once the web server is running the example can be visited at this link:
 - [[http://127.0.0.1:8181/examples/default/examples#database\_examples]]
 - The default configuration of web2py uses the SQLite database engine
 - Our implementation also utilises the PostgreSQL database which should be installed separately
-*** installer
-**** COMMENT install
+** installer
+*** COMMENT install
 #+name:install
 #+begin_src R :session *R* :tangle install.R :exports none :eval no
   #### name:install ####
@@ -270,18 +270,18 @@ This is where Morpho and other EML tools come into their own.  Our
   file.rename("data_inventory-master", "data_inventory")
   setwd("~/web2py/")
   #dir()
-
+  
   if(LinuxOperatingSystem()){
     system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   } else {
     system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   }
   browseURL("http://127.0.0.1:8181/data_inventory")    
-
+  
 #+end_src
 
-** COMMENT Design the database 
-*** Create a new database
+* COMMENT Design the database 
+** Create a new database
 - create a new postgres database using the following  code
 #+name:create.db
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
@@ -293,16 +293,16 @@ This is where Morpho and other EML tools come into their own.  Our
   grant all on schema public to w2p_user;
   \q
 #+end_src
-*** Create a new web2py application
+** Create a new web2py application
 - this will create a directory in the applications folder of the web2py home directory
 #+begin_src sh :session *shell* :tangle no :exports reports :eval no
   cd ~/tools/web2py 
   python ./web2py.py -S data_inventory
 #+end_src
 
-*** relational model
+** relational model
 - The structure we decided on was that there would be ONE project TO MANY datasets, ONE dataset to MANY datatables, and ONE datatable TO MANY attributes/variables
-*** defaults for models/db.py
+** defaults for models/db.py
 - the database tables are set up in the models/db.py file that comes with default settings
 - The first bit to change is the db reference from SQLite to postgres
 - also note that "#if request.is\_local else []" will allow using as a server
@@ -567,11 +567,17 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       Field('project_id',db.project),
 #+end_src
 *** dataset shortname
-TODO
+A concise name, eg. vernal-data-1999.
+The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
+
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName
+
+
 **** COMMENT TODO shortname
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)),  _target='new')))
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-1', scheme=True, host=True)),  _target='new')))
       ),
 #+end_src
 *** dataset title
@@ -626,6 +632,7 @@ TODO
       Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
       Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
 #+end_src
+
 
 *** dataset methods protocol
 **** general EML methods module info
@@ -701,10 +708,16 @@ If possible also details of the sequence of planned analyses, with statistical m
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('taxonomic_coverage','string', comment="List of scientific names."),
 #+end_src
-*** TODO dataset additional info
+*** additional info
+Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
+
+- EML Standard: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo
+- Local Link: http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo
+
+**** COMMENT codes
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular journal paper). %s.',
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+      Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
       ),
 #+end_src
 *** TODO dataset alternateidentifier
@@ -718,7 +731,8 @@ If possible also details of the sequence of planned analyses, with statistical m
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
 #+end_src
-*** TODO access rules (ie ethics required)
+*** TODO access rules 
+for instance are ethics protocol details required?
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
@@ -1249,6 +1263,7 @@ Field('thesis_publication_status','string')
   
   
 #+end_src
+
 
 ** COMMENT coauthors approvals (and journal copyright controls)
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -2789,8 +2804,9 @@ response.include_files()
   tbls <- pgListTables(ch, "public")
   tbls$no <- 1:nrow(tbls)
   tbls
-  tbls[c(1:4,9,12:21),1]
-  tbls <- tbls[c(1:4,9,12:21),1]
+  #tbls[c(1:4,9,12:21),1]
+  #tbls <- tbls[c(1:4,9,12:21),1]
+  tbls <- tbls[,1]
   for(tbl_i in tbls){
   #  tbl_i = tbls[1]
   dat <- dbGetQuery(ch, sprintf("select * from public.%s order by id", tbl_i))
@@ -2829,21 +2845,26 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney" # "Air pollution from biomass smoke" "Air_Pollution_Monitoring_Stations_NSW" #
-  dset <- "ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
+  prj <- "Biomass_Smoke_Validated_Events"
+    #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
+  dset <- "biomass_smoke_events_database"
+  #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
-  entities <- F
+  entities <- T
   show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
+  #browseURL("data_deposit_form.html")
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_fields.html")
   knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_short.html")
+  
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   outfile
   file.rename("EML_metadata_short.html", outfile)
-  #browseURL("data_deposit_form.html")
-  # browseURL("EML_metadata_fields.html")
-  #browseURL(outfile)
+  browseURL(outfile)
+  
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
@@ -3932,7 +3953,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "SEIFA"
+  proj <- "Biomass_Smoke_Validated_Events"
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
@@ -3962,7 +3983,10 @@ EML_metadata_short.Rmd
                      )
   dbRemoveTable(ch_target, "project_insert")  
   } else {
-    print("already exists!")
+    pid2  <- dbGetQuery(ch_target,
+                             paste("select id from project where title like '%",proj,"%'", sep = "")
+                             )
+    sprintf("already exists! and Proj ID is %s", pid2)
   }
   
   
@@ -3970,7 +3994,7 @@ EML_metadata_short.Rmd
   dsets  <- dbGetQuery(ch_source,
                        paste("select * from dataset where project_id = ",pid, sep = "")
                        )
-  dsets
+  dsets[,1:4]
   
   # recursively walk back up from attr and licence
   # we are not using publs at the moment for UCRH, but that is future
@@ -4006,13 +4030,14 @@ EML_metadata_short.Rmd
   dsets[1,]
   dsets[,1:3]
   for(i in 1:nrow(dsets)){
-  #i = 1
+  #i = 2
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
     d_id
   
   dbWriteTable(ch_target, "dataset_insert", dsets[i,])
   dbSendQuery(ch_target,
+              #cat(
               paste(
               "INSERT INTO dataset(
               project_id, shortname, creator, contact, contact_email, abstract, 
@@ -4043,6 +4068,7 @@ EML_metadata_short.Rmd
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
                     )
   todo_i
+  if(nrow(todo_i) > 0){    
   dbWriteTable(ch_target, "to_insert", todo_i)
   dbSendQuery(ch_target,
               paste("INSERT INTO entity(
@@ -4055,7 +4081,7 @@ EML_metadata_short.Rmd
               from to_insert", sep = "")
               )
   dbRemoveTable(ch_target, "to_insert")
-  
+  }
   tbl_i <- "intellectualright"
   todo_i <- dbGetQuery(ch_source,
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
