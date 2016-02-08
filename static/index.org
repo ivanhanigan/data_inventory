@@ -2847,7 +2847,7 @@ response.include_files()
   dir()
   prj <- "Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  dset <- "biomass_smoke_events_database"
+  dset <- "Biosmoke_UCRH_extended_Farhad_June_2015" #
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
@@ -2861,10 +2861,12 @@ response.include_files()
   # browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
+  outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
   outfile
   file.rename("EML_metadata_short.html", outfile)
-  browseURL(outfile)
-  
+  setwd(dirname(outfile))
+  browseURL(basename(outfile))
+  setwd("~/tools/web2py/applications/data_inventory/static/")
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
@@ -3752,7 +3754,7 @@ EML_metadata_short.Rmd
   # File / Entity level information 
   
   ```{r, echo = F, eval = T, results="asis"}
-  if(entities){  
+
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
   dat_ent <- dbGetQuery(ch,
@@ -3767,8 +3769,14 @@ EML_metadata_short.Rmd
   where t1.title = '%s'
   and t2.shortname = '%s'", prj, dset)
   )
-  # head(dat_ent)
   
+  if(nrow(dat_ent) == 0){
+
+   print("No files documented yet")
+
+  } else {
+  
+  if(entities){    
   help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
     from crosswalk t1
     where eml_table like '%entity%'",
@@ -3805,6 +3813,8 @@ EML_metadata_short.Rmd
   } else {
   print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = "html", include.rownames = F)
   }   
+
+  }
   ```
   
 #+end_src
