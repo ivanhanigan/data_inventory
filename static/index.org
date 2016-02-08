@@ -3963,7 +3963,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Biomass_Smoke_Validated_Events"
+  proj <- "Air_Pollution_Monitoring_Stations_NSW"
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
