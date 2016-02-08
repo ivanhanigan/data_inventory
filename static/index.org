@@ -2870,10 +2870,12 @@ response.include_files()
   # browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
+  outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
   outfile
   file.rename("EML_metadata_short.html", outfile)
-  browseURL(outfile)
-  
+  setwd(dirname(outfile))
+  browseURL(basename(outfile))
+  setwd("~/tools/web2py/applications/data_inventory/static/")
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
 #+end_src
 
@@ -3761,7 +3763,7 @@ EML_metadata_short.Rmd
   # File / Entity level information 
   
   ```{r, echo = F, eval = T, results="asis"}
-  if(entities){  
+
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
   dat_ent <- dbGetQuery(ch,
@@ -3776,8 +3778,14 @@ EML_metadata_short.Rmd
   where t1.title = '%s'
   and t2.shortname = '%s'", prj, dset)
   )
-  # head(dat_ent)
   
+  if(nrow(dat_ent) == 0){
+
+   print("No files documented yet")
+
+  } else {
+  
+  if(entities){    
   help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
     from crosswalk t1
     where eml_table like '%entity%'",
@@ -3814,6 +3822,8 @@ EML_metadata_short.Rmd
   } else {
   print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = "html", include.rownames = F)
   }   
+
+  }
   ```
   
 #+end_src
@@ -3821,7 +3831,7 @@ EML_metadata_short.Rmd
 ** data inventory report
 *** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
