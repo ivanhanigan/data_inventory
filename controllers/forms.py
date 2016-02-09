@@ -46,7 +46,7 @@ def manage_projects():
 
                                        db.dataset.additional_metadata,                                          
 
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution, 
+                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,

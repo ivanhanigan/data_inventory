@@ -56,7 +56,7 @@ mail.settings.login = 'username:password'
 
 ## configure auth policy
 auth.settings.registration_requires_verification = False
-auth.settings.registration_requires_approval = True
+auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
@@ -125,7 +125,7 @@ A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, 
 ),
 Field('related_project','text', 
 comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
 ),
 format = '%(title)s' 
 )
@@ -177,12 +177,15 @@ Field('pubdate','date'),
 Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
+Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
+Field('request_date','date', comment = 'Date provision requested.'),
 format = '%(shortname)s'
     )
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
 db.dataset.creator.requires = [IS_NOT_EMPTY()]
-    
+db.dataset.provision_status.requires = IS_IN_SET(['Identified', 'Requested', 'Provided'])      
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
   

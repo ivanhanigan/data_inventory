@@ -765,6 +765,19 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 #+end_src
+*** TODO provision status
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+#+end_src
+*** TODO request notes
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
+#+end_src
+*** TODO request date
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('request_date','date', comment = 'Date provision requested.'),
+#+end_src
+
 *** COMMENT TODO end
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(shortname)s'
@@ -772,7 +785,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
   
   db.dataset.contact_email.requires = [IS_EMAIL()]
   db.dataset.creator.requires = [IS_NOT_EMPTY()]
-      
+  db.dataset.provision_status.requires = IS_IN_SET(['Identified', 'Requested', 'Provided'])      
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
      
 #+end_src
