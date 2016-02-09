@@ -82,14 +82,14 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 * Introduction
 - There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
 - The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
-- This article describes an approach to use a relational database with web-based forms (using the web2py framework) and SQL helper functions (written in the R language) 
-* The Ecological Metadata Language (EML)
+- This article describes an approach to use a relational database with web-based forms (using the web2py framework) and helper functions (written in the R and SQL languages) 
+** The Ecological Metadata Language (EML)
 The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
-** COMMENT snip
+*** COMMENT snip
 - We follow the LTER descriptions of best practice "~/references/LTER - Unknown - Introduction What is EML.pdf"
 - We added some things like metadataProvider, but this is optional
 
-** XML 
+*** XML 
 A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
 
 
@@ -125,12 +125,12 @@ A minimal EML document is summarised below.  This is a schematic view that shows
             <additionalLinks>
   
 #+end_src
-** A schematic diagram of the EML modules
+*** A schematic diagram of the EML modules
 In the figure below the EML hierarchy of modules is shown graphically. An EML metadata document contains a dataset module that allows the grouping of one or more data entities linked together by particular integrity constraints to form a Data Package.  The project module places the dataset that is being documented into its larger research context, and optionally allows multiple related Data Packages to be linked. The mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines).
 
 [[file:./images/EML_project.png]]
 
-** The parts of an EML document 
+*** The parts of an EML document 
 In EML, the term dataset is applied to a document which may contain
   general information such as the title, creator, and contacts,
   abstract and keywords as well as one or more data entities, such as
@@ -149,7 +149,7 @@ In EML, the term dataset refers to one or more data
 
  Below is a brief description of the way we interpret the components of an EML dataset
 
-*** Datasets
+**** Datasets
 Dataset is the top level of the EML.  The miminum necessary to
 produce a valid EML document is <title>, <creator>, <contract>. But
 one can't tell very much with just a title and a name.  Our aim is to
@@ -166,7 +166,7 @@ For more information about the general EML descriptions see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html
 
 For more detailed information about the EML-dataset module see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html
-*** Projects
+**** Projects
 The project module is optional, but in many cases highly desirable as
 this provides an overall description of the larger-scale project or
 research context with which that dataset is associated.  For example
@@ -179,7 +179,7 @@ The project module is recursive in that it provides an overall description of th
 For more information about the EML-dataset module see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html
 
-*** Data Entity
+**** Data Entity
 As stated earlier, a dataset consists of one or more data entities,
 and the most common data entity is a <dataTable>. A data table is
 something that looks like a matrix with rows for observations and
@@ -200,19 +200,19 @@ In addition to datatables, people using database applications may also
 
 For more information about types of EML-entities see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
 
-*** Attributes
+**** Attributes
 An attribute or as it is sometime referred to, variable, in this
   context refers to the name of the column of a datatable
 
 For more information about the EML dataTable type (especially its attributes) see:
 https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataTable.html#attribute
 
-** COMMENT snip 
+*** COMMENT snip 
 This is where Morpho and other EML tools come into their own.  Our
   database solution might be useful as an initial stage of data
   documentation, to be further refined using specialised EML tools
 
-* web2py 
+* COMMENT web2py 
 ** set up web2py 
 - Web2py comes packaged up with everything it needs to run on a system (just needs python)
 - run this using:
@@ -270,17 +270,17 @@ This is where Morpho and other EML tools come into their own.  Our
   file.rename("data_inventory-master", "data_inventory")
   setwd("~/web2py/")
   #dir()
-
+  
   if(LinuxOperatingSystem()){
     system("python web2py.py -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   } else {
     system("web2py.exe -a xpassword -i 0.0.0.0 -p 8181", wait = F)
   }
   browseURL("http://127.0.0.1:8181/data_inventory")    
-
+  
 #+end_src
 
-* Design the database 
+* COMMENT Design the database 
 ** Create a new database
 - create a new postgres database using the following  code
 #+name:create.db
@@ -369,7 +369,7 @@ This is where Morpho and other EML tools come into their own.  Our
   
   ## configure auth policy
   auth.settings.registration_requires_verification = False
-  auth.settings.registration_requires_approval = True
+  auth.settings.registration_requires_approval = False
   auth.settings.reset_password_requires_verification = True
   
   ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
@@ -397,8 +397,8 @@ This is where Morpho and other EML tools come into their own.  Our
   ## after defining tables, uncomment below to enable auditing
   # auth.enable_record_versioning(db)
 #+end_src
-* Define our tables
-The following sections show the definitions LTERN used to create the data inventory
+* Definitions and tips for each metadata field
+The following sections show the definitions used to create the data inventory:
 ** Project Information and Data Owners
 - The EML Project module is used to place the dataset that is being documented into its larger research context.
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html][EML online]]
@@ -416,7 +416,7 @@ The following sections show the definitions LTERN used to create the data invent
       'project',
 #+end_src
 *** eml/dataset/project/title
-LTERN's suggested structure is either:
+The suggested structure is either:
 - the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
 - a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
@@ -454,7 +454,9 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
   A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
   ),
 #+end_src
-*** COMMENT funding-code
+*** funding-code
+- Significant funding sources under which the data has been collected over the lifespan of the project
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('funding', 'text',
       comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
@@ -492,25 +494,32 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
       ),
 #+end_src
 
-*** COMMENT project_established
+*** project established
+- Commencement date of overarching research project as a specific date or year
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('project_established','date', 
       comment= XML(T('Commencement date of overarching research project as a specific date or year. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
-*** COMMENT project citation
+*** citation
+- Citations relevant to the design of the overarching project
+**** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('project_citation','text', 
       comment= XML(T('Citations relevant to the design of the overarching project. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
 #+end_src
-*** COMMENT relatedProject 
+*** relatedProject
+- A recursive link to another project. This allows projects to be nested under one another
+
+**** COMMENT code 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('related_project','text', 
       comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-      A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
       ),
 #+end_src
 
@@ -1101,7 +1110,7 @@ Field('thesis_publication_status','string')
      
 #+end_src
 *** COMMENT R bibtex-code
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:R bibtex ####
   # if using postgres
   library(rpostgrestools)
@@ -1283,7 +1292,7 @@ Field('extra_details', 'text')
     )
      
 #+end_src
-* Design User Interface
+* COMMENT Design User Interface
 ** Defaults for controllers/default.py
 - Following the example in the documentation 
 
@@ -1500,7 +1509,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 
                                          db.dataset.additional_metadata,                                          
 
-                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution, 
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
@@ -2795,10 +2804,10 @@ response.include_files()
 
 #+end_src
 
-* backups
+* COMMENT backups
 ** COMMENT backup-code
 #+name:backup
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   ch <- connect2postgres2("data_inventory_hanigan_dev4")  
   tbls <- pgListTables(ch, "public")
@@ -2835,10 +2844,10 @@ response.include_files()
 
 #+RESULTS: pgdump
 
-* ETL
+* COMMENT ETL
 ** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:go ####
   library(rmarkdown)
   library(knitr)
@@ -2847,7 +2856,7 @@ response.include_files()
   dir()
   prj <- "Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  dset <- "Biosmoke_UCRH_extended_Farhad_June_2015" #
+  dset <- "biomass_smoke_events_database"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
@@ -3950,7 +3959,7 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
-* check in/check out
+* COMMENT check in/check out
 ** checkout from child to master when master not exists
 #+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
@@ -3963,7 +3972,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Air_Pollution_Monitoring_Stations_NSW"
+  proj <- "Biomass_Smoke_Validated_Events"
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
