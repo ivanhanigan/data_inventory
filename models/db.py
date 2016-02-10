@@ -185,7 +185,7 @@ format = '%(shortname)s'
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
 db.dataset.creator.requires = [IS_NOT_EMPTY()]
-db.dataset.provision_status.requires = IS_IN_SET(['Identified', 'Requested', 'Provided'])      
+db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
   

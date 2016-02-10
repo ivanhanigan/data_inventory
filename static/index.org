@@ -785,7 +785,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
   
   db.dataset.contact_email.requires = [IS_EMAIL()]
   db.dataset.creator.requires = [IS_NOT_EMPTY()]
-  db.dataset.provision_status.requires = IS_IN_SET(['Identified', 'Requested', 'Provided'])      
+  db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
      
 #+end_src
@@ -3985,7 +3985,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Biomass_Smoke_Validated_Events"
+  proj <- "Project_Exposures_Neuro"
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
