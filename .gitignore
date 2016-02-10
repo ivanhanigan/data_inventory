@@ -1,8 +1,10 @@
-cache/**
-databases/**
-errors/**
-sessions/**
+cache/*
+databases/*
+errors/*
+sessions/*
 *˜
 *.pyc
 .Rproj.user
-static/eml-2.1.1/**
+static/eml-2.1.1/*
+databases_bu/*
+databases_bu3/*
