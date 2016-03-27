@@ -58,7 +58,7 @@ def manage_projects():
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
                                        orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
+                             user_signature=True,maxtextlength =200, csv=False, paginate=150)
     return dict(grid=grid)
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'

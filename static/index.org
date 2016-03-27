@@ -1534,7 +1534,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
+                               user_signature=True,maxtextlength =200, csv=False, paginate=150)
       return dict(grid=grid)
 #+end_src  
 ** COMMENT deprecated manageproj-code
@@ -2867,20 +2867,23 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Biomass_Smoke_Validated_Events"
+  prj <- "ROSS RIVER VIRUS RATES"
+    #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  dset <- "biomass_smoke_events_database"
+  #dset <- #"Vally2012-RossRiverRates"
+  dset <- "Vally20091223_RossRiverRates Restricted Data"
+    #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
-  show_exemplar <- T
+  show_exemplar <- F
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
-  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
   # browseURL("EML_metadata_fields.html")
   knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
-  # browseURL("EML_metadata_short.html")
+   browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
@@ -3179,11 +3182,11 @@ response.include_files()
   ---
   
   
-
+  
   # Introduction
-
+  
   Date metadata document produced: `r Sys.Date()`.
-
+  
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
@@ -3191,20 +3194,20 @@ response.include_files()
   library(sqldf)
   library(knitr)
   library(xtable)  
-
+  
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  prj <- "Air_Pollution_Monitoring_Stations_WA"
-  dset <- "AP_WA_19942012"
+  #prj <- "Air_Pollution_Monitoring_Stations_WA"
+  #dset <- "AP_WA_1994_2012"
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
   #dset <- "noise_model_preliminary_results"
-
+  
   #ch  <- connect2postgres2("data_inventory_air_pollution")
   #prj <- "Walkability"
   #dset <- "walkability_mayne"
-
-
+  
+  
   show_exemplar <- T
   ```
   
@@ -3431,7 +3434,7 @@ response.include_files()
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
   dat_ent <- dbGetQuery(ch,
-  #cat(
+  # cat(
   sprintf("select 
   t3.*
   from project t1
@@ -3440,7 +3443,7 @@ response.include_files()
   join entity t3
   on t2.id = t3.dataset_id
   where t1.title = '%s'
-  and t2.shortname = '%s'", prj, dset),
+  and t2.shortname = '%s'", prj, dset)
   )
   # head(dat_ent)
   
@@ -3493,7 +3496,7 @@ response.include_files()
     )
   #names(dat)
   #t(dat)
-  if(length(nrow(dat) > 0) == 0){
+  if(length(nrow(dat) > 0) != 0 & nrow(dat) >0){
   ####  help
   help  <- sqldf(connection = ch,
     "select t1.eml_node, t1.help_comment, t1.datinv
@@ -3510,13 +3513,33 @@ response.include_files()
   names(qc2) <- c("variable", "value", "help_comment")
   
   qc2[,2] <- gsub("\n", " | ", qc2[,2])
-  if(show_exemplar){
-  print(xtable(qc2[-c(1,2),]), type = "html", include.rownames = F)
-  } else {
+  ## if(show_exemplar){
+  ## cat("Variables attributes
+  ## ---
+  ## ")
+  ## print(xtable(qc2[-c(1,2),]), type = "html", include.rownames = F)
+  ## } else {
+  ## cat("Variables attributes
+  ## ---
+  ## ")
+    
+  ## print(xtable(qc2[-c(1,2),-2]), type = "html", include.rownames = F)
+  ## }
+  
+  # actually give info then display
+  cat("Variables attributes
+  ---
+  Instructions
+  ")  
   print(xtable(qc2[-c(1,2),-2]), type = "html", include.rownames = F)
-  }
+  cat("\nThe attributes are:\n")
+  print(xtable(
+    dat[,-1]
+    ), type = "html", include.rownames = F)
+  
   }
   ```
+  
 #+end_src
 #+RESULTS:
 
