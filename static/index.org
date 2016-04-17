@@ -627,6 +627,15 @@ TODO
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
 #+end_src
+*** dataset recommended citation
+A resource that describes a literature citation that one might find in a bibliography. If included, this represents the primary resource that is described in this eml document. 
+
+- https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/./eml.html#citation 
+
+**** code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
+#+end_src
 *** dataset methods/studyextent
 - http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent
 - Both specific to sampling area and frequency, spatial extent/resolution, temporal boundaries. eg CCD 2001.
@@ -1094,6 +1103,9 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('publication_status','string', requires = IS_IN_SET(['Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
+Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
 Field('key_results', 'text', comment = 'Include both effect estimates and uncertainty'),
 Field('background_to_study', 'string', comment = ''),
@@ -1107,7 +1119,6 @@ Field('general_comments', 'text', comment = ''),
 Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
-Field('title','string'),
 Field('year_published','integer'),
 Field('impact_factor','double'),
 Field('date_impact_factor_checked','date'),
@@ -1639,11 +1650,13 @@ def my_form_processing(grid):
                                                         ],
                                fields = [
                                          db.publication.bibtex_key, db.publication.citation,  
-                                         db.publication.thesis_section, 
-                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.publication.publication_status, 
+                                         db.authorship_approval.id, db.authorship_approval.name,
+                                         db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
-                                         orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
-                               user_signature=True,maxtextlength =200)
+                                         orderby = dict(publication_status=db.publication.publication_status,
+                                         authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200, paginate= 150)
       return dict(grid=grid)
 #+end_src
 
@@ -2867,11 +2880,13 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "ROSS RIVER VIRUS RATES"
+  prj <- "CTM_CSIRO"
+  #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
   #dset <- #"Vally2012-RossRiverRates"
-  dset <- "Vally20091223_RossRiverRates Restricted Data"
+  dset <- "CTM_CSIRO_Sydney_Shipping_2010_2011"
+    #"Vally20091223_RossRiverRates Restricted Data"
     #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
@@ -2880,15 +2895,17 @@ response.include_files()
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
-  knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
   # browseURL("EML_metadata_fields.html")
-  knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
-   browseURL("EML_metadata_short.html")
+  #knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
   outfile
-  file.rename("EML_metadata_short.html", outfile)
+  file.rename("EML_metadata_fields.html", outfile)
+  #file.rename("EML_metadata_short.html", outfile)
   setwd(dirname(outfile))
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
@@ -3231,7 +3248,7 @@ response.include_files()
     contact,
     contact_email,
     abstract,
-    associated_party,
+    associated_party, recommended_citation,
     studyextent,
     geographicdescription,
     boundingcoordinates,
@@ -3253,7 +3270,7 @@ response.include_files()
    where shortname ='%s'", dset)
   )
   dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
-  # dat_i
+   #dat_i
    dat_i$order <- 1:nrow(dat_i)
     #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
     #      collapse = ", ", sep = "")
@@ -3391,7 +3408,7 @@ response.include_files()
   # Dataset or study detailed information   
   ```{r, echo = F, eval = T, results="asis"}  
   
-  qc_out <- qc_out_raw[qc_out_raw$variable %in% c(
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
   'associated_party',
   'geographicdescription',
   'boundingcoordinates',
@@ -4008,7 +4025,7 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
-  proj <- "Project_Exposures_Neuro"
+  proj <- "45_and_Up_Study" 
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
