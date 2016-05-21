@@ -2880,32 +2880,34 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "CTM_CSIRO"
+  prj <- "ABS_data"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
   #dset <- #"Vally2012-RossRiverRates"
-  dset <- "CTM_CSIRO_Sydney_Shipping_2010_2011"
+  dset <- "ABS_meshblocks"
     #"Vally20091223_RossRiverRates Restricted Data"
     #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
-  show_exemplar <- F
+  show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
-  rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
-  # browseURL("EML_metadata_fields.html")
-  #knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
-  # browseURL("EML_metadata_short.html")
+  #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
+   #browseURL("EML_metadata_fields.html")
+  rmarkdown::render("EML_metadata_short.Rmd") #, stylesheet='custom.css')
+  browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
-  outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
+  outfile <- file.path("~/projects_environment_general_local", prj,
+  dset, outfile)
+  #outfile <- file.path("~/projects", prj, dset, outfile)
   outfile
-  file.rename("EML_metadata_fields.html", outfile)
-  #file.rename("EML_metadata_short.html", outfile)
+  #file.rename("EML_metadata_fields.html", outfile)
+  file.rename("EML_metadata_short.html", outfile)
   setwd(dirname(outfile))
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
@@ -3430,7 +3432,7 @@ response.include_files()
   'keywords',
   'licence_code',
   'licence_text','licencee','data_owner','data_owner_contact','path_to_licence',
-  'special_conditions'
+  'special_conditions', 'recommended_citation'
   ),]
   if(show_exemplar){
   print(xtable(qc_out[,]), type = "html", include.rownames = F)
@@ -3616,7 +3618,7 @@ response.include_files()
     contact_email,
     abstract,
     additional_metadata,
-    associated_party,
+    associated_party, recommended_citation,
     studyextent,
     geographicdescription,
     boundingcoordinates,
@@ -3781,7 +3783,7 @@ response.include_files()
   # Dataset or study metadata   
   ```{r, echo = F, eval = T, results="asis"}  
   
-  qc_out <- qc_out_raw[qc_out_raw$variable %in% c(
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
   'additional_metadata',
   'studyextent',
   'temporalcoverage_daterange',
