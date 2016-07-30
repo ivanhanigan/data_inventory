@@ -778,6 +778,11 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
 #+end_src
+*** TODO provision status
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('provision_date','date', comment = 'The date provided.'),
+#+end_src
+
 *** TODO request notes
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
@@ -1770,9 +1775,9 @@ SELECT t1.*, t2.title
   #str(stdy)
   #str(fdsc)
   ids <- names(table(stdy$IDNO))
-  ids[grep("DROUGHT", ids)]
+  ids[grep("GRID", ids)]
   # do
-  stdy_i <- "drought"
+  stdy_i <- "bom_grids"
   stdy_i
   stdyj <- stdy[tolower(stdy$IDNO) == stdy_i, ]
   names(stdyj) <- tolower(names(stdyj))
@@ -1801,8 +1806,8 @@ SELECT t1.*, t2.title
   dbWriteTable(ch,  "temp", stdyj, row.names = F)
   
   sqltxt <- paste("
-  insert into project (id, ", datinv ,")
-  select 1, ", ddi ,"
+  insert into project ( ", datinv ,")
+  select  ", ddi ,"
   from temp
   ", sep = "")
   cat(sqltxt)
@@ -1810,20 +1815,23 @@ SELECT t1.*, t2.title
   dbSendQuery(ch, sqltxt)
   dbRemoveTable(ch, "temp")
   
+  # manually add dataset, get the dataaset_id
   
+  sql <- paste("select t1.IDNO, t2.*
+  from stdy t1
+  left join fdsc t2
+  on t1.IDNO = t2.IDNO
+  where lower(t1.IDNO) like '",stdy_i,"'", sep = "")
+  #cat(sql)
+  dat <- sqldf(sql, drv = "SQLite")
+  str(dat)
+  dat[,1:4]
+  #dat[,'FILENAME']
+  names(dat) <- tolower(names(dat))
+  #dat
+  # give up inserting and just look
+  #write.csv(dat, "~/Desktop/temp.csv", row.names = F)
   
-  ## sql <- paste("select t1.IDNO, t2.*
-  ## from stdy t1
-  ## left join fdsc t2
-  ## on t1.IDNO = t2.IDNO
-  ## where lower(t1.IDNO) like '",stdy_i,"'", sep = "")
-  ## #cat(sql)
-  ## dat <- sqldf(sql)
-  ## str(dat)
-  ## dat[,1:10]
-  ## dat[,'FILENAME']
-  ## names(dat) <- tolower(names(dat))
-  ## dat
 #+end_src
 ** COMMENT snip-code
 #+name:snip
@@ -2869,23 +2877,67 @@ response.include_files()
 #+end_src
 
 #+RESULTS: pgdump
+** COMMENT psql restore
+#+name:psql restore
+#+begin_src R :session *R* :tangle psql restor.R :exports none :eval no
+  'name:psql restor'
+  cd /home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/
+  ls
+  psql -h localhost -d data_inventory_dev4_hanigan_backup -U postgres < "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-2016-06-26-12-03-34.backup"
+  # failed
+  createdb data_inventory_dev4_hanigan_backup
+  psql -d data_inventory_dev4_hanigan_backup
+  grant all on schema public to w2p_user;
+  \q
+    
+    
+    
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"project\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"dataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequests\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequest\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessdataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequest\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"publication\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessor\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"attr\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"authorship_approval\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"checklist\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"crosswalk\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"dataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"intellectualright\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"entity\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"keyword\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+    
+#+end_src
 
 * COMMENT ETL
 ** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
   library(rmarkdown)
   library(knitr)
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "ABS_data"
+  prj <- "Air_Pollution_Monitoring_Stations_WA"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
   #dset <- #"Vally2012-RossRiverRates"
-  dset <- "ABS_meshblocks"
+  dsets <- "AP_WA_1994_2014"
+  ## dsets  <- c("ABS_SEIFA",
+  ## "ASGM_mortality",
+  ## "ASGC_1981_2010",
+  ## "ABS_meshblocks",
+  ## "ABS Correspondence",
+  ## "ABS_Census_2001",
+  ## "ABS_POA", "ABS_LGA",
+  ## "ABS_Census_2011")
+  for(i in 1:length(dsets)){
+  #  i = 1
+  dset  <- dsets[i]
     #"Vally20091223_RossRiverRates Restricted Data"
     #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
@@ -2899,15 +2951,20 @@ response.include_files()
   #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
    #browseURL("EML_metadata_fields.html")
   rmarkdown::render("EML_metadata_short.Rmd") #, stylesheet='custom.css')
-  browseURL("EML_metadata_short.html")
+  #browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   outfile <- file.path("~/projects_environment_general_local", prj,
+  #dset, outfile)
+  #outfile <- file.path("~/projects_ceraph", prj,
   dset, outfile)
+  
   #outfile <- file.path("~/projects", prj, dset, outfile)
   outfile
   #file.rename("EML_metadata_fields.html", outfile)
   file.rename("EML_metadata_short.html", outfile)
+  
+  }  
   setwd(dirname(outfile))
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
@@ -2915,7 +2972,7 @@ response.include_files()
 #+end_src
 
 #+RESULTS: go
-: TRUE
+: /home/ivan_hanigan/projects_environment_general_local/Air_Pollution_Monitoring_Stations_WA/AP_WA_1994_2014
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no

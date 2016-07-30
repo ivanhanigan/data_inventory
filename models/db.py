@@ -179,6 +179,7 @@ Field('access_rules','text', comment = "The eml-access module describes the leve
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+Field('provision_date','date', comment = 'The date provided.'),
 Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
 Field('request_date','date', comment = 'Date provision requested.'),
 format = '%(shortname)s'
