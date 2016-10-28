@@ -378,7 +378,7 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
-Field('publication_status','string', requires = IS_IN_SET(['Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
