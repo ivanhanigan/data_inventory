@@ -1108,7 +1108,7 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
-Field('publication_status','string', requires = IS_IN_SET(['Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
@@ -2921,12 +2921,12 @@ response.include_files()
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Air_Pollution_Monitoring_Stations_WA"
+  prj <- "DROUGHT-AWAP-GRIDS"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  #dset <- #"Vally2012-RossRiverRates"
-  dsets <- "AP_WA_1994_2014"
+  dsets <- "DROUGHT_AWAP_GRIDS_1900_2015"
+  #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
   ## dsets  <- c("ABS_SEIFA",
   ## "ASGM_mortality",
   ## "ASGC_1981_2010",
@@ -2954,10 +2954,10 @@ response.include_files()
   #browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
-  outfile <- file.path("~/projects_environment_general_local", prj,
-  #dset, outfile)
-  #outfile <- file.path("~/projects_ceraph", prj,
+  outfile <- file.path("/home/ResearchData", prj,
   dset, outfile)
+  #outfile <- file.path("~/projects_ceraph", prj,
+  #dset, outfile)
   
   #outfile <- file.path("~/projects", prj, dset, outfile)
   outfile
@@ -2972,7 +2972,7 @@ response.include_files()
 #+end_src
 
 #+RESULTS: go
-: /home/ivan_hanigan/projects_environment_general_local/Air_Pollution_Monitoring_Stations_WA/AP_WA_1994_2014
+: /home/ivan_hanigan/projects_environment_general_local/ABS_data/ABS_SEIFA
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
