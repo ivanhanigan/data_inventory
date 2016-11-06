@@ -1,10 +1,18 @@
 cache/*
 databases/*
+<<<<<<< HEAD
+=======
+databases_bu*
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 errors/*
 sessions/*
 *˜
 *.pyc
 .Rproj.user
+<<<<<<< HEAD
 static/eml-2.1.1/*
 databases_bu/*
 databases_bu3/*
+=======
+static/eml-2.1.1/*
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad

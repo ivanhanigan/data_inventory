@@ -324,8 +324,13 @@ This is where Morpho and other EML tools come into their own.  Our
   
   if not request.env.web2py_runtime_gae:
       ## if NOT running on Google App Engine use SQLite or other DB
+<<<<<<< HEAD
       ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
       db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+=======
+      db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = True)
+      ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_dbname", fake_migrate_all = False)
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   else:
       ## connect to Google BigTable (optional 'google:datastore://namespace')
       db = DAL('google:datastore')
@@ -627,6 +632,7 @@ TODO
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
 #+end_src
+<<<<<<< HEAD
 *** dataset recommended citation
 A resource that describes a literature citation that one might find in a bibliography. If included, this represents the primary resource that is described in this eml document. 
 
@@ -636,6 +642,8 @@ A resource that describes a literature citation that one might find in a bibliog
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
 #+end_src
+=======
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 *** dataset methods/studyextent
 - http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent
 - Both specific to sampling area and frequency, spatial extent/resolution, temporal boundaries. eg CCD 2001.
@@ -649,6 +657,7 @@ A resource that describes a literature citation that one might find in a bibliog
       Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
       Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
       Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+<<<<<<< HEAD
 #+end_src
 
 
@@ -700,6 +709,59 @@ If possible also details of the sequence of planned analyses, with statistical m
       Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
 #+end_src
 
+=======
+#+end_src
+
+
+*** dataset methods protocol
+**** general EML methods module info
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html
+- The eml-methods module describes the methods followed in the creation of the dataset, including description of field, laboratory and processing steps, sampling methods and units, quality control procedures. The eml-methods module is used to describe the actual procedures that are used in the creation or the subsequent processing of a dataset. Likewise, eml-methods is used to describe processes that have been used to define / improve the quality of a data file, or to identify potential problems with the data file. Note that the eml-protocol module is intended to be used to document a prescribed procedure, whereas the eml-method module is used to describe procedures that were actually performed. The distinction is that the use of the term "protocol" is used in the "prescriptive" sense, and the term "method" is used in the "descriptive" sense. This distinction allows managers to build a protocol library of well-known, established protocols (procedures), but also document what procedure was truly performed in relation to the established protocol. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. 
+
+- eml-methods is descriptive (often written in the declarative mood: "I took five subsamples...") whereas eml-protocol is prescriptive (often written in the imperative mood: "Take five subsamples...").
+
+**** Recommendations for protocol
+The protocol information can be captured in two places of EML
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#protocol
+- In many cases the simpler option is to use the methods module protocol section which is designed to capture 'reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file'.
+- It can also be used to identify potential problems with the data collection protocol or study design, to be addressed in the methods steps.
+
+
+After deciding where the protocol information will sit, then consider including the following information:
+- Study type: select from a list like time-series, cross-sectional, spatial, exploratory, confirmatory
+- Data sets collected/used 
+- Analysis package (statistical package name and version)
+- Study population (including inclusion and exclusion criteria)
+- Exposure variables
+- Outcome measures (outcome measures, including comparison group)
+- Covariates (possible exposures, potential confounders or effect modifiers)
+
+If possible also details of the sequence of planned analyses, with statistical methods to be employed and how each of the planned hypotheses will be tested. Include details of how potential confounding and bias will be dealt with. For example:
+
+1. Descriptive analyses
+2. Univariable analysis
+3. Multivariable analysis, and
+4. Interactions, subgroups, sensitivity analyses
+
+*** dataset sampling description
+- Similar to a description of sampling procedures found in the methods section of a journal article.
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#samplingDescription
+*** dataset method steps
+- http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep
+- EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable.
+- Include data cleaning strategy, and process for handling missing data.
+- Include text descriptions of the procedures, relevant literature, software, instrumentation, source data and any quality control measures taken.
+
+*** COMMENT dataset methods sampling, steps, protocol codes
+**** COMMENT codes
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('methods_protocol' , 'text', comment = XML(T('The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps). %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-9', scheme=True, host=True)))))),
+      Field('sampling_desc' ,'text', comment = XML(T('Similar to a description of sampling procedures found in the methods section of a journal article. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-10', scheme=True, host=True)))))),
+      Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
+#+end_src
+
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 *** COMMENT dataset assoc
 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
@@ -774,6 +836,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 #+end_src
+<<<<<<< HEAD
 *** TODO provision status
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
@@ -792,6 +855,8 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
       Field('request_date','date', comment = 'Date provision requested.'),
 #+end_src
 
+=======
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 *** COMMENT TODO end
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       format = '%(shortname)s'
@@ -799,7 +864,11 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
   
   db.dataset.contact_email.requires = [IS_EMAIL()]
   db.dataset.creator.requires = [IS_NOT_EMPTY()]
+<<<<<<< HEAD
   db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
+=======
+      
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
      
 #+end_src
@@ -1108,9 +1177,12 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+<<<<<<< HEAD
 Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
+=======
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
 Field('key_results', 'text', comment = 'Include both effect estimates and uncertainty'),
 Field('background_to_study', 'string', comment = ''),
@@ -1124,6 +1196,10 @@ Field('general_comments', 'text', comment = ''),
 Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
+<<<<<<< HEAD
+=======
+Field('title','string'),
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 Field('year_published','integer'),
 Field('impact_factor','double'),
 Field('date_impact_factor_checked','date'),
@@ -1174,6 +1250,7 @@ Field('thesis_publication_status','string')
   ct <- bib[[citn[citn_i, 3]]]
   #print(  ct[[1]]$year)
   
+<<<<<<< HEAD
   
   titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
   id  <-  citn[citn_i, 1]
@@ -1214,6 +1291,48 @@ Field('thesis_publication_status','string')
   #  name_i = auths[1]
   dbSendQuery(ch,
   #            cat(
+=======
+  
+  titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
+  id  <-  citn[citn_i, 1]
+  dbSendQuery(ch,
+  #            cat(
+    sprintf("update publication set title = '%s', year_published = %s where id = %s",  gsub("'", '"', titl), ct[[1]]$year, id)
+              )
+  }
+#+end_src
+
+#+RESULTS:
+
+*** COMMENT R bibtex authors -code
+#+name:R bibtex
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  
+  # author approvals, careful not to re-run!
+  #for(citn_i in 1:nrow(citn)){
+  citn[,3]
+  citn_i = 23
+  ct <- bib[[citn[citn_i, 3]]]
+  #print(  ct[[1]]$year)
+  ct
+  
+  titl  <- gsub("\\}", "", gsub("\\{", "", ct[[1]]$title))
+  id  <-  citn[citn_i, 1]
+  ## dbSendQuery(ch,
+  ## #             cat(
+  ##   sprintf("update publication set title = '%s', year_published = %s where id = %s",  titl, ct[[1]]$year, id)
+  ##             )
+  
+  auths <- ct[[1]]$author
+  auths <- lapply(auths, paste)
+  auths[[length(auths) + 1]] <- "Copyright"
+  auths[[length(auths) + 1]] <- "Ethics Approval"
+  auths <- gsub("'", "", auths)
+  for(name_i in auths){
+  #  name_i = auths[1]
+  dbSendQuery(ch,
+  #            cat(
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   sprintf("insert into authorship_approval(publication_id, name) values (%s, '%s')\n", id, name_i)
               )
               
@@ -1243,6 +1362,7 @@ Field('thesis_publication_status','string')
 #+name:R bibtex
 #+begin_src R :session *R* :tangle no :exports none :eval no
   setwd("~/tools/web2py/applications/data_inventory/static")
+<<<<<<< HEAD
   
   
   ct[[1]]
@@ -1270,6 +1390,35 @@ Field('thesis_publication_status','string')
   for(citn_i in 1:nrow(citn)){
   #citn
   
+=======
+  
+  
+  ct[[1]]
+  #$author
+  txt_hd <- "---
+  title: Untitled
+  output: html_document
+  csl: chicago-author-date.csl
+  bibliography: references.bib
+  ---\n\n
+  
+  ```{r, echo = F, results = 'hide'}
+  # get the bibtex info
+  library(knitcitations)
+  library(bibtex)
+  cleanbib()
+  cite_options(citation_format = 'pandoc', check.entries=FALSE) 
+  if(!exists('bib')) bib <- read.bibtex('~/references/library.bib')
+    
+  ```
+  \n
+  "
+  
+  txt <- ""
+  for(citn_i in 1:nrow(citn)){
+  #citn
+  
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   txt <- paste(txt,
                sprintf(
   "`r citet(bib[['%s']])`"
@@ -1550,7 +1699,11 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                                          db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
+<<<<<<< HEAD
                                user_signature=True,maxtextlength =200, csv=False, paginate=150)
+=======
+                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
       return dict(grid=grid)
 #+end_src  
 ** COMMENT deprecated manageproj-code
@@ -1579,6 +1732,8 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
   
   def manage_datasets():
       grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
+<<<<<<< HEAD
+=======
                                                         ],
                                fields = [
                                          db.dataset.shortname,
@@ -1619,6 +1774,7 @@ def my_form_processing(grid):
   
   def manage_datasets():
       grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
                                                         ],
                                fields = [
                                          db.dataset.shortname,
@@ -1639,6 +1795,49 @@ def my_form_processing(grid):
                                          db.authorship_approval.date_approval_given],
                                          orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200, csv=False, paginate=50)
+<<<<<<< HEAD
+      return dict(grid=grid)
+#+end_src
+
+
+** test autoenter creator in contact FAIL
+
+*** COMMENT auto fill contact
+#+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
+
+def my_form_processing(grid):
+    if grid.vars.contact == "":
+       grid.vars.contact = 'a test'
+
+#+end_src
+*** manage datasets test
+#+name:manage datasets
+#+begin_src R :session *R* :tangle no :exports reports :eval no :padline no
+  
+  def manage_datasets():
+      grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
+                                                        ],
+                               fields = [
+                                         db.dataset.shortname,
+                                         db.dataset.id,
+                              
+                                         db.dataset.additional_metadata,                                          
+                                         db.dataset.contact_email,
+                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                         db.attr.variable_name, db.attr.variable_definition,
+                                         db.accessrequest.accessdataset_id, 
+                                         db.accessrequest.dataset_id,
+                                         db.accessrequest.title, 
+                                         db.keyword.keyword,
+                                         db.intellectualright.licence_code,
+                                         db.publication.bibtex_key, db.publication.title,  
+                                         db.publication.google_scholar_cites, db.publication.impact_factor,
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200, csv=False, paginate=50)
+=======
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
       if grid.process(onvalidation=my_form_processing).accepted:
           session.flash = 'record inserted'
           redirect(URL())
@@ -1655,6 +1854,7 @@ def my_form_processing(grid):
                                                         ],
                                fields = [
                                          db.publication.bibtex_key, db.publication.citation,  
+<<<<<<< HEAD
                                          db.publication.publication_status, 
                                          db.authorship_approval.id, db.authorship_approval.name,
                                          db.authorship_approval.date_request_sent,
@@ -1662,6 +1862,13 @@ def my_form_processing(grid):
                                          orderby = dict(publication_status=db.publication.publication_status,
                                          authorship_approval=db.authorship_approval.id),
                                user_signature=True,maxtextlength =200, paginate= 150)
+=======
+                                         db.publication.thesis_section, 
+                                         db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
+                                         db.authorship_approval.date_approval_given],
+                                         orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
+                               user_signature=True,maxtextlength =200)
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
       return dict(grid=grid)
 #+end_src
 
@@ -1775,9 +1982,15 @@ SELECT t1.*, t2.title
   #str(stdy)
   #str(fdsc)
   ids <- names(table(stdy$IDNO))
+<<<<<<< HEAD
   ids[grep("GRID", ids)]
   # do
   stdy_i <- "bom_grids"
+=======
+  ids[grep("DROUGHT", ids)]
+  # do
+  stdy_i <- "drought"
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   stdy_i
   stdyj <- stdy[tolower(stdy$IDNO) == stdy_i, ]
   names(stdyj) <- tolower(names(stdyj))
@@ -2916,13 +3129,14 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
 * COMMENT ETL
 ** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
+#+begin_src R :session *R* :tangle no :exports none :eval no
   #### name:go ####
   library(rmarkdown)
   library(knitr)
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
+<<<<<<< HEAD
   prj <- "DROUGHT-AWAP-GRIDS"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
@@ -2955,6 +3169,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   dset  <- dsets[i]
     #"Vally20091223_RossRiverRates Restricted Data"
     #"biomass_smoke_events_db"
+=======
+  prj <- "Biomass_Smoke_Validated_Events"
+    #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
+  dset <- "biomass_smoke_events_database"
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
@@ -2963,6 +3182,7 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+<<<<<<< HEAD
   #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
    #browseURL("EML_metadata_fields.html")
   rmarkdown::render("EML_metadata_short.Rmd") #, stylesheet='custom.css')
@@ -2980,6 +3200,16 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   file.rename("EML_metadata_short.html", outfile)
   
   }  
+=======
+  # browseURL("EML_metadata_fields.html")
+  knitr::knit2html("EML_metadata_short.Rmd", stylesheet='custom.css')
+  # browseURL("EML_metadata_short.html")
+  
+  outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
+  outfile <- file.path("~/projects_environment_general_local", prj, dset, outfile)
+  outfile
+  file.rename("EML_metadata_short.html", outfile)
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   setwd(dirname(outfile))
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
@@ -2987,7 +3217,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
 #+end_src
 
 #+RESULTS: go
+<<<<<<< HEAD
 : /home/ivan_hanigan/projects_environment_general_local/ABS_data/ABS_SEIFA
+=======
+: TRUE
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3273,11 +3507,19 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   ---
   
   
+<<<<<<< HEAD
   
   # Introduction
   
   Date metadata document produced: `r Sys.Date()`.
   
+=======
+
+  # Introduction
+
+  Date metadata document produced: `r Sys.Date()`.
+
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   ```{r, echo = F, eval = T, results="hide"}
   #### name:summary of project info ####
   if(exists('ch'))   dbDisconnect(ch)
@@ -3285,20 +3527,36 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   library(sqldf)
   library(knitr)
   library(xtable)  
+<<<<<<< HEAD
   
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
   #prj <- "Air_Pollution_Monitoring_Stations_WA"
   #dset <- "AP_WA_1994_2012"
+=======
+
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  prj <- "Air_Pollution_Monitoring_Stations_WA"
+  dset <- "AP_WA_19942012"
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   
   #ch  <- connect2postgres2("data_inventory_noise")
   #prj <- "Noise Model"
   #dset <- "noise_model_preliminary_results"
+<<<<<<< HEAD
   
   #ch  <- connect2postgres2("data_inventory_air_pollution")
   #prj <- "Walkability"
   #dset <- "walkability_mayne"
   
   
+=======
+
+  #ch  <- connect2postgres2("data_inventory_air_pollution")
+  #prj <- "Walkability"
+  #dset <- "walkability_mayne"
+
+
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   show_exemplar <- T
   ```
   
@@ -3322,7 +3580,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
     contact,
     contact_email,
     abstract,
+<<<<<<< HEAD
     associated_party, recommended_citation,
+=======
+    associated_party,
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
     studyextent,
     geographicdescription,
     boundingcoordinates,
@@ -3344,7 +3606,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
    where shortname ='%s'", dset)
   )
   dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+<<<<<<< HEAD
    #dat_i
+=======
+  # dat_i
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
    dat_i$order <- 1:nrow(dat_i)
     #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
     #      collapse = ", ", sep = "")
@@ -3482,7 +3748,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   # Dataset or study detailed information   
   ```{r, echo = F, eval = T, results="asis"}  
   
+<<<<<<< HEAD
   qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
+=======
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c(
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   'associated_party',
   'geographicdescription',
   'boundingcoordinates',
@@ -3504,7 +3774,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   'keywords',
   'licence_code',
   'licence_text','licencee','data_owner','data_owner_contact','path_to_licence',
+<<<<<<< HEAD
   'special_conditions', 'recommended_citation'
+=======
+  'special_conditions'
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   ),]
   if(show_exemplar){
   print(xtable(qc_out[,]), type = "html", include.rownames = F)
@@ -3525,7 +3799,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   #### entity ####
   #dat <- dbGetQuery(ch, "select * from entity")
   dat_ent <- dbGetQuery(ch,
+<<<<<<< HEAD
   # cat(
+=======
+  #cat(
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   sprintf("select 
   t3.*
   from project t1
@@ -3534,7 +3812,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   join entity t3
   on t2.id = t3.dataset_id
   where t1.title = '%s'
+<<<<<<< HEAD
   and t2.shortname = '%s'", prj, dset)
+=======
+  and t2.shortname = '%s'", prj, dset),
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   )
   # head(dat_ent)
   
@@ -3587,7 +3869,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
     )
   #names(dat)
   #t(dat)
+<<<<<<< HEAD
   if(length(nrow(dat) > 0) != 0 & nrow(dat) >0){
+=======
+  if(length(nrow(dat) > 0) == 0){
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   ####  help
   help  <- sqldf(connection = ch,
     "select t1.eml_node, t1.help_comment, t1.datinv
@@ -3604,6 +3890,7 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   names(qc2) <- c("variable", "value", "help_comment")
   
   qc2[,2] <- gsub("\n", " | ", qc2[,2])
+<<<<<<< HEAD
   ## if(show_exemplar){
   ## cat("Variables attributes
   ## ---
@@ -3631,6 +3918,15 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   }
   ```
   
+=======
+  if(show_exemplar){
+  print(xtable(qc2[-c(1,2),]), type = "html", include.rownames = F)
+  } else {
+  print(xtable(qc2[-c(1,2),-2]), type = "html", include.rownames = F)
+  }
+  }
+  ```
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 #+end_src
 #+RESULTS:
 
@@ -3690,7 +3986,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
     contact_email,
     abstract,
     additional_metadata,
+<<<<<<< HEAD
     associated_party, recommended_citation,
+=======
+    associated_party,
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
     studyextent,
     geographicdescription,
     boundingcoordinates,
@@ -3855,7 +4155,11 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
   # Dataset or study metadata   
   ```{r, echo = F, eval = T, results="asis"}  
   
+<<<<<<< HEAD
   qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
+=======
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c(
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   'additional_metadata',
   'studyextent',
   'temporalcoverage_daterange',
@@ -4099,7 +4403,11 @@ EML_metadata_short.Rmd
   #tbls <- tbls[c(1:4,9,12:21),1]
   
   # get the project id
+<<<<<<< HEAD
   proj <- "45_and_Up_Study" 
+=======
+  proj <- "Biomass_Smoke_Validated_Events"
+>>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
                           )
