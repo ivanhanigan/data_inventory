@@ -12,7 +12,7 @@
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_dev4_hanigan_backup", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -179,6 +179,7 @@ Field('access_rules','text', comment = "The eml-access module describes the leve
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+Field('provision_date','date', comment = 'The date provided.'),
 Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
 Field('request_date','date', comment = 'Date provision requested.'),
 format = '%(shortname)s'
