@@ -2878,7 +2878,22 @@ response.include_files()
 
 #+RESULTS: pgdump
 *** pgdump2
+# on jadehawk
 pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_backups/data_inventory_hanigan_dev4_$(date +"%F-%H%M").gz
+ls /media/ritmo2/postgres_backups/
+scp /media/ritmo2/postgres_backups/data_inventory_hanigan_dev4_2016-11-06-1054.gz ivan_hanigan@192.168.1.107:/home/ivan_hanigan/postgres_backups
+
+# on hackintosh
+CREATE DATABASE data_inventory_hanigan_dev4_backup
+  WITH ENCODING='UTF8'
+       OWNER=w2p_user
+       CONNECTION LIMIT=-1;
+
+cd ~/postgres_backups
+gunzip < data_inventory_hanigan_dev4_2016-11-06-1054.gz | psql -U postgres data_inventory_hanigan_dev4_backup
+change the models/db.py (set migrate to true, then back to false)
+delete/drop the old database
+
 ** COMMENT psql restore
 #+name:psql restore
 #+begin_src R :session *R* :tangle psql restor.R :exports none :eval no
