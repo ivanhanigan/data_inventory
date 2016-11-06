@@ -58,11 +58,7 @@ def manage_projects():
                                        db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
                                        db.authorship_approval.date_approval_given],
                                        orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-<<<<<<< HEAD
                              user_signature=True,maxtextlength =200, csv=False, paginate=150)
-=======
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
     return dict(grid=grid)
 def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
@@ -92,7 +88,6 @@ def manage_publications():
                                                       ],
                              fields = [
                                        db.publication.bibtex_key, db.publication.citation,  
-<<<<<<< HEAD
                                        db.publication.publication_status, 
                                        db.authorship_approval.id, db.authorship_approval.name,
                                        db.authorship_approval.date_request_sent,
@@ -100,13 +95,6 @@ def manage_publications():
                                        orderby = dict(publication_status=db.publication.publication_status,
                                        authorship_approval=db.authorship_approval.id),
                              user_signature=True,maxtextlength =200, paginate= 150)
-=======
-                                       db.publication.thesis_section, 
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200)
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
     return dict(grid=grid)
 def manage_accessors_or_groups():
     grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],

@@ -11,13 +11,8 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-<<<<<<< HEAD
     ##db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = False)
-    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_dev4_hanigan_backup", fake_migrate_all = False)
-=======
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'], fake_migrate_all = True)
-    ##db = DAL("postgres://w2p_user:your_password@localhost:5432/data_inventory_dbname", fake_migrate_all = False)
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
+    db = DAL("postgres://w2p_user:xpassword@localhost:5432/data_inventory_hanigan_dev4", fake_migrate_all = False)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -152,10 +147,7 @@ Field('contact','string', comment = 'A contact name for general enquiries.  This
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
 Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
-<<<<<<< HEAD
 Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
-=======
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
@@ -195,11 +187,7 @@ format = '%(shortname)s'
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
 db.dataset.creator.requires = [IS_NOT_EMPTY()]
-<<<<<<< HEAD
 db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
-=======
-    
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
   
@@ -390,12 +378,9 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
-<<<<<<< HEAD
 Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
-=======
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
 Field('key_results', 'text', comment = 'Include both effect estimates and uncertainty'),
 Field('background_to_study', 'string', comment = ''),
@@ -409,10 +394,6 @@ Field('general_comments', 'text', comment = ''),
 Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
-<<<<<<< HEAD
-=======
-Field('title','string'),
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 Field('year_published','integer'),
 Field('impact_factor','double'),
 Field('date_impact_factor_checked','date'),
