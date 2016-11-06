@@ -1108,7 +1108,7 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
-Field('publication_status','string', requires = IS_IN_SET(['Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
@@ -2868,7 +2868,7 @@ response.include_files()
 
 
 ** COMMENT pgdump-local
-#+name:pgdump
+*** pgdump1
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   cat(sprintf('
   pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev4
@@ -2877,21 +2877,57 @@ response.include_files()
 #+end_src
 
 #+RESULTS: pgdump
+*** pgdump2
+pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_backups/data_inventory_hanigan_dev4_$(date +"%F-%H%M").gz
+** COMMENT psql restore
+#+name:psql restore
+#+begin_src R :session *R* :tangle psql restor.R :exports none :eval no
+  'name:psql restor'
+  cd /home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/
+  ls
+  psql -h localhost -d data_inventory_dev4_hanigan_backup -U postgres < "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-2016-06-26-12-03-34.backup"
+  # failed
+  createdb data_inventory_dev4_hanigan_backup
+  psql -d data_inventory_dev4_hanigan_backup
+  grant all on schema public to w2p_user;
+  \q
+    
+    
+    
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"project\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"dataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequests\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequest\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessdataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessrequest\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"publication\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"accessor\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"attr\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"authorship_approval\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"checklist\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"crosswalk\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"dataset\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"intellectualright\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"entity\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+  pg_dump -h localhost -p 5432 -U w2p_user -i -t \"public\".\"keyword\" data_inventory_hanigan_dev4 | psql -h 192.168.1.118 -U w2p_user data_inventory_dev4_hanigan_backup
+    
+#+end_src
 
 * COMMENT ETL
 ** COMMENT go-code
 #+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval no
+#+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
   library(rmarkdown)
   library(knitr)
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "ABS_data"
+  prj <- "DROUGHT-AWAP-GRIDS"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
+<<<<<<< HEAD
   #dset <- #"Vally2012-RossRiverRates"
   #dset <- "ASGC_1981_2010"
   dsets  <- c("ABS_SEIFA",
@@ -2902,6 +2938,18 @@ response.include_files()
   "ABS_Census_2001",
   "ABS_POA",
   "ABS_Census_2011")
+=======
+  dsets <- "DROUGHT_AWAP_GRIDS_1900_2015"
+  #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
+  ## dsets  <- c("ABS_SEIFA",
+  ## "ASGM_mortality",
+  ## "ASGC_1981_2010",
+  ## "ABS_meshblocks",
+  ## "ABS Correspondence",
+  ## "ABS_Census_2001",
+  ## "ABS_POA", "ABS_LGA",
+  ## "ABS_Census_2011")
+>>>>>>> 63163d6545c9ba441bf5dcead967a40de3515bda
   for(i in 1:length(dsets)){
   #  i = 1
   dset  <- dsets[i]
@@ -2921,8 +2969,11 @@ response.include_files()
   #browseURL("EML_metadata_short.html")
   
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
-  outfile <- file.path("~/projects_environment_general_local", prj,
+  outfile <- file.path("/home/ResearchData", prj,
   dset, outfile)
+  #outfile <- file.path("~/projects_ceraph", prj,
+  #dset, outfile)
+  
   #outfile <- file.path("~/projects", prj, dset, outfile)
   outfile
   #file.rename("EML_metadata_fields.html", outfile)
@@ -2936,7 +2987,7 @@ response.include_files()
 #+end_src
 
 #+RESULTS: go
-: TRUE
+: /home/ivan_hanigan/projects_environment_general_local/ABS_data/ABS_SEIFA
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
