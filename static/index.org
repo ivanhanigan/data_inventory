@@ -2868,7 +2868,7 @@ response.include_files()
 
 
 ** COMMENT pgdump-local
-#+name:pgdump
+*** pgdump1
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   cat(sprintf('
   pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev4
@@ -2877,6 +2877,8 @@ response.include_files()
 #+end_src
 
 #+RESULTS: pgdump
+*** pgdump2
+pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_backups/data_inventory_hanigan_dev4_$(date +"%F-%H%M").gz
 ** COMMENT psql restore
 #+name:psql restore
 #+begin_src R :session *R* :tangle psql restor.R :exports none :eval no
