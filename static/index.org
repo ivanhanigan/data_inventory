@@ -2938,11 +2938,13 @@ delete/drop the old database
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "DROUGHT-AWAP-GRIDS"
+  prj <- "Local_Land_Services"
+    #"DROUGHT-AWAP-GRIDS"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  dsets <- "DROUGHT_AWAP_GRIDS_1900_2015"
+  dsets <- "Local_Land_Services_NSW_20140205"
+    #"DROUGHT_AWAP_GRIDS_1900_2015"
   #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
   ## dsets  <- c("ABS_SEIFA",
   ## "ASGM_mortality",
@@ -2986,10 +2988,11 @@ delete/drop the old database
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
+  dbDisconnect(ch)
 #+end_src
 
 #+RESULTS: go
-: /home/ivan_hanigan/projects_environment_general_local/ABS_data/ABS_SEIFA
+: TRUE
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3965,6 +3968,8 @@ EML_metadata_short.Rmd
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
   dir()
+  #collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   rmarkdown::render("data_inventory.Rmd", "html_document")
   dbDisconnect(ch)
@@ -3978,7 +3983,7 @@ EML_metadata_short.Rmd
 *** COMMENT RMD
 #+begin_src R :session *R* :tangle data_inventory.Rmd :exports none :eval no
   ---
-  title: "Project and data inventory"
+  title: "Data inventory"
   author: Ivan Hanigan
   output:
     html_document:
@@ -3986,12 +3991,12 @@ EML_metadata_short.Rmd
   ---
   
    
-  # Introduction
   
-  - Updated: `r Sys.Date()`
+  
+  - Updated: `r format(Sys.time(), "%Y-%m-%d %H:%M")`
       
   
-  # Data Inventory of Potential Data Sources  
+  # Data Inventory
   
   ```{r, echo = F, results = 'hide', warning=FALSE, message=FALSE }  
   library(swishdbtools)
@@ -4003,9 +4008,9 @@ EML_metadata_short.Rmd
   ```{r, echo = F, results = 'asis'}
   if(do_loops){
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  projects <- dbGetQuery(ch, "select title, project_abstract, personnel_data_owner
-  from project
-  order by title")
+  projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
+  from project where %s
+  order by title", collection))
   #print(projects$title)
   for(i in 1:nrow(projects)){
   #i = 14
@@ -4052,7 +4057,8 @@ EML_metadata_short.Rmd
   ##                      )
   ##              , sep = "")
   cat(txt)
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact", "abstract", "additional_metadata", "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", "access_rules")]))
+  ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
     print(xtable(qc), include.rownames = T, type = "html")
