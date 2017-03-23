@@ -1108,7 +1108,7 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
-Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Accepted', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
 Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
 Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
@@ -2938,12 +2938,12 @@ delete/drop the old database
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Local_Land_Services"
-    #"DROUGHT-AWAP-GRIDS"
+  prj <- "PSMA_Admin_Boundaries"
+  dsets <- "DROUGHT-AWAP-GRIDS"
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  dsets <- "Local_Land_Services_NSW_20140205"
+  #dsets <- "Local_Land_Services_NSW_20140205"
     #"DROUGHT_AWAP_GRIDS_1900_2015"
   #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
   ## dsets  <- c("ABS_SEIFA",
@@ -2961,7 +2961,7 @@ delete/drop the old database
     #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
-  entities <- T
+  entities <- F
   show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
@@ -2977,7 +2977,7 @@ delete/drop the old database
   dset, outfile)
   #outfile <- file.path("~/projects_ceraph", prj,
   #dset, outfile)
-  
+  #outfile <- file.path("/home/ivan_hanigan/Dropbox/projects_ceraph_transfers/Data inventory_files", outfile)
   #outfile <- file.path("~/projects", prj, dset, outfile)
   outfile
   #file.rename("EML_metadata_fields.html", outfile)
@@ -3973,7 +3973,7 @@ EML_metadata_short.Rmd
   do_loops <- TRUE
   rmarkdown::render("data_inventory.Rmd", "html_document")
   dbDisconnect(ch)
-  #  browseURL("data_inventory.html")
+    browseURL("data_inventory.html")
   
 #+end_src
 
@@ -4058,7 +4058,7 @@ EML_metadata_short.Rmd
   ##              , sep = "")
   cat(txt)
   ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules")]))
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules", "recommended_citation")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
     print(xtable(qc), include.rownames = T, type = "html")

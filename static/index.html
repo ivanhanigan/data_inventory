@@ -7,11 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<<<<<<< HEAD
-<meta name="generated" content="2016-02-06T10:42+1100"/>
-=======
-<meta name="generated" content="2016-02-07T21:41+1100"/>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
+<meta name="generated" content="2017-03-23T11:03+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -145,16 +141,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#sec-2">2 Definitions and tips for each metadata field</a>
 <ul>
-<<<<<<< HEAD
-<li><a href="#sec-3-1">3.1 set up web2py</a></li>
-<li><a href="#sec-3-2">3.2 the web2py database example</a></li>
-<li><a href="#sec-3-3">3.3 installer</a></li>
-</ul>
-</li>
-<li><a href="#sec-4">4 Design the database</a>
-=======
 <li><a href="#sec-2-1">2.1 Project Information and Data Owners</a>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 <ul>
 <li><a href="#sec-2-1-1">2.1.1 eml/dataset/project/title</a></li>
 <li><a href="#sec-2-1-2">2.1.2 eml/dataset/project/personnel</a></li>
@@ -174,112 +161,29 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-2-4">2.2.4 dataset contact</a></li>
 <li><a href="#sec-2-2-5">2.2.5 dataset abstract</a></li>
 <li><a href="#sec-2-2-6">2.2.6 dataset additional metadata links</a></li>
-<li><a href="#sec-2-2-7">2.2.7 dataset methods/studyextent</a></li>
-<li><a href="#sec-2-2-8">2.2.8 dataset temporal coverage</a></li>
-<li><a href="#sec-2-2-9">2.2.9 dataset methods protocol</a></li>
-<li><a href="#sec-2-2-10">2.2.10 dataset sampling description</a></li>
-<li><a href="#sec-2-2-11">2.2.11 dataset method steps</a></li>
-<li><a href="#sec-2-2-12">2.2.12 dataset Geographic</a></li>
-<li><a href="#sec-2-2-13">2.2.13 dataset bounding coords</a></li>
-<li><a href="#sec-2-2-14">2.2.14 dataset taxo cov</a></li>
-<li><a href="#sec-2-2-15">2.2.15 additional info</a></li>
-<li><a href="#sec-2-2-16">2.2.16 dataset alternateidentifier</a></li>
-<li><a href="#sec-2-2-17">2.2.17 dataset pubdate</a></li>
-<li><a href="#sec-2-2-18">2.2.18 access rules</a></li>
-<li><a href="#sec-2-2-19">2.2.19 distribution method</a></li>
-<li><a href="#sec-2-2-20">2.2.20 metadataprovider</a></li>
+<li><a href="#sec-2-2-7">2.2.7 dataset recommended citation</a></li>
+<li><a href="#sec-2-2-8">2.2.8 dataset methods/studyextent</a></li>
+<li><a href="#sec-2-2-9">2.2.9 dataset temporal coverage</a></li>
+<li><a href="#sec-2-2-10">2.2.10 dataset methods protocol</a></li>
+<li><a href="#sec-2-2-11">2.2.11 dataset sampling description</a></li>
+<li><a href="#sec-2-2-12">2.2.12 dataset method steps</a></li>
+<li><a href="#sec-2-2-13">2.2.13 dataset Geographic</a></li>
+<li><a href="#sec-2-2-14">2.2.14 dataset bounding coords</a></li>
+<li><a href="#sec-2-2-15">2.2.15 dataset taxo cov</a></li>
+<li><a href="#sec-2-2-16">2.2.16 additional info</a></li>
+<li><a href="#sec-2-2-17">2.2.17 dataset alternateidentifier</a></li>
+<li><a href="#sec-2-2-18">2.2.18 dataset pubdate</a></li>
+<li><a href="#sec-2-2-19">2.2.19 access rules</a></li>
+<li><a href="#sec-2-2-20">2.2.20 distribution method</a></li>
+<li><a href="#sec-2-2-21">2.2.21 metadataprovider</a></li>
+<li><a href="#sec-2-2-22">2.2.22 provision status</a></li>
+<li><a href="#sec-2-2-23">2.2.23 provision status</a></li>
+<li><a href="#sec-2-2-24">2.2.24 request notes</a></li>
+<li><a href="#sec-2-2-25">2.2.25 request date</a></li>
 </ul>
 </li>
 <li><a href="#sec-2-3">2.3 Data Entity (dataTable)</a>
 <ul>
-<<<<<<< HEAD
-<li><a href="#sec-5-2-1">5.2.1 dataset shortname</a></li>
-<li><a href="#sec-5-2-2">5.2.2 dataset title</a></li>
-<li><a href="#sec-5-2-3">5.2.3 dataset creator</a></li>
-<li><a href="#sec-5-2-4">5.2.4 dataset contact</a></li>
-<li><a href="#sec-5-2-5">5.2.5 dataset abstract</a></li>
-<li><a href="#sec-5-2-6">5.2.6 dataset additional metadata links</a></li>
-<li><a href="#sec-5-2-7">5.2.7 dataset methods/studyextent</a></li>
-<li><a href="#sec-5-2-8">5.2.8 dataset temporal coverage</a></li>
-<li><a href="#sec-5-2-9">5.2.9 dataset methods protocol</a></li>
-<li><a href="#sec-5-2-10">5.2.10 dataset sampling description</a></li>
-<li><a href="#sec-5-2-11">5.2.11 dataset method steps</a></li>
-<li><a href="#sec-5-2-12">5.2.12 dataset Geographic</a></li>
-<li><a href="#sec-5-2-13">5.2.13 dataset bounding coords</a></li>
-<li><a href="#sec-5-2-14">5.2.14 dataset taxo cov</a></li>
-<li><a href="#sec-5-2-15">5.2.15 additional info</a></li>
-<li><a href="#sec-5-2-16">5.2.16 dataset alternateidentifier</a></li>
-<li><a href="#sec-5-2-17">5.2.17 dataset pubdate</a></li>
-<li><a href="#sec-5-2-18">5.2.18 access rules</a></li>
-<li><a href="#sec-5-2-19">5.2.19 distribution method</a></li>
-<li><a href="#sec-5-2-20">5.2.20 metadataprovider</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-3">5.3 Data Entity (dataTable)</a>
-<ul>
-<li><a href="#sec-5-3-1">5.3.1 eml/dataset/entity/id</a></li>
-<li><a href="#sec-5-3-2">5.3.2 eml/dataset/entity/name</a></li>
-<li><a href="#sec-5-3-3">5.3.3 eml/dataset/entity/description</a></li>
-<li><a href="#sec-5-3-4">5.3.4 eml/dataset/entity/physical/distribution</a></li>
-<li><a href="#sec-5-3-5">5.3.5 temporal cov</a></li>
-<li><a href="#sec-5-3-6">5.3.6 eml/dataset/entity methods</a></li>
-</ul></li>
-</ul>
-</li>
-<li><a href="#sec-6">6 Design User Interface</a>
-<ul>
-<li><a href="#sec-6-1">6.1 Defaults for controllers/default.py</a></li>
-<li><a href="#sec-6-2">6.2 Top Menu</a></li>
-<li><a href="#sec-6-3">6.3 Access a dataset</a></li>
-<li><a href="#sec-6-4">6.4 Main form ties it all together (manage projects)</a></li>
-<li><a href="#sec-6-5">6.5 Form to manage all dataset</a>
-<ul>
-<li><a href="#sec-6-5-1">6.5.1 manage datasets</a></li>
-</ul>
-</li>
-<li><a href="#sec-6-6">6.6 test autoenter creator in contact FAIL</a>
-<ul>
-<li><a href="#sec-6-6-1">6.6.1 manage datasets test</a></li>
-</ul>
-</li>
-<li><a href="#sec-6-7">6.7 Form to manage all publications</a></li>
-<li><a href="#sec-6-8">6.8 Form to manage accessors or groups</a></li>
-<li><a href="#sec-6-9">6.9 finesse the interface</a></li>
-</ul>
-</li>
-<li><a href="#sec-7">7 backups</a></li>
-<li><a href="#sec-8">8 ETL</a>
-<ul>
-<li><a href="#sec-8-1">8.1 summary of data for ETL</a></li>
-<li><a href="#sec-8-2">8.2 load transformed</a></li>
-<li><a href="#sec-8-3">8.3 summary of EML fields for projects/datasets</a>
-<ul>
-<li><a href="#sec-8-3-1">8.3.1 head</a></li>
-<li><a href="#sec-8-3-2">8.3.2 dataset overview</a></li>
-<li><a href="#sec-8-3-3">8.3.3 umbrella project</a></li>
-<li><a href="#sec-8-3-4">8.3.4 dataset overview</a></li>
-<li><a href="#sec-8-3-5">8.3.5 files entities overview</a></li>
-<li><a href="#sec-8-3-6">8.3.6 attributes</a></li>
-</ul>
-</li>
-<li><a href="#sec-8-4">8.4 short summary of EML fields for projects/datasets homepage</a>
-<ul>
-<li><a href="#sec-8-4-1">8.4.1 head</a></li>
-<li><a href="#sec-8-4-2">8.4.2 dataset overview</a></li>
-<li><a href="#sec-8-4-3">8.4.3 umbrella project</a></li>
-<li><a href="#sec-8-4-4">8.4.4 dataset overview</a></li>
-<li><a href="#sec-8-4-5">8.4.5 files entities overview</a></li>
-</ul>
-</li>
-<li><a href="#sec-8-5">8.5 data inventory report</a></li>
-</ul>
-</li>
-<li><a href="#sec-9">9 check in/check out</a>
-<ul>
-<li><a href="#sec-9-1">9.1 checkout from child to master when master not exists</a></li>
-<li><a href="#sec-9-2">9.2 checkout from master to child, assumes you want to replace child (and manually removed it)</a></li>
-<li><a href="#sec-9-3">9.3 DEPRECATED identify-aquire-post-update-review procedures</a></li>
-=======
 <li><a href="#sec-2-3-1">2.3.1 eml/dataset/entity/id</a></li>
 <li><a href="#sec-2-3-2">2.3.2 eml/dataset/entity/name</a></li>
 <li><a href="#sec-2-3-3">2.3.3 eml/dataset/entity/description</a></li>
@@ -288,7 +192,6 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-3-6">2.3.6 eml/dataset/entity methods</a></li>
 </ul>
 </li>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 </ul>
 </li>
 </ul>
@@ -490,16 +393,6 @@ For more information about the EML dataTable type (especially its attributes) se
 </li>
 </ul>
 </div>
-
-</div>
-
-<div id="outline-container-3-3" class="outline-3">
-<h3 id="sec-3-3"><span class="section-number-3">3.3</span> installer</h3>
-<div class="outline-text-3" id="text-3-3">
-
-
-
-</div>
 </div>
 </div>
 
@@ -664,8 +557,6 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 </ul>
 
 
-
-
 </div>
 
 </div>
@@ -681,25 +572,8 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 
 
 </div>
-<<<<<<< HEAD
-
-<div id="outline-container-5-2-1" class="outline-4">
-<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> dataset shortname</h4>
-<div class="outline-text-4" id="text-5-2-1">
-
-<p>A concise name, eg. vernal-data-1999.
-The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
-</p>
-<ul>
-<li><a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#shortName</a>
-</li>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#shortName</a>
-</li>
-</ul>
-=======
 
 </div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <div id="outline-container-2-1-8" class="outline-4">
 <h4 id="sec-2-1-8"><span class="section-number-4">2.1.8</span> relatedProject</h4>
@@ -711,228 +585,12 @@ The 'shortName' field provides a concise name that describes the resource that i
 </ul>
 
 
-</div>
-
-</div>
-
-<<<<<<< HEAD
-<div id="outline-container-5-2-2" class="outline-4">
-<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> dataset title</h4>
-<div class="outline-text-4" id="text-5-2-2">
-
-<p>TODO
-</p>
-</div>
-
-</div>
-=======
-
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
-
-<div id="outline-container-5-2-3" class="outline-4">
-<h4 id="sec-5-2-3"><span class="section-number-4">5.2.3</span> dataset creator</h4>
-<div class="outline-text-4" id="text-5-2-3">
-
-<p>TODO
-</p>
-</div>
-
-</div>
-<<<<<<< HEAD
-
-<div id="outline-container-5-2-4" class="outline-4">
-<h4 id="sec-5-2-4"><span class="section-number-4">5.2.4</span> dataset contact</h4>
-<div class="outline-text-4" id="text-5-2-4">
-
-<p>TODO
-</p>
-</div>
-
-</div>
-
-<div id="outline-container-5-2-5" class="outline-4">
-<h4 id="sec-5-2-5"><span class="section-number-4">5.2.5</span> dataset abstract</h4>
-<div class="outline-text-4" id="text-5-2-5">
-
-<p>This should be brief but include:
-</p><ul>
-<li>Study research question
-</li>
-<li>Specific hypothesis under study
-</li>
-<li>Endpoints or outcomes of interest
-</li>
-</ul>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2-6" class="outline-4">
-<h4 id="sec-5-2-6"><span class="section-number-4">5.2.6</span> dataset additional metadata links</h4>
-<div class="outline-text-4" id="text-5-2-6">
-
-<p>TODO
-</p>
-</div>
-
-</div>
-
-<div id="outline-container-5-2-7" class="outline-4">
-<h4 id="sec-5-2-7"><span class="section-number-4">5.2.7</span> dataset methods/studyextent</h4>
-<div class="outline-text-4" id="text-5-2-7">
-
-<ul>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent</a>
-</li>
-<li>Both specific to sampling area and frequency, spatial extent/resolution, temporal boundaries. eg CCD 2001.
-</li>
-</ul>
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2-8" class="outline-4">
-<h4 id="sec-5-2-8"><span class="section-number-4">5.2.8</span> dataset temporal coverage</h4>
-<div class="outline-text-4" id="text-5-2-8">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2-9" class="outline-4">
-<h4 id="sec-5-2-9"><span class="section-number-4">5.2.9</span> dataset methods protocol</h4>
-<div class="outline-text-4" id="text-5-2-9">
-
-<ul>
-<li id="sec-5-2-9-1">general EML methods module info<br/>
-<ul>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html</a>
-</li>
-<li>The eml-methods module describes the methods followed in the creation of the dataset, including description of field, laboratory and processing steps, sampling methods and units, quality control procedures. The eml-methods module is used to describe the actual procedures that are used in the creation or the subsequent processing of a dataset. Likewise, eml-methods is used to describe processes that have been used to define / improve the quality of a data file, or to identify potential problems with the data file. Note that the eml-protocol module is intended to be used to document a prescribed procedure, whereas the eml-method module is used to describe procedures that were actually performed. The distinction is that the use of the term "protocol" is used in the "prescriptive" sense, and the term "method" is used in the "descriptive" sense. This distinction allows managers to build a protocol library of well-known, established protocols (procedures), but also document what procedure was truly performed in relation to the established protocol. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. 
-
-</li>
-<li>eml-methods is descriptive (often written in the declarative mood: "I took five subsamples&hellip;") whereas eml-protocol is prescriptive (often written in the imperative mood: "Take five subsamples&hellip;").
-</li>
-</ul>
-
-
-</li>
-</ul>
-<ul>
-<li id="sec-5-2-9-2">Recommendations for protocol<br/>
-The protocol information can be captured in two places of EML
-<ul>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html</a>
-</li>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#protocol">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#protocol</a>
-</li>
-<li>In many cases the simpler option is to use the methods module protocol section which is designed to capture 'reference a protocol resource or describe methods and identify the processes that have been used to define / improve the quality of a data file'.
-</li>
-<li>It can also be used to identify potential problems with the data collection protocol or study design, to be addressed in the methods steps.
-</li>
-</ul>
-
-
-
-<p>
-After deciding where the protocol information will sit, then consider including the following information:
-</p><ul>
-<li>Study type: select from a list like time-series, cross-sectional, spatial, exploratory, confirmatory
-</li>
-<li>Data sets collected/used 
-</li>
-<li>Analysis package (statistical package name and version)
-</li>
-<li>Study population (including inclusion and exclusion criteria)
-</li>
-<li>Exposure variables
-</li>
-<li>Outcome measures (outcome measures, including comparison group)
-</li>
-<li>Covariates (possible exposures, potential confounders or effect modifiers)
-</li>
-</ul>
-
-
-<p>
-If possible also details of the sequence of planned analyses, with statistical methods to be employed and how each of the planned hypotheses will be tested. Include details of how potential confounding and bias will be dealt with. For example:
-</p>
-<ol>
-<li>Descriptive analyses
-</li>
-<li>Univariable analysis
-</li>
-<li>Multivariable analysis, and
-</li>
-<li>Interactions, subgroups, sensitivity analyses
-</li>
-</ol>
-
-
-</li>
-</ul>
-</div>
-
-</div>
-
-<div id="outline-container-5-2-10" class="outline-4">
-<h4 id="sec-5-2-10"><span class="section-number-4">5.2.10</span> dataset sampling description</h4>
-<div class="outline-text-4" id="text-5-2-10">
-
-<ul>
-<li>Similar to a description of sampling procedures found in the methods section of a journal article.
-</li>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#samplingDescription">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#samplingDescription</a>
-</li>
-</ul>
-
-</div>
-
-</div>
-
-<div id="outline-container-5-2-11" class="outline-4">
-<h4 id="sec-5-2-11"><span class="section-number-4">5.2.11</span> dataset method steps</h4>
-<div class="outline-text-4" id="text-5-2-11">
-
-<ul>
-<li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep</a>
-</li>
-<li>EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable.
-</li>
-<li>Include data cleaning strategy, and process for handling missing data.
-</li>
-<li>Include text descriptions of the procedures, relevant literature, software, instrumentation, source data and any quality control measures taken.
-</li>
-</ul>
 
 
 
 
 
 </div>
-
-</div>
-
-<div id="outline-container-5-2-12" class="outline-4">
-<h4 id="sec-5-2-12"><span class="section-number-4">5.2.12</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
-<div class="outline-text-4" id="text-5-2-12">
-
-
-
-
-<pre class="src src-markdown">Field('geographicdescription','string',
-comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-),
-</pre>
-=======
 </div>
 
 </div>
@@ -941,20 +599,13 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 <h3 id="sec-2-2"><span class="section-number-3">2.2</span> Dataset</h3>
 <div class="outline-text-3" id="text-2-2">
 
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-2-13" class="outline-4">
-<h4 id="sec-5-2-13"><span class="section-number-4">5.2.13</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
-<div class="outline-text-4" id="text-5-2-13">
-=======
 <div id="outline-container-2-2-1" class="outline-4">
 <h4 id="sec-2-2-1"><span class="section-number-4">2.2.1</span> dataset shortname</h4>
 <div class="outline-text-4" id="text-2-2-1">
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <p>A concise name, eg. vernal-data-1999.
 The 'shortName' field provides a concise name that describes the resource that is being documented. It is the appropriate place to store a filename associated with other storage systems.
@@ -968,28 +619,14 @@ The 'shortName' field provides a concise name that describes the resource that i
 
 
 
-<<<<<<< HEAD
-<pre class="src src-markdown">Field('boundingcoordinates','string',
-comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-),
-</pre>
-=======
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 </div>
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-2-14" class="outline-4">
-<h4 id="sec-5-2-14"><span class="section-number-4">5.2.14</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
-<div class="outline-text-4" id="text-5-2-14">
-=======
 <div id="outline-container-2-2-2" class="outline-4">
 <h4 id="sec-2-2-2"><span class="section-number-4">2.2.2</span> dataset title</h4>
 <div class="outline-text-4" id="text-2-2-2">
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <p>TODO
 </p>
@@ -1015,22 +652,7 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </p>
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-2-15" class="outline-4">
-<h4 id="sec-5-2-15"><span class="section-number-4">5.2.15</span> additional info</h4>
-<div class="outline-text-4" id="text-5-2-15">
-
-<p>Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
-</p>
-<ul>
-<li>EML Standard: <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
-</li>
-<li>Local Link: <a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
-</li>
-</ul>
-=======
 </div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <div id="outline-container-2-2-5" class="outline-4">
 <h4 id="sec-2-2-5"><span class="section-number-4">2.2.5</span> dataset abstract</h4>
@@ -1046,23 +668,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </li>
 </ul>
 
-</div>
-
-</div>
-
-<div id="outline-container-5-2-16" class="outline-4">
-<h4 id="sec-5-2-16"><span class="section-number-4">5.2.16</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
-<div class="outline-text-4" id="text-5-2-16">
 
 
 </div>
-
-
-<pre class="src src-markdown">Field('alternateidentifier','string',
-comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
-),
-</pre>
 
 </div>
 
@@ -1074,17 +682,37 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </p>
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-2-17" class="outline-4">
-<h4 id="sec-5-2-17"><span class="section-number-4">5.2.17</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
-<div class="outline-text-4" id="text-5-2-17">
-=======
 </div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <div id="outline-container-2-2-7" class="outline-4">
-<h4 id="sec-2-2-7"><span class="section-number-4">2.2.7</span> dataset methods/studyextent</h4>
+<h4 id="sec-2-2-7"><span class="section-number-4">2.2.7</span> dataset recommended citation</h4>
 <div class="outline-text-4" id="text-2-2-7">
+
+<p>A resource that describes a literature citation that one might find in a bibliography. If included, this represents the primary resource that is described in this eml document. 
+</p>
+<ul>
+<li><a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/./eml.html#citation">https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/./eml.html#citation</a> 
+</li>
+</ul>
+
+
+<ul>
+<li id="sec-2-2-7-1">code<br/>
+
+
+
+<pre class="src src-markdown">Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
+</pre>
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-2-2-8" class="outline-4">
+<h4 id="sec-2-2-8"><span class="section-number-4">2.2.8</span> dataset methods/studyextent</h4>
+<div class="outline-text-4" id="text-2-2-8">
 
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#studyExtent</a>
@@ -1094,99 +722,41 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </ul>
 
 
-<<<<<<< HEAD
-<pre class="src src-markdown">Field('pubdate','date'),
-</pre>
-
 </div>
 
-</div>
-
-<div id="outline-container-5-2-18" class="outline-4">
-<h4 id="sec-5-2-18"><span class="section-number-4">5.2.18</span> <span class="todo TODO">TODO</span> access rules</h4>
-<div class="outline-text-4" id="text-5-2-18">
-
-<p>for instance are ethics protocol details required?
-</p>
-
-=======
-</div>
-
-</div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
-
-<div id="outline-container-2-2-8" class="outline-4">
-<h4 id="sec-2-2-8"><span class="section-number-4">2.2.8</span> dataset temporal coverage</h4>
-<div class="outline-text-4" id="text-2-2-8">
-
-<pre class="src src-markdown">Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
-</pre>
-
-
-</div>
-
-<<<<<<< HEAD
-<div id="outline-container-5-2-19" class="outline-4">
-<h4 id="sec-5-2-19"><span class="section-number-4">5.2.19</span> <span class="todo TODO">TODO</span> distribution method</h4>
-<div class="outline-text-4" id="text-5-2-19">
-
-<ul>
-<li id="sec-5-2-19-1">ideas<br/>
-new field = dataset/distribution<sub>methods</sub>
-The methods of distribution used for others to access the software, data, and documentation.
-
-<p>
-Distribution strategies include:
-</p><ul>
-<li>publication of journal papers, reports, conference presentations, blogging, twitter and news media
-</li>
-<li>data deposit in a portal or archive
-</li>
-<li>code publication online to open-source code sharing sites, or made available on request.
-</li>
-</ul>
-=======
 </div>
 
 <div id="outline-container-2-2-9" class="outline-4">
-<h4 id="sec-2-2-9"><span class="section-number-4">2.2.9</span> dataset methods protocol</h4>
+<h4 id="sec-2-2-9"><span class="section-number-4">2.2.9</span> dataset temporal coverage</h4>
 <div class="outline-text-4" id="text-2-2-9">
 
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-10" class="outline-4">
+<h4 id="sec-2-2-10"><span class="section-number-4">2.2.10</span> dataset methods protocol</h4>
+<div class="outline-text-4" id="text-2-2-10">
+
 <ul>
-<li id="sec-2-2-9-1">general EML methods module info<br/>
+<li id="sec-2-2-10-1">general EML methods module info<br/>
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html</a>
 </li>
 <li>The eml-methods module describes the methods followed in the creation of the dataset, including description of field, laboratory and processing steps, sampling methods and units, quality control procedures. The eml-methods module is used to describe the actual procedures that are used in the creation or the subsequent processing of a dataset. Likewise, eml-methods is used to describe processes that have been used to define / improve the quality of a data file, or to identify potential problems with the data file. Note that the eml-protocol module is intended to be used to document a prescribed procedure, whereas the eml-method module is used to describe procedures that were actually performed. The distinction is that the use of the term "protocol" is used in the "prescriptive" sense, and the term "method" is used in the "descriptive" sense. This distinction allows managers to build a protocol library of well-known, established protocols (procedures), but also document what procedure was truly performed in relation to the established protocol. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. 
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 </li>
 <li>eml-methods is descriptive (often written in the declarative mood: "I took five subsamples&hellip;") whereas eml-protocol is prescriptive (often written in the imperative mood: "Take five subsamples&hellip;").
 </li>
 </ul>
 
-<<<<<<< HEAD
-<p>
-This deals with IP and copyright, so maybe just have well been in the intellectual<sub>right</sub> module?
-</p></li>
-</ul>
-<ul>
-<li id="sec-5-2-19-2">code<br/>
-
-
-
-<pre class="src src-markdown">Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
-</pre>
-
-</li>
-</ul>
-</div>
-=======
 
 </li>
 </ul>
 <ul>
-<li id="sec-2-2-9-2">Recommendations for protocol<br/>
+<li id="sec-2-2-10-2">Recommendations for protocol<br/>
 The protocol information can be captured in two places of EML
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-protocol.html</a>
@@ -1198,15 +768,8 @@ The protocol information can be captured in two places of EML
 <li>It can also be used to identify potential problems with the data collection protocol or study design, to be addressed in the methods steps.
 </li>
 </ul>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
-<<<<<<< HEAD
-<div id="outline-container-5-2-20" class="outline-4">
-<h4 id="sec-5-2-20"><span class="section-number-4">5.2.20</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
-<div class="outline-text-4" id="text-5-2-20">
-=======
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <p>
 After deciding where the protocol information will sit, then consider including the following information:
@@ -1242,23 +805,16 @@ If possible also details of the sequence of planned analyses, with statistical m
 </li>
 </ol>
 
-<<<<<<< HEAD
-<pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
-</pre>
-
-
-=======
 
 </li>
 </ul>
 </div>
 
 </div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
-<div id="outline-container-2-2-10" class="outline-4">
-<h4 id="sec-2-2-10"><span class="section-number-4">2.2.10</span> dataset sampling description</h4>
-<div class="outline-text-4" id="text-2-2-10">
+<div id="outline-container-2-2-11" class="outline-4">
+<h4 id="sec-2-2-11"><span class="section-number-4">2.2.11</span> dataset sampling description</h4>
+<div class="outline-text-4" id="text-2-2-11">
 
 <ul>
 <li>Similar to a description of sampling procedures found in the methods section of a journal article.
@@ -1271,9 +827,9 @@ If possible also details of the sequence of planned analyses, with statistical m
 
 </div>
 
-<div id="outline-container-2-2-11" class="outline-4">
-<h4 id="sec-2-2-11"><span class="section-number-4">2.2.11</span> dataset method steps</h4>
-<div class="outline-text-4" id="text-2-2-11">
+<div id="outline-container-2-2-12" class="outline-4">
+<h4 id="sec-2-2-12"><span class="section-number-4">2.2.12</span> dataset method steps</h4>
+<div class="outline-text-4" id="text-2-2-12">
 
 <ul>
 <li><a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-methods.html#methodStep</a>
@@ -1294,30 +850,26 @@ If possible also details of the sequence of planned analyses, with statistical m
 
 </div>
 
-<div id="outline-container-2-2-12" class="outline-4">
-<h4 id="sec-2-2-12"><span class="section-number-4">2.2.12</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
-<div class="outline-text-4" id="text-2-2-12">
+<div id="outline-container-2-2-13" class="outline-4">
+<h4 id="sec-2-2-13"><span class="section-number-4">2.2.13</span> <span class="todo TODO">TODO</span> dataset Geographic</h4>
+<div class="outline-text-4" id="text-2-2-13">
 
 
 
 
-<<<<<<< HEAD
-<pre class="src src-markdown">Field('entityname','string', comment = "The file name, name of database table, etc. It should identify the entity in the dataset. Example: SpeciesAbundance1996.csv", requires = IS<span style="color: #268bd2; font-style: italic;">_NOT_</span>EMPTY()),
-=======
 <pre class="src src-markdown">Field('geographicdescription','string',
 comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 </pre>
 
 </div>
 
 </div>
 
-<div id="outline-container-2-2-13" class="outline-4">
-<h4 id="sec-2-2-13"><span class="section-number-4">2.2.13</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
-<div class="outline-text-4" id="text-2-2-13">
+<div id="outline-container-2-2-14" class="outline-4">
+<h4 id="sec-2-2-14"><span class="section-number-4">2.2.14</span> <span class="todo TODO">TODO</span> dataset bounding coords</h4>
+<div class="outline-text-4" id="text-2-2-14">
 
 
 
@@ -1332,66 +884,23 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-3-4" class="outline-4">
-<h4 id="sec-5-3-4"><span class="section-number-4">5.3.4</span> eml/dataset/entity/physical/distribution</h4>
-<div class="outline-text-4" id="text-5-3-4">
-=======
-<div id="outline-container-2-2-14" class="outline-4">
-<h4 id="sec-2-2-14"><span class="section-number-4">2.2.14</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
-<div class="outline-text-4" id="text-2-2-14">
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
-
-<ul>
-<li>The PhysicalDistribution contains the information required for retrieving the resource.
-</li>
-<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-physical.html#distribution">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-physical.html#distribution">EML online</a>
-</li>
-</ul>
+<div id="outline-container-2-2-15" class="outline-4">
+<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> <span class="todo TODO">TODO</span> dataset taxo cov</h4>
+<div class="outline-text-4" id="text-2-2-15">
 
 
 
-<<<<<<< HEAD
-=======
+
 <pre class="src src-markdown">Field('taxonomic_coverage','string', comment="List of scientific names."),
 </pre>
 
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 </div>
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-5-3-5" class="outline-4">
-<h4 id="sec-5-3-5"><span class="section-number-4">5.3.5</span> <span class="todo TODO">TODO</span> temporal cov</h4>
-<div class="outline-text-4" id="text-5-3-5">
-
-
-
-
-<pre class="src src-markdown">Field('entity<span style="color: #268bd2; font-style: italic;">_temporalcoverage_</span>daterange','string', comment = "A text description of the temporal range that events were observed on"),
-</pre>
-
-
-</div>
-
-</div>
-
-<div id="outline-container-5-3-6" class="outline-4">
-<h4 id="sec-5-3-6"><span class="section-number-4">5.3.6</span> eml/dataset/entity methods</h4>
-<div class="outline-text-4" id="text-5-3-6">
-
-
-
-
-<pre class="src src-markdown">Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
-</pre>
-
-
-=======
-<div id="outline-container-2-2-15" class="outline-4">
-<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> additional info</h4>
-<div class="outline-text-4" id="text-2-2-15">
+<div id="outline-container-2-2-16" class="outline-4">
+<h4 id="sec-2-2-16"><span class="section-number-4">2.2.16</span> additional info</h4>
+<div class="outline-text-4" id="text-2-2-16">
 
 <p>Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement).
 </p>
@@ -1401,7 +910,6 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 <li>Local Link: <a href="http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo">http://127.0.0.1:8181/data_inventory/static/eml-2.1.1/docs/eml-2.1.1/eml-resource.html#additionalInfo</a>
 </li>
 </ul>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
 
@@ -1409,9 +917,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-16" class="outline-4">
-<h4 id="sec-2-2-16"><span class="section-number-4">2.2.16</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
-<div class="outline-text-4" id="text-2-2-16">
+<div id="outline-container-2-2-17" class="outline-4">
+<h4 id="sec-2-2-17"><span class="section-number-4">2.2.17</span> <span class="todo TODO">TODO</span> dataset alternateidentifier</h4>
+<div class="outline-text-4" id="text-2-2-17">
 
 
 
@@ -1426,9 +934,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-17" class="outline-4">
-<h4 id="sec-2-2-17"><span class="section-number-4">2.2.17</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
-<div class="outline-text-4" id="text-2-2-17">
+<div id="outline-container-2-2-18" class="outline-4">
+<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
+<div class="outline-text-4" id="text-2-2-18">
 
 
 
@@ -1440,9 +948,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-18" class="outline-4">
-<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> access rules</h4>
-<div class="outline-text-4" id="text-2-2-18">
+<div id="outline-container-2-2-19" class="outline-4">
+<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> access rules</h4>
+<div class="outline-text-4" id="text-2-2-19">
 
 <p>for instance are ethics protocol details required?
 </p>
@@ -1456,12 +964,12 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-19" class="outline-4">
-<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> distribution method</h4>
-<div class="outline-text-4" id="text-2-2-19">
+<div id="outline-container-2-2-20" class="outline-4">
+<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> distribution method</h4>
+<div class="outline-text-4" id="text-2-2-20">
 
 <ul>
-<li id="sec-2-2-19-1">ideas<br/>
+<li id="sec-2-2-20-1">ideas<br/>
 new field = dataset/distribution<sub>methods</sub>
 The methods of distribution used for others to access the software, data, and documentation.
 
@@ -1482,7 +990,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </p></li>
 </ul>
 <ul>
-<li id="sec-2-2-19-2">code<br/>
+<li id="sec-2-2-20-2">code<br/>
 
 
 
@@ -1495,15 +1003,73 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-2-2-20" class="outline-4">
-<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
-<div class="outline-text-4" id="text-2-2-20">
+<div id="outline-container-2-2-21" class="outline-4">
+<h4 id="sec-2-2-21"><span class="section-number-4">2.2.21</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
+<div class="outline-text-4" id="text-2-2-21">
 
 
 
 
 <pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 </pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-22" class="outline-4">
+<h4 id="sec-2-2-22"><span class="section-number-4">2.2.22</span> <span class="todo TODO">TODO</span> provision status</h4>
+<div class="outline-text-4" id="text-2-2-22">
+
+
+
+
+<pre class="src src-markdown">Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-23" class="outline-4">
+<h4 id="sec-2-2-23"><span class="section-number-4">2.2.23</span> <span class="todo TODO">TODO</span> provision status</h4>
+<div class="outline-text-4" id="text-2-2-23">
+
+
+
+
+<pre class="src src-markdown">Field('provision_date','date', comment = 'The date provided.'),
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-24" class="outline-4">
+<h4 id="sec-2-2-24"><span class="section-number-4">2.2.24</span> <span class="todo TODO">TODO</span> request notes</h4>
+<div class="outline-text-4" id="text-2-2-24">
+
+
+
+
+<pre class="src src-markdown">Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-25" class="outline-4">
+<h4 id="sec-2-2-25"><span class="section-number-4">2.2.25</span> <span class="todo TODO">TODO</span> request date</h4>
+<div class="outline-text-4" id="text-2-2-25">
+
+
+
+
+<pre class="src src-markdown">Field('request_date','date', comment = 'Date provision requested.'),
+</pre>
+
 
 
 
@@ -1563,33 +1129,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-<<<<<<< HEAD
-<pre class="src src-R">def manage_projects():
-    grid = SQLFORM.smartgrid(db.project,linked_tables=[<span style="color: #2aa198;">'dataset'</span>, <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [db.project.title, db.project.personnel_data_owner,
-                                       db.dataset.shortname,
-
-
-                                       db.dataset.additional_metadata,                                          
-
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution, 
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(project=db.project.title, dataset=db.dataset.shortname,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-=======
 <pre class="src src-markdown">Field('entitydescription', 'string', comment = "Text generally describing the entity, its type, and relevant information about the data in the entity. Example: Species abundance data for 1996 at the VCR LTER site"),
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 </pre>
 
 
@@ -1597,46 +1137,6 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-6-5" class="outline-3">
-<h3 id="sec-6-5"><span class="section-number-3">6.5</span> Form to manage all dataset</h3>
-<div class="outline-text-3" id="text-6-5">
-
-
-</div>
-
-<div id="outline-container-6-5-1" class="outline-4">
-<h4 id="sec-6-5-1"><span class="section-number-4">6.5.1</span> manage datasets</h4>
-<div class="outline-text-4" id="text-6-5-1">
-
-
-
-
-<pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.dataset.shortname,
-                                       db.dataset.id,
-                            
-                                       db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-                                       db.keyword.keyword,
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-=======
 <div id="outline-container-2-3-4" class="outline-4">
 <h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> eml/dataset/entity/physical/distribution</h4>
 <div class="outline-text-4" id="text-2-3-4">
@@ -1648,136 +1148,19 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </li>
 </ul>
 
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
-
-</div>
 </div>
 
 </div>
 
-<<<<<<< HEAD
-<div id="outline-container-6-6" class="outline-3">
-<h3 id="sec-6-6"><span class="section-number-3">6.6</span> test autoenter creator in contact FAIL</h3>
-<div class="outline-text-3" id="text-6-6">
-=======
 <div id="outline-container-2-3-5" class="outline-4">
 <h4 id="sec-2-3-5"><span class="section-number-4">2.3.5</span> <span class="todo TODO">TODO</span> temporal cov</h4>
 <div class="outline-text-4" id="text-2-3-5">
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
 
 
-<<<<<<< HEAD
-</div>
-
-<div id="outline-container-6-6-1" class="outline-4">
-<h4 id="sec-6-6-1"><span class="section-number-4">6.6.1</span> manage datasets test</h4>
-<div class="outline-text-4" id="text-6-6-1">
-
-
-
-
-<pre class="src src-R">def manage_datasets():
-    grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ <span style="color: #2aa198;">'entity'</span>, <span style="color: #2aa198;">'keyword'</span>, <span style="color: #2aa198;">'intellectualright'</span>, <span style="color: #2aa198;">'attr'</span>,<span style="color: #2aa198;">'accessrequest'</span>, <span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.dataset.shortname,
-                                       db.dataset.id,
-                            
-                                       db.dataset.additional_metadata,                                          
-                                       db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
-                                       db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
-                                       db.accessrequest.title, 
-                                       db.keyword.keyword,
-                                       db.intellectualright.licence_code,
-                                       db.publication.bibtex_key, db.publication.title,  
-                                       db.publication.google_scholar_cites, db.publication.impact_factor,
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(dataset=db.dataset.title,authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
-    <span style="color: #859900; font-weight: bold;">if</span> grid.process(onvalidation=my_form_processing).accepted:
-        session.flash = <span style="color: #2aa198;">'record inserted'</span>
-        redirect(URL())
-
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-6-7" class="outline-3">
-<h3 id="sec-6-7"><span class="section-number-3">6.7</span> Form to manage all publications</h3>
-<div class="outline-text-3" id="text-6-7">
-
-
-
-
-<pre class="src src-R">def manage_publications():
-    grid = SQLFORM.smartgrid(db.publication,linked_tables=[<span style="color: #2aa198;">'publication'</span>, <span style="color: #2aa198;">'authorship_approval'</span>
-                                                      ],
-                             fields = [
-                                       db.publication.bibtex_key, db.publication.citation,  
-                                       db.publication.thesis_section, 
-                                       db.authorship_approval.id, db.authorship_approval.name, db.authorship_approval.date_request_sent,
-                                       db.authorship_approval.date_approval_given],
-                                       orderby = dict(thesis_section=db.publication.thesis_section, authorship_approval=db.authorship_approval.id),
-                             user_signature=True,maxtextlength =200)
-    <span style="color: #859900; font-weight: bold;">return</span> dict(grid=grid)
-</pre>
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-6-8" class="outline-3">
-<h3 id="sec-6-8"><span class="section-number-3">6.8</span> Form to manage accessors or groups</h3>
-<div class="outline-text-3" id="text-6-8">
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-6-9" class="outline-3">
-<h3 id="sec-6-9"><span class="section-number-3">6.9</span> finesse the interface</h3>
-<div class="outline-text-3" id="text-6-9">
-
-<ul>
-<li>the following makes a home page
-</li>
-<li>TODO the indenting is stuffed in the index chunk
-
-</li>
-<li>also go to static/css/web2py.css and change line 33/34 text width to about 800px
-</li>
-<li>removed from just above instructions and replaced with if auth is logged after instructions.
-  {{if 'message' in globals():}}
-  &lt;h3&gt;{{=message}}&lt;/h3&gt;
-
-</li>
-<li>removed from bottom
-  {{block right<sub>sidebar</sub>}}
-  {{<code>A(T("Administrative Interface"), _href=URL('admin','default','index'), _class</code>'btn',
-       <sub>style</sub>='margin-top: 1em;')}}
-  {{end}}
-</li>
-</ul>
-=======
 <pre class="src src-markdown">Field('entity<span style="color: #268bd2; font-style: italic;">_temporalcoverage_</span>daterange','string', comment = "A text description of the temporal range that events were observed on"),
 </pre>
 
@@ -1785,7 +1168,6 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </div>
 
 </div>
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 <div id="outline-container-2-3-6" class="outline-4">
 <h4 id="sec-2-3-6"><span class="section-number-4">2.3.6</span> eml/dataset/entity methods</h4>
@@ -1793,41 +1175,8 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-<<<<<<< HEAD
-<pre class="src src-markdown">  {{left<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled,right<span style="color: #268bd2; font-style: italic;">_sidebar_</span>enabled=False,('message' in globals())}}
-{{extend 'layout.html'}}
-  
-
-  &lt;h4&gt;{{=T('Instructions')}}&lt;/h4&gt;
-  &lt;li&gt;{{=T('To use the data inventory please register in top right corner.')}}&lt;/li&gt;
-  {{if auth.is<span style="color: #268bd2; font-style: italic;">_logged_</span>in():}}
-&lt;ol&gt;
-    &lt;li&gt;{{=T('You are using the data inventory')}}&lt;/li&gt;
-  &lt;li&gt;{{=XML(T('The main tool for managing research projects (umbrella grouping of datasets) is at %s',
-             A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_projects/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">           _href=URL('forms','manage_</span>projects'))))}}&lt;/li&gt;
-    &lt;li&gt;{{=XML(T('The main tool for managing datasets is at %s',
-           A('%(application)s/forms/manage<span style="color: #268bd2; font-style: italic;">_datasets/'%request,</span>
-<span style="color: #268bd2; font-style: italic;">             _href=URL('forms','manage_</span>datasets'))))}}&lt;/li&gt;
-  &lt;li&gt;{{=XML(T('The technical documentation for this application is at %s',
-             A('this link',
-           <span style="color: #268bd2; font-style: italic;">_href=URL('static','index.html'), _target='new')))}}&lt;/li&gt;</span>
-<span style="color: #268bd2; font-style: italic;">&lt;/ol&gt;</span>
-<span style="color: #268bd2; font-style: italic;">  {{elif 'content' in globals():}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=content}}</span>
-<span style="color: #268bd2; font-style: italic;">  {{else:}}</span>
-<span style="color: #268bd2; font-style: italic;">{{=BEAUTIFY(response._</span>vars)}}
-  {{pass}}
-
-  {{block right_sidebar}}
-{{=A(T("About this site"), _href=URL('static', 'index.html'), _class='btn',
-       _style='margin-top: 1em;')}}
-{{end}}
-  
-=======
 
 <pre class="src src-markdown">Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 </pre>
 
 
@@ -1843,15 +1192,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-<<<<<<< HEAD
 
 
-</div>
-</div>
 
-</div>
-=======
->>>>>>> 47b52ab918c4478948884fff80cc3eafa38278ad
 
 
 
@@ -1868,181 +1211,6 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
-
-
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3" class="outline-3">
-<h3 id="sec-8-3"><span class="section-number-3">8.3</span> summary of EML fields for projects/datasets</h3>
-<div class="outline-text-3" id="text-8-3">
-
-
-</div>
-
-<div id="outline-container-8-3-1" class="outline-4">
-<h4 id="sec-8-3-1"><span class="section-number-4">8.3.1</span> head</h4>
-<div class="outline-text-4" id="text-8-3-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-2" class="outline-4">
-<h4 id="sec-8-3-2"><span class="section-number-4">8.3.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-3-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-3" class="outline-4">
-<h4 id="sec-8-3-3"><span class="section-number-4">8.3.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-8-3-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-4" class="outline-4">
-<h4 id="sec-8-3-4"><span class="section-number-4">8.3.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-3-4">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-5" class="outline-4">
-<h4 id="sec-8-3-5"><span class="section-number-4">8.3.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-8-3-5">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-3-6" class="outline-4">
-<h4 id="sec-8-3-6"><span class="section-number-4">8.3.6</span> attributes</h4>
-<div class="outline-text-4" id="text-8-3-6">
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-8-4" class="outline-3">
-<h3 id="sec-8-4"><span class="section-number-3">8.4</span> short summary of EML fields for projects/datasets homepage</h3>
-<div class="outline-text-3" id="text-8-4">
-
-
-</div>
-
-<div id="outline-container-8-4-1" class="outline-4">
-<h4 id="sec-8-4-1"><span class="section-number-4">8.4.1</span> head</h4>
-<div class="outline-text-4" id="text-8-4-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-2" class="outline-4">
-<h4 id="sec-8-4-2"><span class="section-number-4">8.4.2</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-4-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-3" class="outline-4">
-<h4 id="sec-8-4-3"><span class="section-number-4">8.4.3</span> umbrella project</h4>
-<div class="outline-text-4" id="text-8-4-3">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-4" class="outline-4">
-<h4 id="sec-8-4-4"><span class="section-number-4">8.4.4</span> dataset overview</h4>
-<div class="outline-text-4" id="text-8-4-4">
-
-
-
-</div>
-
-</div>
-
-<div id="outline-container-8-4-5" class="outline-4">
-<h4 id="sec-8-4-5"><span class="section-number-4">8.4.5</span> files entities overview</h4>
-<div class="outline-text-4" id="text-8-4-5">
-
-<p>EML<sub>metadata</sub><sub>short</sub>.Rmd
-</p>
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-8-5" class="outline-3">
-<h3 id="sec-8-5"><span class="section-number-3">8.5</span> data inventory report</h3>
-<div class="outline-text-3" id="text-8-5">
-
-
-
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-9" class="outline-2">
-<h2 id="sec-9"><span class="section-number-2">9</span> check in/check out</h2>
-<div class="outline-text-2" id="text-9">
-
-
-</div>
-
-<div id="outline-container-9-1" class="outline-3">
-<h3 id="sec-9-1"><span class="section-number-3">9.1</span> checkout from child to master when master not exists</h3>
-<div class="outline-text-3" id="text-9-1">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-9-2" class="outline-3">
-<h3 id="sec-9-2"><span class="section-number-3">9.2</span> checkout from master to child, assumes you want to replace child (and manually removed it)</h3>
-<div class="outline-text-3" id="text-9-2">
-
-
-</div>
-
-</div>
-
-<div id="outline-container-9-3" class="outline-3">
-<h3 id="sec-9-3"><span class="section-number-3">9.3</span> DEPRECATED identify-aquire-post-update-review procedures</h3>
-<div class="outline-text-3" id="text-9-3">
-
-<ul>
-<li>doco for identified data are in a sep database so not to mess up clean inventory
-</li>
-<li>once data aquisitioon has started transfer to the main data inventory
-</li>
-</ul>
 
 
 </div>
