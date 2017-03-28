@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2017-03-23T11:03+1100"/>
+<meta name="generated" content="2017-03-28T11:04+1100"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -144,8 +144,8 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-1">2.1 Project Information and Data Owners</a>
 <ul>
 <li><a href="#sec-2-1-1">2.1.1 eml/dataset/project/title</a></li>
-<li><a href="#sec-2-1-2">2.1.2 eml/dataset/project/personnel</a></li>
-<li><a href="#sec-2-1-3">2.1.3 funding-code</a></li>
+<li><a href="#sec-2-1-2">2.1.2 eml/dataset/project/personnel (Personnel Data Owner, Personnel Owner Organisationname, Personnel General)</a></li>
+<li><a href="#sec-2-1-3">2.1.3 eml/dataset/project/funding</a></li>
 <li><a href="#sec-2-1-4">2.1.4 eml/dataset/project/abstract</a></li>
 <li><a href="#sec-2-1-5">2.1.5 eml/dataset/project/studyAreaDescription</a></li>
 <li><a href="#sec-2-1-6">2.1.6 project established</a></li>
@@ -436,15 +436,14 @@ For more information about the EML dataTable type (especially its attributes) se
 
 <p>The suggested structure is either:
 </p><ul>
-<li>the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
+<li>the [Project Originator's Name + DataType] (ie 'ABS_data', 'PSMA_Admin_Boundaries') , or 
 </li>
-<li>a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
+<li>a label that describes the [DataType + Geographic coverage] and optional links to the [people] or [organisations] who own the data (ie 'Air_pollution_monitoring_ACT' or 'Schools_ACT').
 </li>
 <li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title">EML online</a>
 </li>
-<li>If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title.
-</li>
 </ul>
+
 
 
 </div>
@@ -452,7 +451,7 @@ For more information about the EML dataTable type (especially its attributes) se
 </div>
 
 <div id="outline-container-2-1-2" class="outline-4">
-<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> eml/dataset/project/personnel</h4>
+<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> eml/dataset/project/personnel (Personnel Data Owner, Personnel Owner Organisationname, Personnel General)</h4>
 <div class="outline-text-4" id="text-2-1-2">
 
 <p>In EML the Data Owner is able to be shown at various points on the xpath.  
@@ -468,29 +467,19 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 
 
 
-<ul>
-<li id="sec-2-1-2-1">personnel general<br/>
 
-
-
-<pre class="src src-markdown">Field('personnel','string', 
-comment= XML(T('This is for key people etc that are not the owner. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
-),
-</pre>
-
-</li>
-</ul>
 </div>
 
 </div>
 
 <div id="outline-container-2-1-3" class="outline-4">
-<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> funding-code</h4>
+<h4 id="sec-2-1-3"><span class="section-number-4">2.1.3</span> eml/dataset/project/funding</h4>
 <div class="outline-text-4" id="text-2-1-3">
 
 <ul>
 <li>Significant funding sources under which the data has been collected over the lifespan of the project
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-project.html#funding">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#funding">EML online</a>
 </li>
 </ul>
 
@@ -1178,6 +1167,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 <pre class="src src-markdown">Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
 </pre>
+
 
 
 

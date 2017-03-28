@@ -89,23 +89,23 @@ db.define_table(
     'project',
 Field('title', 'string',
 comment= XML(T('The project places the data into its larger research context.  %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel_data_owner','string', 
 comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel_owner_organisationname','string', 
 comment= XML(T('This is the data owner organisation. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel','string', 
 comment= XML(T('This is for key people etc that are not the owner. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('funding', 'text',
 comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-3', scheme=True, host=True)), _target='new')))
 ),
 Field('project_abstract', 'text',
 comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
@@ -125,7 +125,7 @@ A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, 
 ),
 Field('related_project','text', 
 comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
+A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-8', scheme=True, host=True)), _target='new')))
 ),
 format = '%(title)s' 
 )

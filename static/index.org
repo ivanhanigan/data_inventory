@@ -417,18 +417,19 @@ The following sections show the definitions used to create the data inventory:
 #+end_src
 *** eml/dataset/project/title
 The suggested structure is either:
-- the [Plot Network Name] (ie 'Victorian Alpine Plot Network') , or 
-- a label that describes the [geographic coverage], [data type] and links to the [people] or [organisations] who own the data (ie Australian Tundra Experiment : Long Term Ecological Research Network (LTERN) - Victorian Alpine Plot Network).
+- the [Project Originator's Name + DataType] (ie 'ABS\_data', 'PSMA\_Admin\_Boundaries') , or 
+- a label that describes the [DataType + Geographic coverage] and optional links to the [people] or [organisations] who own the data (ie 'Air\_pollution\_monitoring\_ACT' or 'Schools\_ACT').
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#title][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#title][EML online]]
+**** COMMENT snip
 - If the data has been collected as part of a larger umbrella research project this is the title. Suggested structure is: [Generic Project Name] OR [geographic coverage] [data type].  Otherwise it is the same as the dataset title.
 **** COMMENT project/title/code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('title', 'string',
   comment= XML(T('The project places the data into its larger research context.  %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new')))
   ),
 #+end_src
-*** eml/dataset/project/personnel
+*** eml/dataset/project/personnel (Personnel Data Owner, Personnel Owner Organisationname, Personnel General)
 In EML the Data Owner is able to be shown at various points on the xpath.  
 LTERN uses the dataset/project/personnel/individualName or dataset/project/personnel/organizationName with  dataset/project/personnel/role == 'Data Owner' 
 - A data owner can be a person, an organisational role or an organisation who has a statutory and operational authority over data.
@@ -440,27 +441,28 @@ LTERN uses the dataset/project/personnel/individualName or dataset/project/perso
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel_data_owner','string', 
   comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
   ),
   Field('personnel_owner_organisationname','string', 
   comment= XML(T('This is the data owner organisation. %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
   ),
 #+end_src
-**** personnel general
+**** COMMENT personnel general code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
   Field('personnel','string', 
   comment= XML(T('This is for key people etc that are not the owner. %s',
-  A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+  A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
   ),
 #+end_src
-*** funding-code
+*** eml/dataset/project/funding
 - Significant funding sources under which the data has been collected over the lifespan of the project
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#funding][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#funding][EML online]]
 **** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('funding', 'text',
       comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
-      A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-3', scheme=True, host=True)), _target='new')))
       ),
 
 #+end_src
@@ -519,7 +521,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('related_project','text', 
       comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-      A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
+      A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-8', scheme=True, host=True)), _target='new')))
       ),
 #+end_src
 
@@ -2876,6 +2878,8 @@ response.include_files()
     
 #+end_src
 
+#+RESULTS:
+
 #+RESULTS: pgdump
 *** pgdump2
 # on jadehawk
@@ -2992,7 +2996,7 @@ delete/drop the old database
 #+end_src
 
 #+RESULTS: go
-: TRUE
+: /home/ivan_hanigan/tools/web2py/applications/data_inventory/static/data_inventory_book
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3968,8 +3972,8 @@ EML_metadata_short.Rmd
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
   dir()
-  #collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
-  collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   rmarkdown::render("data_inventory.Rmd", "html_document")
   dbDisconnect(ch)
@@ -4094,6 +4098,143 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
+** data inventory report test bookdown
+*** COMMENT go-code
+#+name:go
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  #### name:go ####
+  projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
+  setwd(projdir)
+  library(bookdown)
+  
+  dir()
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
+  do_loops <- TRUE
+  source("data_inventory.R")
+  dbDisconnect(ch)
+  #?bookdown_site
+  setwd("data_inventory_book")
+  render_book("index.Rmd")
+  setwd("..")
+  #browseURL("data_inventory_book/_book/index.html")
+  #dir()
+  
+#+end_src
+
+#+RESULTS: go
+: TRUE
+
+*** COMMENT RMD
+#+begin_src R :session *R* :tangle data_inventory.R :exports none :eval no
+  library(swishdbtools)
+  library(sqldf)
+  library(knitr)
+  library(xtable)  
+  if(do_loops){
+  #  do_loops  <- T
+  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+  #collection  <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
+  from project where %s
+  order by title", collection))
+  #print(projects$title)
+  for(i in 1:nrow(projects)){
+  #i = 2
+  prj <- projects[i,1]
+  txt <- sprintf('%s\n===\n', prj)
+  
+  ## txt <- paste(txt,
+  ##              sprintf("- Abstract: %s\n- Data Owner: %s\n",
+  ##                      projects[i,2],
+  ##                      projects[i,3]
+  ##                      ),
+  ##              sep = "")
+  
+    qc <- as.data.frame(t(projects[i,c("title", "personnel_data_owner", "project_abstract")]))
+    names(qc) <- c("metadata_field")
+    qc[,1] <- gsub("\n", " | ", qc[,1])
+  
+  
+  out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 10, sprintf("0%s", i), i), 
+    gsub(" ", "-", prj)
+  )
+  sink(
+  out_bookfile
+  )
+  cat(txt)
+  print(xtable(qc), include.rownames = T, type = "html")
+  #qc
+  #kable(qc)
+  cat("\n\n")
+  sink()  
+  
+  datasets <- dbGetQuery(ch,
+  sprintf("select t1.*
+  from dataset t1
+  join project t2
+  on t1.project_id = t2.id
+  where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
+                         )
+  #str(datasets)
+  if(
+  nrow(datasets)==0
+  ) next
+  for(j in 1:nrow(datasets)){
+  #j = 1
+    dset <- datasets$shortname[j]
+  #print(dset)
+  txt <- sprintf('\n%s\n---\n', dset)
+    
+   
+  ## txt <- paste(txt,
+  ##              sprintf("- Dataset Abstract: %s\n- Creator: %s\n- Contact: %s\n\n",
+  ##                      datasets[j,"abstract"],
+  ##                      datasets[j,"creator"],
+  ##                      datasets[j,"contact"]                     
+  ##                      )
+  ##              , sep = "")
+  
+  ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules", "recommended_citation")]))
+    names(qc) <- c("metadata_field")
+    qc[,1] <- gsub("\n", " | ", qc[,1])
+  sink(out_bookfile, append = T)
+  cat(txt)
+  print(xtable(qc), include.rownames = T, type = "html")
+  cat("\n\n")    
+  sink()
+    #entities <- dbGetQuery(ch,
+    #sprintf("select t1.entityname, entitydescription, physical_distribution
+    #from entity t1
+    #join dataset t2
+    #on t1.dataset_id = t2.id
+    #where t2.shortname = '%s'", dset)
+    #                       )
+    # str(entities)
+  
+    #cat("\n### Files and Folders\n\n")
+    #print(xtable(entities), type = "html", include.rownames = F)
+  
+  ## for(k in 1:nrow(entities)){
+  ##   #k = 1
+  ##   ent <- entities[k,"entityname"]
+  ##   txt <- sprintf('\n### %s\n\n', ent)
+  ##   cat(txt)
+  ##   qc <- as.data.frame(t(entities[k,-c(1:2)]))
+  ##   names(qc) <- NULL
+  ##   qc[,1] <- gsub("\n", " | ", qc[,1])
+  ##   print(xtable(qc), include.rownames = T, type = "html")
+  ##   cat("\n\n")  
+  ## }
+  
+  }
+  }
+  }
+  
+  
+#+end_src
+
 * COMMENT check in/check out
 ** checkout from child to master when master not exists
 #+begin_src R :session *R* :tangle no :exports none :eval no
