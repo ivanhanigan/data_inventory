@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Data Inventory "/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2017-03-28T11:04+1100"/>
+<meta name="generated" content="2017-08-16T15:02+1000"/>
 <meta name="author" content="Ivan Hanigan"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -172,14 +172,15 @@ for the JavaScript code in this tag.
 <li><a href="#sec-2-2-15">2.2.15 dataset taxo cov</a></li>
 <li><a href="#sec-2-2-16">2.2.16 additional info</a></li>
 <li><a href="#sec-2-2-17">2.2.17 dataset alternateidentifier</a></li>
-<li><a href="#sec-2-2-18">2.2.18 dataset pubdate</a></li>
-<li><a href="#sec-2-2-19">2.2.19 access rules</a></li>
-<li><a href="#sec-2-2-20">2.2.20 distribution method</a></li>
-<li><a href="#sec-2-2-21">2.2.21 metadataprovider</a></li>
-<li><a href="#sec-2-2-22">2.2.22 provision status</a></li>
+<li><a href="#sec-2-2-18">2.2.18 eml/dataset/publisher</a></li>
+<li><a href="#sec-2-2-19">2.2.19 dataset pubdate</a></li>
+<li><a href="#sec-2-2-20">2.2.20 access rules</a></li>
+<li><a href="#sec-2-2-21">2.2.21 distribution method</a></li>
+<li><a href="#sec-2-2-22">2.2.22 metadataprovider</a></li>
 <li><a href="#sec-2-2-23">2.2.23 provision status</a></li>
-<li><a href="#sec-2-2-24">2.2.24 request notes</a></li>
-<li><a href="#sec-2-2-25">2.2.25 request date</a></li>
+<li><a href="#sec-2-2-24">2.2.24 provision status</a></li>
+<li><a href="#sec-2-2-25">2.2.25 request notes</a></li>
+<li><a href="#sec-2-2-26">2.2.26 request date</a></li>
 </ul>
 </li>
 <li><a href="#sec-2-3">2.3 Data Entity (dataTable)</a>
@@ -924,8 +925,25 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 </div>
 
 <div id="outline-container-2-2-18" class="outline-4">
-<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
+<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> eml/dataset/publisher</h4>
 <div class="outline-text-4" id="text-2-2-18">
+
+<ul>
+<li>The publisher of this data set. At times this is a traditional publishing house, but it may also simply be an institution that is making the data available in a published (ie, citable) format.
+</li>
+<li>The KNB definition can be found at these links: <a href="./eml-2.1.1/docs/eml-2.1.1/eml-dataset.html#publisher">EML 2.1.1 definition</a> or <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html#publisher">EML online</a>
+</li>
+</ul>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-19" class="outline-4">
+<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> dataset pubdate</h4>
+<div class="outline-text-4" id="text-2-2-19">
 
 
 
@@ -937,9 +955,9 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-19" class="outline-4">
-<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> access rules</h4>
-<div class="outline-text-4" id="text-2-2-19">
+<div id="outline-container-2-2-20" class="outline-4">
+<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> access rules</h4>
+<div class="outline-text-4" id="text-2-2-20">
 
 <p>for instance are ethics protocol details required?
 </p>
@@ -953,12 +971,12 @@ A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, h
 
 </div>
 
-<div id="outline-container-2-2-20" class="outline-4">
-<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> distribution method</h4>
-<div class="outline-text-4" id="text-2-2-20">
+<div id="outline-container-2-2-21" class="outline-4">
+<h4 id="sec-2-2-21"><span class="section-number-4">2.2.21</span> <span class="todo TODO">TODO</span> distribution method</h4>
+<div class="outline-text-4" id="text-2-2-21">
 
 <ul>
-<li id="sec-2-2-20-1">ideas<br/>
+<li id="sec-2-2-21-1">ideas<br/>
 new field = dataset/distribution<sub>methods</sub>
 The methods of distribution used for others to access the software, data, and documentation.
 
@@ -979,7 +997,7 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 </p></li>
 </ul>
 <ul>
-<li id="sec-2-2-20-2">code<br/>
+<li id="sec-2-2-21-2">code<br/>
 
 
 
@@ -992,28 +1010,14 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-2-2-21" class="outline-4">
-<h4 id="sec-2-2-21"><span class="section-number-4">2.2.21</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
-<div class="outline-text-4" id="text-2-2-21">
-
-
-
-
-<pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
-</pre>
-
-</div>
-
-</div>
-
 <div id="outline-container-2-2-22" class="outline-4">
-<h4 id="sec-2-2-22"><span class="section-number-4">2.2.22</span> <span class="todo TODO">TODO</span> provision status</h4>
+<h4 id="sec-2-2-22"><span class="section-number-4">2.2.22</span> <span class="todo TODO">TODO</span> metadataprovider</h4>
 <div class="outline-text-4" id="text-2-2-22">
 
 
 
 
-<pre class="src src-markdown">Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+<pre class="src src-markdown">Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
 </pre>
 
 </div>
@@ -1027,6 +1031,20 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 
 
+<pre class="src src-markdown">Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2-24" class="outline-4">
+<h4 id="sec-2-2-24"><span class="section-number-4">2.2.24</span> <span class="todo TODO">TODO</span> provision status</h4>
+<div class="outline-text-4" id="text-2-2-24">
+
+
+
+
 <pre class="src src-markdown">Field('provision_date','date', comment = 'The date provided.'),
 </pre>
 
@@ -1035,9 +1053,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-2-2-24" class="outline-4">
-<h4 id="sec-2-2-24"><span class="section-number-4">2.2.24</span> <span class="todo TODO">TODO</span> request notes</h4>
-<div class="outline-text-4" id="text-2-2-24">
+<div id="outline-container-2-2-25" class="outline-4">
+<h4 id="sec-2-2-25"><span class="section-number-4">2.2.25</span> <span class="todo TODO">TODO</span> request notes</h4>
+<div class="outline-text-4" id="text-2-2-25">
 
 
 
@@ -1049,9 +1067,9 @@ This deals with IP and copyright, so maybe just have well been in the intellectu
 
 </div>
 
-<div id="outline-container-2-2-25" class="outline-4">
-<h4 id="sec-2-2-25"><span class="section-number-4">2.2.25</span> <span class="todo TODO">TODO</span> request date</h4>
-<div class="outline-text-4" id="text-2-2-25">
+<div id="outline-container-2-2-26" class="outline-4">
+<h4 id="sec-2-2-26"><span class="section-number-4">2.2.26</span> <span class="todo TODO">TODO</span> request date</h4>
+<div class="outline-text-4" id="text-2-2-26">
 
 
 

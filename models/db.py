@@ -174,6 +174,10 @@ Field('alternateidentifier','string',
 comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
+Field('publisher','string',
+comment = XML(T('The publisher of this data set (e.g. repository, publishing house, any institution making the data available). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-2-18', scheme=True, host=True)), _target='new')))     
+),
 Field('pubdate','date'),
 Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),

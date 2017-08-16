@@ -747,6 +747,17 @@ Any information that is not characterised well by EML metadata. Example is a gro
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
       ),
 #+end_src
+*** TODO eml/dataset/publisher
+- The publisher of this data set. At times this is a traditional publishing house, but it may also simply be an institution that is making the data available in a published (ie, citable) format.
+- The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-dataset.html#publisher][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-dataset.html#publisher][EML online]]
+**** COMMENT code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('publisher','string',
+      comment = XML(T('The publisher of this data set (e.g. repository, publishing house, any institution making the data available). %s.',
+      A('More', _href=XML(URL('static','index.html',  anchor='sec-2-2-18', scheme=True, host=True)), _target='new')))     
+      ),
+#+end_src
+
 *** TODO dataset pubdate
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('pubdate','date'),
@@ -2942,8 +2953,8 @@ delete/drop the old database
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "PSMA_Admin_Boundaries"
-  dsets <- "DROUGHT-AWAP-GRIDS"
+  prj <- "Project_Exposures"
+  dsets <- c("SEEF_exposures")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -2965,7 +2976,7 @@ delete/drop the old database
     #"biomass_smoke_events_db"
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
-  entities <- F
+  entities <- T
   show_exemplar <- T
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
@@ -2975,15 +2986,18 @@ delete/drop the old database
    #browseURL("EML_metadata_fields.html")
   rmarkdown::render("EML_metadata_short.Rmd") #, stylesheet='custom.css')
   #browseURL("EML_metadata_short.html")
-  
+  pth <- as.character(qc_out[which(qc_out$variable == "additional_metadata"),])[2]
+  pth
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
-  outfile <- file.path("/home/ResearchData", prj,
-  dset, outfile)
+  #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
+  outfile <- file.path("~",pth, outfile)
+  
+  outfile
   #outfile <- file.path("~/projects_ceraph", prj,
   #dset, outfile)
   #outfile <- file.path("/home/ivan_hanigan/Dropbox/projects_ceraph_transfers/Data inventory_files", outfile)
   #outfile <- file.path("~/projects", prj, dset, outfile)
-  outfile
+  
   #file.rename("EML_metadata_fields.html", outfile)
   file.rename("EML_metadata_short.html", outfile)
   
@@ -3972,8 +3986,8 @@ EML_metadata_short.Rmd
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
   dir()
-  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
-  #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
+  #collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   rmarkdown::render("data_inventory.Rmd", "html_document")
   dbDisconnect(ch)
@@ -4098,7 +4112,7 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
-** data inventory report test bookdown
+** TODO data inventory report test bookdown
 *** COMMENT go-code
 #+name:go
 #+begin_src R :session *R* :tangle no :exports none :eval yes
@@ -4115,7 +4129,8 @@ EML_metadata_short.Rmd
   dbDisconnect(ch)
   #?bookdown_site
   setwd("data_inventory_book")
-  render_book("index.Rmd")
+  #render_book("index.Rmd")
+  render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
   #browseURL("data_inventory_book/_book/index.html")
   #dir()
@@ -4140,7 +4155,7 @@ EML_metadata_short.Rmd
   order by title", collection))
   #print(projects$title)
   for(i in 1:nrow(projects)){
-  #i = 2
+  #i = 13
   prj <- projects[i,1]
   txt <- sprintf('%s\n===\n', prj)
   
@@ -4170,18 +4185,26 @@ EML_metadata_short.Rmd
   sink()  
   
   datasets <- dbGetQuery(ch,
-  sprintf("select t1.*
+  sprintf("select t1.*, t3.licence_code
   from dataset t1
   join project t2
   on t1.project_id = t2.id
+  left join (select * from intellectualright) t3
+  on t1.id = t3.dataset_id
   where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
                          )
+  ## select t1.*
+  ## from dataset t1
+  ## join project t2
+  ## on t1.project_id = t2.id
+  ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
+  ##                        )
   #str(datasets)
   if(
   nrow(datasets)==0
   ) next
   for(j in 1:nrow(datasets)){
-  #j = 1
+  #j = 3
     dset <- datasets$shortname[j]
   #print(dset)
   txt <- sprintf('\n%s\n---\n', dset)
@@ -4196,12 +4219,38 @@ EML_metadata_short.Rmd
   ##              , sep = "")
   
   ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules", "recommended_citation")]))
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules", "recommended_citation", "licence_code")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
+  if(
+    is.null(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
+    is.na(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
+            qc[     which(row.names(qc) == "recommended_citation")     ,] == ""
+     )  qc[     which(row.names(qc) == "recommended_citation")     ,]  <-  paste(sapply(datasets[j, c("creator", "pubdate", "title", "publisher")], as.character), sep = "", collapse = ", ")
+  if(
+    is.null( qc[     which(row.names(qc) == "licence_code")     ,]) |
+    is.na( qc[     which(row.names(qc) == "licence_code")     ,]) |  
+             qc[     which(row.names(qc) == "licence_code")     ,] == "" 
+     ) qc[     which(row.names(qc) == "licence_code")     ,]  <- "No licence"
+
+  if(
+    is.null( qc[     which(row.names(qc) == "additional_metadata")     ,]) |
+    is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
+             qc[     which(row.names(qc) == "additional_metadata")     ,] == "" 
+     ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
+  pth  <- qc[which(row.names(qc) == "additional_metadata"),]
+  qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
+                      pth,
+                      '" target = "_blank">',
+                      pth,
+                      '</a>'
+                      )  
+
+  #t(qc)
+    
   sink(out_bookfile, append = T)
   cat(txt)
-  print(xtable(qc), include.rownames = T, type = "html")
+  print(xtable(qc), include.rownames = T, type = "html", sanitize.text.function = function(x){x})
   cat("\n\n")    
   sink()
     #entities <- dbGetQuery(ch,
