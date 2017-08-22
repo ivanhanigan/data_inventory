@@ -2909,6 +2909,9 @@ gunzip < data_inventory_hanigan_dev4_2016-11-06-1054.gz | psql -U postgres data_
 change the models/db.py (set migrate to true, then back to false)
 delete/drop the old database
 
+OR
+pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_backup -v "backup_file-2017-08-17-11-35-35.backup"
+
 ** COMMENT psql restore
 #+name:psql restore
 #+begin_src R :session *R* :tangle psql restor.R :exports none :eval no
@@ -2953,8 +2956,8 @@ delete/drop the old database
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Project_Exposures"
-  dsets <- c("SEEF_exposures")
+  prj <- "Satellite_NO2_LUR"
+  dsets <- c("SatNO2_2006_2011")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -2990,7 +2993,7 @@ delete/drop the old database
   pth
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
-  outfile <- file.path("~",pth, outfile)
+  outfile <- file.path(pth, outfile)
   
   outfile
   #outfile <- file.path("~/projects_ceraph", prj,
@@ -3002,7 +3005,9 @@ delete/drop the old database
   file.rename("EML_metadata_short.html", outfile)
   
   }  
-  setwd(dirname(outfile))
+  setwd(
+    dirname(outfile)
+    )
   browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
@@ -4121,7 +4126,12 @@ EML_metadata_short.Rmd
   setwd(projdir)
   library(bookdown)
   
-  dir()
+  flist <- dir("data_inventory_book", pattern = ".Rmd$",full.names = T)
+  flist <- flist[-grep("index.Rmd", flist)]
+  flist
+  file.remove(flist)
+  servers  <- c("ceraph", "coesra", "ucrh")
+  server  <- servers[2]
   collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
   #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
@@ -4171,7 +4181,7 @@ EML_metadata_short.Rmd
     qc[,1] <- gsub("\n", " | ", qc[,1])
   
   
-  out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 10, sprintf("0%s", i), i), 
+  out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 9, sprintf("0%s", i+1), i+1), 
     gsub(" ", "-", prj)
   )
   sink(
@@ -4232,20 +4242,24 @@ EML_metadata_short.Rmd
     is.na( qc[     which(row.names(qc) == "licence_code")     ,]) |  
              qc[     which(row.names(qc) == "licence_code")     ,] == "" 
      ) qc[     which(row.names(qc) == "licence_code")     ,]  <- "No licence"
-
+  
   if(
     is.null( qc[     which(row.names(qc) == "additional_metadata")     ,]) |
     is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
              qc[     which(row.names(qc) == "additional_metadata")     ,] == "" 
      ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
   pth  <- qc[which(row.names(qc) == "additional_metadata"),]
+  if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
+  if(server == "coesra") pth  <- file.path("/home/ivan.hanigan_canberra", pth)
+  if(server == "ucrh") pth  <- file.path("Q:", pth)  
+    
   qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
                       pth,
                       '" target = "_blank">',
                       pth,
                       '</a>'
                       )  
-
+  
   #t(qc)
     
   sink(out_bookfile, append = T)
