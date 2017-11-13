@@ -629,6 +629,13 @@ TODO
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
 #+end_src
+*** dataset alternateIdentifier 
+An additional, secondary identifier for this entity. The primary identifier belongs in the "id" attribute, but additional identifiers that are used to label this entity, possibly from different data management systems
+**** COMMENT code
+#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+      Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+#+end_src
+
 *** dataset recommended citation
 A resource that describes a literature citation that one might find in a bibliography. If included, this represents the primary resource that is described in this eml document. 
 
@@ -2884,7 +2891,7 @@ response.include_files()
 *** pgdump1
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   cat(sprintf('
-  pg_dump -h localhost -p 5432 -U postgres -F t -v -i -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev4
+  pg_dump -h localhost -p 5432 -U postgres -F t -v -f "/home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/backup_file-%s.backup" -n "public" data_inventory_hanigan_dev4
   ',gsub(":","-",gsub(" ","-",Sys.time()))))
     
 #+end_src
@@ -2898,6 +2905,15 @@ pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /media/ritmo2/postgres_
 ls /media/ritmo2/postgres_backups/
 scp /media/ritmo2/postgres_backups/data_inventory_hanigan_dev4_2016-11-06-1054.gz ivan_hanigan@192.168.1.107:/home/ivan_hanigan/postgres_backups
 
+# on jadehawk w dropbox
+pg_dump -U postgres data_inventory_hanigan_dev4 | gzip > /home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/data_inventory_hanigan_dev4_$(date +"%F-%H%M").gz
+ls /home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/
+# paste
+sudo arp-scan 192.168.1.0/24
+cd /home/ivan_hanigan/Dropbox/data/data_inventory_hanigan/backups/
+scp data_inventory_hanigan_dev4_2017-09-05-1828.gz ivan_hanigan@192.168.1.112:/home/ivan_hanigan/postgres_backups
+
+
 # on hackintosh
 CREATE DATABASE data_inventory_hanigan_dev4_backup
   WITH ENCODING='UTF8'
@@ -2905,7 +2921,7 @@ CREATE DATABASE data_inventory_hanigan_dev4_backup
        CONNECTION LIMIT=-1;
 
 cd ~/postgres_backups
-gunzip < data_inventory_hanigan_dev4_2016-11-06-1054.gz | psql -U postgres data_inventory_hanigan_dev4_backup
+gunzip < data_inventory_hanigan_dev4_2017-09-05-1828.gz | psql -U postgres data_inventory_hanigan_dev4_backup
 change the models/db.py (set migrate to true, then back to false)
 delete/drop the old database
 
@@ -2956,8 +2972,8 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Satellite_NO2_LUR"
-  dsets <- c("SatNO2_2006_2011")
+  prj <- "Air_Pollution_Monitoring_Stations_NSW"
+  dsets <- c("OEH_monitor_Sydney_2007_2014")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -2993,17 +3009,17 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   pth
   outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
   #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
-  outfile <- file.path(pth, outfile)
-  
+  outfile <- file.path("~", pth, outfile)
+
   outfile
   #outfile <- file.path("~/projects_ceraph", prj,
   #dset, outfile)
   #outfile <- file.path("/home/ivan_hanigan/Dropbox/projects_ceraph_transfers/Data inventory_files", outfile)
   #outfile <- file.path("~/projects", prj, dset, outfile)
-  
+
   #file.rename("EML_metadata_fields.html", outfile)
   file.rename("EML_metadata_short.html", outfile)
-  
+
   }  
   setwd(
     dirname(outfile)
@@ -4125,7 +4141,7 @@ EML_metadata_short.Rmd
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
   library(bookdown)
-  
+
   flist <- dir("data_inventory_book", pattern = ".Rmd$",full.names = T)
   flist <- flist[-grep("index.Rmd", flist)]
   flist
@@ -4142,9 +4158,9 @@ EML_metadata_short.Rmd
   #render_book("index.Rmd")
   render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
-  #browseURL("data_inventory_book/_book/index.html")
+  ##browseURL("data_inventory_book/_book/index.html")
   #dir()
-  
+
 #+end_src
 
 #+RESULTS: go
@@ -4163,24 +4179,50 @@ EML_metadata_short.Rmd
   projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
   from project where %s
   order by title", collection))
-  #print(projects$title)
+  ##    print(projects$title)
   for(i in 1:nrow(projects)){
-  #i = 13
-  prj <- projects[i,1]
+  ##i = 13
+      prj <- projects[i,1]
+  datasets <- dbGetQuery(ch,
+  sprintf("select t1.*, t3.licence_code
+  from dataset t1
+  join project t2
+  on t1.project_id = t2.id
+  left join (select * from intellectualright) t3
+  on t1.id = t3.dataset_id
+  where t2.title = '%s' 
+    and t1.provision_status = 'Published'
+  order by t1.shortname 
+  ", gsub("'", "\\'", prj))
+  )
+
+  ## datasets[,1:4]    
+  ## select t1.*
+  ## from dataset t1
+  ## join project t2
+  ## on t1.project_id = t2.id
+  ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
+  ##                        )
+  #str(datasets)
+  if(
+  nrow(datasets)==0
+  ) next
+
+      
   txt <- sprintf('%s\n===\n', prj)
-  
+
   ## txt <- paste(txt,
   ##              sprintf("- Abstract: %s\n- Data Owner: %s\n",
   ##                      projects[i,2],
   ##                      projects[i,3]
   ##                      ),
   ##              sep = "")
-  
+
     qc <- as.data.frame(t(projects[i,c("title", "personnel_data_owner", "project_abstract")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
-  
-  
+
+
   out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 9, sprintf("0%s", i+1), i+1), 
     gsub(" ", "-", prj)
   )
@@ -4193,26 +4235,8 @@ EML_metadata_short.Rmd
   #kable(qc)
   cat("\n\n")
   sink()  
-  
-  datasets <- dbGetQuery(ch,
-  sprintf("select t1.*, t3.licence_code
-  from dataset t1
-  join project t2
-  on t1.project_id = t2.id
-  left join (select * from intellectualright) t3
-  on t1.id = t3.dataset_id
-  where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
-                         )
-  ## select t1.*
-  ## from dataset t1
-  ## join project t2
-  ## on t1.project_id = t2.id
-  ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
-  ##                        )
-  #str(datasets)
-  if(
-  nrow(datasets)==0
-  ) next
+
+      
   for(j in 1:nrow(datasets)){
   #j = 3
     dset <- datasets$shortname[j]
@@ -4227,9 +4251,9 @@ EML_metadata_short.Rmd
   ##                      datasets[j,"contact"]                     
   ##                      )
   ##              , sep = "")
-  
+
   ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "access_rules", "recommended_citation", "licence_code")]))
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "alternate_identifier", "access_rules", "recommended_citation", "licence_code")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
   if(
@@ -4242,7 +4266,7 @@ EML_metadata_short.Rmd
     is.na( qc[     which(row.names(qc) == "licence_code")     ,]) |  
              qc[     which(row.names(qc) == "licence_code")     ,] == "" 
      ) qc[     which(row.names(qc) == "licence_code")     ,]  <- "No licence"
-  
+
   if(
     is.null( qc[     which(row.names(qc) == "additional_metadata")     ,]) |
     is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
@@ -4250,7 +4274,7 @@ EML_metadata_short.Rmd
      ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
   pth  <- qc[which(row.names(qc) == "additional_metadata"),]
   if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
-  if(server == "coesra") pth  <- file.path("/home/ivan.hanigan_canberra", pth)
+  if(server == "coesra") pth  <- file.path("/home/public_share_data/ivan.hanigan_canberra", pth)
   if(server == "ucrh") pth  <- file.path("Q:", pth)  
     
   qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
@@ -4259,7 +4283,7 @@ EML_metadata_short.Rmd
                       pth,
                       '</a>'
                       )  
-  
+
   #t(qc)
     
   sink(out_bookfile, append = T)
@@ -4275,10 +4299,10 @@ EML_metadata_short.Rmd
     #where t2.shortname = '%s'", dset)
     #                       )
     # str(entities)
-  
+
     #cat("\n### Files and Folders\n\n")
     #print(xtable(entities), type = "html", include.rownames = F)
-  
+
   ## for(k in 1:nrow(entities)){
   ##   #k = 1
   ##   ent <- entities[k,"entityname"]
@@ -4290,12 +4314,12 @@ EML_metadata_short.Rmd
   ##   print(xtable(qc), include.rownames = T, type = "html")
   ##   cat("\n\n")  
   ## }
-  
+
   }
   }
   }
-  
-  
+
+
 #+end_src
 
 * COMMENT check in/check out

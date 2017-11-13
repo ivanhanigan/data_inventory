@@ -147,6 +147,7 @@ Field('contact','string', comment = 'A contact name for general enquiries.  This
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
 Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
+Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
 Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
