@@ -277,6 +277,8 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
     Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('accessibility', 'string', comment = XML(T("The data can be 1) public, 2) only a group or 3) restricted to a person %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
     Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
@@ -285,7 +287,8 @@ db.define_table(
     Field('path_to_licence', 'string', comment = 'Optional.')
     )
     
-db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])    
+db.intellectualright.accessibility.requires = IS_IN_SET(['Public', 'CAR', 'CERAPH',  'Restricted', 'other'])
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',

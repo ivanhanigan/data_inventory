@@ -1006,6 +1006,8 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
     Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('accessibility', 'string', comment = XML(T("The data can be 1) public, 2) only a group or 3) restricted to a person %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
     Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
@@ -1015,6 +1017,8 @@ db.define_table(
     )
     
 db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])    
+db.intellectualright.accessibility.requires = IS_IN_SET(['Public', 'CAR', 'CERAPH',  'Restricted', 'other'])   
+ 
 
 #+end_src
 ** COMMENT checklists
@@ -4155,10 +4159,10 @@ EML_metadata_short.Rmd
   dbDisconnect(ch)
   #?bookdown_site
   setwd("data_inventory_book")
-  #render_book("index.Rmd")
+  #render_book("index.Rmd", "bookdown::pdf_book")
   render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
-  ##browseURL("data_inventory_book/_book/index.html")
+  ## browseURL("data_inventory_book/_book/index.html")
   #dir()
 
 #+end_src
@@ -4184,7 +4188,7 @@ EML_metadata_short.Rmd
   ##i = 13
       prj <- projects[i,1]
   datasets <- dbGetQuery(ch,
-  sprintf("select t1.*, t3.licence_code
+  sprintf("select t1.*, t3.licence_code, t3.accessibility
   from dataset t1
   join project t2
   on t1.project_id = t2.id
@@ -4195,15 +4199,15 @@ EML_metadata_short.Rmd
   order by t1.shortname 
   ", gsub("'", "\\'", prj))
   )
-
-  ## datasets[,1:4]    
+  ##names(datasets)
+  ## datasets[,c(1:4, 35)]    
   ## select t1.*
   ## from dataset t1
   ## join project t2
   ## on t1.project_id = t2.id
   ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
   ##                        )
-  #str(datasets)
+  ## str(datasets)
   if(
   nrow(datasets)==0
   ) next
@@ -4253,7 +4257,7 @@ EML_metadata_short.Rmd
   ##              , sep = "")
 
   ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "alternate_identifier", "access_rules", "recommended_citation", "licence_code")]))
+    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "alternate_identifier", "access_rules", "recommended_citation", "licence_code", "accessibility")]))
     names(qc) <- c("metadata_field")
     qc[,1] <- gsub("\n", " | ", qc[,1])
   if(
@@ -4272,7 +4276,13 @@ EML_metadata_short.Rmd
     is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
              qc[     which(row.names(qc) == "additional_metadata")     ,] == "" 
      ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
-  pth  <- qc[which(row.names(qc) == "additional_metadata"),]
+      pth  <- qc[which(row.names(qc) == "additional_metadata"),]
+
+  if(qc[which(row.names(qc) == "accessibility"),] == "Restricted"
+     & !is.na(qc[which(row.names(qc) == "accessibility"),])){
+          pth <- "Access is restricted"
+          qc[which(row.names(qc) == "additional_metadata"),] <- pth
+      } else {   
   if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
   if(server == "coesra") pth  <- file.path("/home/public_share_data/ivan.hanigan_canberra", pth)
   if(server == "ucrh") pth  <- file.path("Q:", pth)  
@@ -4283,7 +4293,7 @@ EML_metadata_short.Rmd
                       pth,
                       '</a>'
                       )  
-
+  }
   #t(qc)
     
   sink(out_bookfile, append = T)
