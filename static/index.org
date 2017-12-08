@@ -1557,7 +1557,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
       grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                         ],
                                fields = [db.project.title, db.project.personnel_data_owner,
-                                         db.dataset.shortname,
+                                         db.dataset.shortname, db.dataset.title, 
 
 
                                          db.dataset.additional_metadata,                                          
@@ -1605,7 +1605,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
       grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
                                                         ],
                                fields = [
-                                         db.dataset.shortname,
+                                         db.dataset.shortname, db.dataset.title,
                                          db.dataset.id,
                               
                                          db.dataset.additional_metadata,                                          
@@ -2972,14 +2972,15 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
   library(rmarkdown)
+  library(bookdown)
   table_type = "latex"
-  show_exemplar <- T
+  show_exemplar <- F
   library(knitr)
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
   prj <- "Exposure_simulation_studies"
-  dsets <- c("Exposure_simulation_study_Sydney_NO2")
+  dsets <- c("expo-sim-syd")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -3036,14 +3037,14 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   setwd(
     dirname(outfile)
     )
-  browseURL(basename(outfile))
+  #browseURL(basename(outfile))
   setwd("~/tools/web2py/applications/data_inventory/static/")
   # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
   dbDisconnect(ch)
 #+end_src
 
 #+RESULTS: go
-: TRUE
+: /home/ivan_hanigan/tools/web2py/applications/data_inventory/static/data_inventory_book
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3930,7 +3931,11 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   'special_conditions'
   ),]
   qc_out <- rbind(qc2, qc_out)
-
+  if(
+  qc_out[qc_out$variable == "licence_code",'value'] == ""
+  ){
+    qc_out[qc_out$variable == "licence_code",'value'] <- "No licence"
+  }
   if(show_exemplar){
   tabcode <- xtable(qc_out[,])
   } else {
@@ -3996,12 +4001,12 @@ EML_metadata_short.Rmd
 
   for(j in 1:nrow(dat_ent)){
   #j = 1
-  print(paste("#### File", j))
+
   ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
   ent_j$order <- 1:nrow(ent_j)
-  #title2 <- paste(c(j, "entity", as.character(ent_j[1,2])),
-  #        collapse = ", ", sep = "")
-  #  title2
+  name <- as.character(ent_j[3,2])
+  pander::pandoc.header(print(paste("Entity: ", name, sep = " ")), level = 2)
+
     qc_ent <- merge(ent_j, help_ent, by.x = "V1", by.y = "datinv", all.x = T)
     qc_ent2 <- qc_ent[order(qc_ent$order),c(1,2,5)]
   #qc_ent2
@@ -4206,7 +4211,7 @@ EML_metadata_short.Rmd
   #render_book("index.Rmd", "bookdown::pdf_book")
   render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
-  ## browseURL("data_inventory_book/_book/index.html")
+  #browseURL("data_inventory_book/_book/index.html")
   #dir()
 
 #+end_src
@@ -4229,7 +4234,7 @@ EML_metadata_short.Rmd
   order by title", collection))
       ##    print(projects$title)
   for(i in 1:nrow(projects)){
-      ##    i = 11
+      ##i = 11
       prj <- projects[i,1]
   datasets <- dbGetQuery(ch,
   sprintf("select t1.*, t3.licence_code, t3.accessibility
@@ -4286,8 +4291,8 @@ EML_metadata_short.Rmd
 
       
   for(j in 1:nrow(datasets)){
-  #j = 3
-    dset <- datasets$shortname[j]
+      ##    j = 1
+      dset <- datasets$title[j]
   #print(dset)
   txt <- sprintf('\n%s\n---\n', dset)
     
@@ -4350,7 +4355,7 @@ EML_metadata_short.Rmd
     #from entity t1
     #join dataset t2
     #on t1.dataset_id = t2.id
-    #where t2.shortname = '%s'", dset)
+    #where t2.title = '%s'", dset)
     #                       )
     # str(entities)
 

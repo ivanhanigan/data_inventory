@@ -41,7 +41,7 @@ def manage_projects():
     grid = SQLFORM.smartgrid(db.project,linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
                                                       ],
                              fields = [db.project.title, db.project.personnel_data_owner,
-                                       db.dataset.shortname,
+                                       db.dataset.shortname, db.dataset.title, 
 
 
                                        db.dataset.additional_metadata,                                          
@@ -64,7 +64,7 @@ def manage_datasets():
     grid = SQLFORM.smartgrid(db.dataset,linked_tables=[ 'entity', 'keyword', 'intellectualright', 'attr','accessrequest', 'publication', 'authorship_approval'
                                                       ],
                              fields = [
-                                       db.dataset.shortname,
+                                       db.dataset.shortname, db.dataset.title,
                                        db.dataset.id,
                             
                                        db.dataset.additional_metadata,                                          
@@ -107,26 +107,3 @@ def manage_accessors_or_groups():
 
     return dict(grid=grid)
     # db.accessor.email.requires = [IS_IN_DB(db,db.accessor.id,'%(email)s')]
-def manage_crosswalk():
-    grid = SQLFORM.smartgrid(db.crosswalk,
-                             fields = [db.crosswalk.transfer2new,   
-                                       db.crosswalk.eml_node,
-                                       db.crosswalk.datinv,
-                                       db.crosswalk.ltern_name,
-                                       db.crosswalk.portal_ddf_qaf,
-                                       db.crosswalk.ddi_node,
-                                       db.crosswalk.aekos_shared
-                                       ],
-                                       orderby = dict(crosswalk=[db.crosswalk.transfer2new, db.crosswalk.portal_ddf_qaf, db.crosswalk.eml_node]),
-                             user_signature=True,maxtextlength =200)
-
-    return dict(grid=grid)
-def manage_thesaurus_ltern():
-    grid = SQLFORM.smartgrid(db.thesaurus_ltern,
-                             fields = [   
-                                       db.thesaurus_ltern.keyword
-                                       ],
-                                       orderby = dict(thesaurus_ltern=[ db.thesaurus_ltern.keyword]),
-                             user_signature=True,maxtextlength =200)
-
-    return dict(grid=grid)
