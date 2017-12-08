@@ -2972,12 +2972,14 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
   library(rmarkdown)
+  table_type = "latex"
+  show_exemplar <- T
   library(knitr)
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Air_Pollution_Monitoring_Stations_NSW"
-  dsets <- c("OEH_monitor_Sydney_2007_2014")
+  prj <- "Exposure_simulation_studies"
+  dsets <- c("Exposure_simulation_study_Sydney_NO2")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -3000,18 +3002,24 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
   # walkability_osm  
   entities <- T
-  show_exemplar <- T
+
   #render("data_deposit_form.Rmd") 
   # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
   #browseURL("data_deposit_form.html")
   #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
   #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
    #browseURL("EML_metadata_fields.html")
-  rmarkdown::render("EML_metadata_short.Rmd") #, stylesheet='custom.css')
-  #browseURL("EML_metadata_short.html")
+      if(table_type == "html"){
+          file_ext <- "html"
+      rmarkdown::render("EML_metadata_short.Rmd", "html_document")         
+      } else {
+          file_ext <- "pdf"
+      rmarkdown::render("EML_metadata_short.Rmd", "pdf_document2") 
+      }
+  # browseURL("EML_metadata_short.pdf")
   pth <- as.character(qc_out[which(qc_out$variable == "additional_metadata"),])[2]
   pth
-  outfile  <- paste(lcu(dset), "_metadata.html", sep = "")
+      outfile  <- paste(lcu(dset), "_metadata.", file_ext, sep = "")
   #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
   outfile <- file.path("~", pth, outfile)
 
@@ -3022,7 +3030,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   #outfile <- file.path("~/projects", prj, dset, outfile)
 
   #file.rename("EML_metadata_fields.html", outfile)
-  file.rename("EML_metadata_short.html", outfile)
+  file.rename(sprintf("EML_metadata_short.%s", file_ext), outfile)
 
   }  
   setwd(
@@ -3035,7 +3043,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+end_src
 
 #+RESULTS: go
-: /home/ivan_hanigan/tools/web2py/applications/data_inventory/static/data_inventory_book
+: TRUE
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -3684,10 +3692,11 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 
 ** short summary of EML fields for projects/datasets homepage
 *** head
+  output: html_document
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   ---
   title: EML metadata fields
-  output: html_document
+  classoption: landscape
   ---
   
   Date metadata document produced: `r Sys.Date()`.
@@ -3850,9 +3859,9 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   'contact_email',
   'abstract'),]
   #if(show_exemplar){
-  #print(xtable(qc_out[,]), type = "html", include.rownames = F)
+  #print(xtable(qc_out[,]), type = table_type, include.rownames = F)
   #} else {
-  #print(xtable(qc_out[,-2]), type = "html", include.rownames = F)
+  #print(xtable(qc_out[,-2]), type = table_type, include.rownames = F)
   #}
   ```
 #+end_src
@@ -3892,9 +3901,9 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   
   
   ## if(show_exemplar){
-  ## print(xtable(qc2[,]), type = "html", include.rownames = F)
+  ## print(xtable(qc2[,]), type = table_type, include.rownames = F)
   ## } else {
-  ## print(xtable(qc2[,-2]), type = "html", include.rownames = F)
+  ## print(xtable(qc2[,-2]), type = table_type, include.rownames = F)
   ## }  
   ```
 #+end_src
@@ -3902,7 +3911,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   # Dataset or study metadata   
   ```{r, echo = F, eval = T, results="asis"}  
-  
+
   qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
   'additional_metadata',
   'studyextent',
@@ -3923,20 +3932,37 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   qc_out <- rbind(qc2, qc_out)
 
   if(show_exemplar){
-  print(xtable(qc_out[,]), type = "html", include.rownames = F)
+  tabcode <- xtable(qc_out[,])
   } else {
-  print(xtable(qc_out[,-2]), type = "html", include.rownames = F)
+  tabcode <- xtable(qc_out[,-3])
+  }
+
+  if(table_type == 'latex'){
+    if(show_exemplar){
+        align(tabcode) <-  c( 'l', 'p{1.7in}', 'p{4in}', 'p{2in}')  
+    } else {
+          align(tabcode) <-  c( 'l', 'p{1.7in}', 'p{6in}')
+    }
+  print(tabcode, tabular.environment='longtable',
+            type = table_type, comment=FALSE,
+            floating=FALSE, caption.placement = "top",
+            hline.after = c(-1,nrow(qc_out)), 
+            add.to.row = list(pos = list(0),command = "\\hline \\endhead "),
+            include.rownames=F) #, sanitize.text.function = function(x) x)
+
+  } else {
+  print(tabcode, type = table_type, include.rownames = F)
   }
   ```
-  
+
 #+end_src
 
 *** files entities overview
 EML_metadata_short.Rmd
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
-  
+
   # File / Entity level information 
-  
+
   ```{r, echo = F, eval = T, results="asis"}
 
   #### entity ####
@@ -3953,21 +3979,21 @@ EML_metadata_short.Rmd
   where t1.title = '%s'
   and t2.shortname = '%s'", prj, dset)
   )
-  
+
   if(nrow(dat_ent) == 0){
 
    print("No files documented yet")
 
   } else {
-  
+
   if(entities){    
   help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
     from crosswalk t1
     where eml_table like '%entity%'",
     connection = ch)
   #help_ent
-  
-  
+
+
   for(j in 1:nrow(dat_ent)){
   #j = 1
   print(paste("#### File", j))
@@ -3986,21 +4012,39 @@ EML_metadata_short.Rmd
   qc_ent2[,2] <- gsub("\n", " | ", qc_ent2[,2])
   #print(kable(qc_ent2, row.names = F))
   if(show_exemplar){
-  print(xtable(qc_ent2[-c(1,2),]), type = "html", include.rownames = F)
+  tabcode <- xtable(qc_ent2[-c(1,2),]) #, type = table_type, include.rownames = F)
   } else {
-  print(xtable(qc_ent2[-c(1,2),-2]), type = "html", include.rownames = F)
+  tabcode <- xtable(qc_ent2[-c(1,2),-3]) #, type = table_type, include.rownames = F)
   }
   #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
-  }
-  
-  
+
+  if(table_type == 'latex'){
+    if(show_exemplar){
+          align(tabcode) <-  c( 'l', 'p{2.1in}', 'p{4in}', 'p{2in}')  
+    } else {
+          align(tabcode) <-  c( 'l', 'p{2.1in}', 'p{6in}')
+    }
+  print(tabcode, tabular.environment='longtable',
+            type = table_type, comment=FALSE,
+            floating=FALSE, caption.placement = "top",
+            hline.after = c(-1,nrow(qc_ent2[-c(1,2),])), 
+            add.to.row = list(pos = list(0),command = "\\hline \\endhead "),
+            include.rownames=F) #, sanitize.text.function = function(x) x)
+
   } else {
-  print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = "html", include.rownames = F)
+  print(tabcode, type = table_type, include.rownames = F)
+  }
+
+  }
+
+
+  } else {
+  print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = table_type, include.rownames = F)
   }   
 
   }
   ```
-  
+
 #+end_src
 
 ** data inventory report
@@ -4152,7 +4196,7 @@ EML_metadata_short.Rmd
   file.remove(flist)
   servers  <- c("ceraph", "coesra", "ucrh")
   server  <- servers[2]
-  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects'"
   #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   source("data_inventory.R")
@@ -4177,15 +4221,15 @@ EML_metadata_short.Rmd
   library(knitr)
   library(xtable)  
   if(do_loops){
-  #  do_loops  <- T
+      ##    do_loops  <- T
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-  #collection  <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+      ##    collection  <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects'"
   projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
   from project where %s
   order by title", collection))
-  ##    print(projects$title)
+      ##    print(projects$title)
   for(i in 1:nrow(projects)){
-  ##i = 13
+      ##    i = 11
       prj <- projects[i,1]
   datasets <- dbGetQuery(ch,
   sprintf("select t1.*, t3.licence_code, t3.accessibility
@@ -4199,8 +4243,8 @@ EML_metadata_short.Rmd
   order by t1.shortname 
   ", gsub("'", "\\'", prj))
   )
-  ##names(datasets)
-  ## datasets[,c(1:4, 35)]    
+      ##    names(datasets)
+      ##    datasets[,c(1:4, 35)]    
   ## select t1.*
   ## from dataset t1
   ## join project t2

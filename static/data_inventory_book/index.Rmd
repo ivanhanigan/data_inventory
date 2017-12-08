@@ -1,7 +1,5 @@
 --- 
-title: "Data Inventory"
-author: "Ivan Hanigan"
-date: "Last edited on `r Sys.Date()`"
+title: "Data Inventory  (Last edited on `r Sys.Date()`)"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 ---
@@ -9,28 +7,30 @@ output: bookdown::gitbook
 Introduction
 ===
 
-This is the data inventory for the air pollution and health collaboration.
+This is the data inventory for the Centre for Air pollution, energy and health Research (CAR).
+First we describe the approach to use a relational data model of linking files within datasets within  projects. 
 
+*Files, Datasets and Projects in the Ecological Metadata Language (EML)*
 
-- There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
-- The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
-- This article describes an approach to use a relational database with web-based forms (using the web2py framework) and helper functions (written in the R and SQL languages) 
+The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  
 
-*The Ecological Metadata Language (EML)*
-
-The  Ecological Metadata Language (EML) schema is defined by the 'Knowledge Network for Biocomplexity' - KNB (https://knb.ecoinformatics.org/#tools/eml).  KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/).  Ecoinformatics.org is an open, voluntary collaboration of developers and researchers that aims to produce software, systems, publications, and services that are beneficial to the ecological and environmental sciences. 
-
-*A schematic diagram of the EML modules*
-In the figure below the EML hierarchy of modules is shown graphically. An EML metadata document contains a dataset module that allows the grouping of one or more data entities linked together by particular integrity constraints to form a Data Package.  The project module places the dataset that is being documented into its larger research context, and optionally allows multiple related Data Packages to be linked. The mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines).
+*A schematic diagram of the EML modules:*
+The figure below shows EML as a hierarchy. An EML document contains a `dataset` module that allows the grouping of one or more data `entities` (e.g. a file) linked together by particular rules to form a `Data Package`.  The `project` module places the dataset that is being documented into its larger research context, and allows multiple related `Data Packages` to be linked. 
 
 ```{r, echo = F}
 knitr::include_graphics("images/EML_project.png")
 ```
 
+*Motivation/Justification*
+
+- The backend uses a web2py database app, and R helper functions written by Ivan Hanigan
+- There is a need for a data inventory tool to enable ecological data collections to be managed more efficiently
+- The Ecological Metadata Language (EML) provides an excellent standardised schema for metadata, but the associated software Morpho does not have the flexibility or extensibility that would enable a data manager to use it to manage large and heterogeneous data collections
+- KNB is a subproject of  Ecoinformatics.org (http://ecoinformatics.org/) an open source collaboration that aims to produce software, systems, and services primarily for the ecological sciences. We apply these to Human Ecology systems too.
 
 *XML* 
 
-A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included.  
+A minimal EML document is summarised below.  This is a schematic view that shows the structure of an EML XML document.  Only a few of the possible components are included. In the graphic above the mandatory component of the EML is shown as a firm line, in contrast with those aspects of the EML which are not mandatory (dotted lines). That is: dataset `title`, `creator` and `contact` are the only required elements for a valid EML `Data Package`.
 
 
 ```{r, eval = F}
@@ -121,21 +121,21 @@ https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.h
 
 *Data Entity*
 As stated earlier, a dataset consists of one or more data entities,
-and the most common data entity is a <dataTable>. A data table is
+and the most common data entity is a `dataTable`. A data table is
 something that looks like a matrix with rows for observations and
 columns for variables
 
 In addition to datatables, people using database applications may also
-  produce a <view> from a database management system or a
-  <storedProcedure> that results in data output. People using GIS
+  produce a `view` from a database management system or a
+  `storedProcedure` that results in data output. People using GIS
   (geographical information system) applications generate both
-  <spatialVector>, also referred to as boundary or shape files, and
-  <spatialRaster>. A <spatialRaster> is a geo-referenced image usually
+  `spatialVector`, also referred to as boundary or shape files, and
+  `spatialRaster`. A `spatialRaster` is a geo-referenced image usually
   produced by a camera on a satellite or other remote sensing
-  device. The final kind of data entity is <otherEntity>. An
-  <otherEntity> is a data entity that cannot be represented by any of
+  device. The final kind of data entity is `otherEntity`. An
+  `otherEntity` is a data entity that cannot be represented by any of
   the previously defined data entity structures. A non-geo-referenced
-  photograph is an <otherEntity>, e.g., a photograph of two different
+  photograph is an `otherEntity`, e.g., a photograph of two different
   types of butterflies.
 
 For more information about types of EML-entities see: https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/#N10115
