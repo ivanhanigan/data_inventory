@@ -46,7 +46,7 @@ def manage_projects():
 
                                        db.dataset.additional_metadata,                                          
 
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                       db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
@@ -69,7 +69,7 @@ def manage_datasets():
                             
                                        db.dataset.additional_metadata,                                          
                                        db.dataset.contact_email,
-                                       db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                       db.entity.entityname, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
                                        db.accessrequest.accessdataset_id, 
                                        db.accessrequest.dataset_id,
@@ -100,8 +100,8 @@ def manage_accessors_or_groups():
     grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
                              fields = [
                                        db.accessdataset.name,
-                                       db.accessdataset.email,
-                                       db.accessor.name, db.accessor.email],
+                                       db.accessdataset.email, 
+                                       db.accessor.name, db.accessor.email, db.accessor.role],
                                        orderby = dict(accessdataset=[db.accessdataset.name]),
                              user_signature=True,maxtextlength =200, csv=False, paginate=35)
 

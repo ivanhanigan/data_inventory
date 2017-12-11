@@ -959,6 +959,9 @@ db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
       Field('name'),
       Field('email'),
       Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
+      Field('role_description', 'text', comment = "Description of the role."),
+      Field('begin_date', 'date', comment = "Access granted on this date"),
+      Field('end_date', 'date', comment = "Access revoked on this date"),
       format = '%(name)s'
       )
   db.accessor.email.requires = [IS_EMAIL()]
@@ -1562,7 +1565,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
 
                                          db.dataset.additional_metadata,                                          
 
-                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                         db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
@@ -1610,7 +1613,7 @@ DEPRECATED [ {{=A('delete accesses',_href=URL('delete_accessed'))}} ]
                               
                                          db.dataset.additional_metadata,                                          
                                          db.dataset.contact_email,
-                                         db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
+                                         db.entity.entityname, db.entity.physical_distribution,
                                          db.attr.variable_name, db.attr.variable_definition,
                                          db.accessrequest.accessdataset_id, 
                                          db.accessrequest.dataset_id,
@@ -1698,8 +1701,8 @@ def my_form_processing(grid):
       grid = SQLFORM.smartgrid(db.accessdataset,linked_tables=['accessor'],
                                fields = [
                                          db.accessdataset.name,
-                                         db.accessdataset.email,
-                                         db.accessor.name, db.accessor.email],
+                                         db.accessdataset.email, 
+                                         db.accessor.name, db.accessor.email, db.accessor.role],
                                          orderby = dict(accessdataset=[db.accessdataset.name]),
                                user_signature=True,maxtextlength =200, csv=False, paginate=35)
 
@@ -2979,8 +2982,8 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Exposure_simulation_studies"
-  dsets <- c("expo-sim-syd")
+  prj <- "CTM_CSIRO"
+  dsets <- c("CTM_CSIRO_Sydney_Shipping_2010_2011")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -3044,7 +3047,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+end_src
 
 #+RESULTS: go
-: /home/ivan_hanigan/tools/web2py/applications/data_inventory/static/data_inventory_book
+: TRUE
 
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
@@ -4201,7 +4204,7 @@ EML_metadata_short.Rmd
   file.remove(flist)
   servers  <- c("ceraph", "coesra", "ucrh")
   server  <- servers[2]
-  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects'"
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects_CAR'"
   #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   source("data_inventory.R")
@@ -4232,7 +4235,7 @@ EML_metadata_short.Rmd
   projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
   from project where %s
   order by title", collection))
-      ##    print(projects$title)
+      ##      print(projects$title)
   for(i in 1:nrow(projects)){
       ##i = 11
       prj <- projects[i,1]
@@ -4249,7 +4252,7 @@ EML_metadata_short.Rmd
   ", gsub("'", "\\'", prj))
   )
       ##    names(datasets)
-      ##    datasets[,c(1:4, 35)]    
+      ##      datasets[,c(1:4, 35)]    
   ## select t1.*
   ## from dataset t1
   ## join project t2
