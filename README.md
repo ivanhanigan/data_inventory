@@ -1,9 +1,6 @@
 
 #### Data Inventory
 
-Licence: CC-BY-4.0
-
-![cc-by-4_0.png](cc-by-4_0.png)
 
 ## About
 
@@ -28,3 +25,7 @@ source("install.R")
 1. Put all the files into your web2py/applications as 'data_inventory'
 1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
 1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
+
+Licence: CC-BY-4.0
+
+![cc-by-4_0.png](cc-by-4_0.png)

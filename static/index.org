@@ -52,9 +52,6 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 #+begin_src R :session *R* :tangle ../README.md :exports none :eval no
   #### Data Inventory
   
-  Licence: CC-BY-4.0
-
-  ![cc-by-4_0.png](cc-by-4_0.png)
   
   ## About
   
@@ -79,6 +76,11 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
   1. Put all the files into your web2py/applications as 'data_inventory'
   1. Dbl-Click to Run the wep2py.py file and go to 127.0.0.1:8000/data_inventory
   1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
+
+  Licence: CC-BY-4.0
+
+  ![cc-by-4_0.png](cc-by-4_0.png)
+
   
 #+end_src
 * Introduction

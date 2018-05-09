@@ -247,9 +247,9 @@ db.define_table(
     Field('name'),
     Field('email'),
     Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
-    Field('role_description', 'text', comment = "Description of the role."),    
+    Field('role_description', 'text', comment = "Description of the role."),
     Field('begin_date', 'date', comment = "Access granted on this date"),
-    Field('end_date', 'date', comment = "Access revoked on this date"),    
+    Field('end_date', 'date', comment = "Access revoked on this date"),
     format = '%(name)s'
     )
 db.accessor.email.requires = [IS_EMAIL()]
