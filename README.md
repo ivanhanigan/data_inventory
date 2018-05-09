@@ -17,6 +17,9 @@ if(!require(downloader)) install.packages("downloader"); require(downloader)
 download("https://raw.githubusercontent.com/ivanhanigan/data_inventory/master/static/install.R",
          "install.R", mode = "wb")
 source("install.R")
+# this downloads the required software and database, but you need to start it manually
+# go to web2py/ and click web2py.exe under windoze, or just bash it in linux.
+# installer features are on my TODO list, thanks for your patience.
 ```
 
 ### or alternatively do a manual install
