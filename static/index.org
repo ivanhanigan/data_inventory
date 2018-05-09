@@ -2982,8 +2982,8 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "CTM_CSIRO"
-  dsets <- c("CTM_CSIRO_Sydney_Shipping_2010_2011")
+  prj <- "Air_Pollution_Monitoring_Stations_National"
+  dsets <- c("Air_Pollution_Monitoring_Stations_National_PM25_2000_2015")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -3873,17 +3873,17 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
     
 
-  
+
   ```{r, echo = F, eval = T, results="asis"}  
-  
+
   dat <- sqldf(connection = ch,
-    sprintf("select t1.title,  personnel_data_owner
+    sprintf("select t1.title,  personnel_data_owner, project_abstract
     from project t1
     where t1.title = '%s'", prj)
     )
   #names(dat)
   #t(dat)
-  
+
   ####  help
   help  <- sqldf(connection = ch,
     "select t1.eml_node, t1.help_comment, t1.datinv
@@ -3891,7 +3891,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
     where eml_table like '%project%'"
     )
   # head(help)
-  
+
   dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
   #dat_i
   dat_i$order <- 1:nrow(dat_i)  
@@ -3902,8 +3902,8 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   qc2[,1] <- gsub("personnel_data_owner", "project_owner_or_originator", qc2[,1])  
   qc2[,2] <- gsub("\n", " | ", qc2[,2])
   qc2 <- rbind(qc_out, qc2)
-  
-  
+
+
   ## if(show_exemplar){
   ## print(xtable(qc2[,]), type = table_type, include.rownames = F)
   ## } else {
@@ -4214,7 +4214,7 @@ EML_metadata_short.Rmd
   #render_book("index.Rmd", "bookdown::pdf_book")
   render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
-  #browseURL("data_inventory_book/_book/index.html")
+  browseURL("data_inventory_book/_book/index.html")
   #dir()
 
 #+end_src
@@ -4336,7 +4336,7 @@ EML_metadata_short.Rmd
           qc[which(row.names(qc) == "additional_metadata"),] <- pth
       } else {   
   if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
-  if(server == "coesra") pth  <- file.path("/home/public_share_data/ivan.hanigan_canberra", pth)
+  if(server == "coesra") pth  <- file.path("/home/public_share_data/ResearchData_CAR", pth)
   if(server == "ucrh") pth  <- file.path("Q:", pth)  
     
   qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
