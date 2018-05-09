@@ -1,7 +1,9 @@
 
 #### Data Inventory
 
-Licence: CC-BY
+Licence: CC-BY-4.0
+
+![cc-by-4_0.png](cc-by-4_0.png)
 
 ## About
 

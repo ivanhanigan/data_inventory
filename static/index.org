@@ -52,7 +52,9 @@ python ~/tools/web2py/web2py.py -a xpassword -i 0.0.0.0 -p 8181
 #+begin_src R :session *R* :tangle ../README.md :exports none :eval no
   #### Data Inventory
   
-  Licence: CC-BY
+  Licence: CC-BY-4.0
+
+  ![cc-by-4_0.png](cc-by-4_0.png)
   
   ## About
   
