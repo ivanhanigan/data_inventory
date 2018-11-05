@@ -89,23 +89,23 @@ db.define_table(
     'project',
 Field('title', 'string',
 comment= XML(T('The project places the data into its larger research context.  %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-1', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel_data_owner','string', 
 comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel_owner_organisationname','string', 
 comment= XML(T('This is the data owner organisation. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel','string', 
 comment= XML(T('This is for key people etc that are not the owner. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-2', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
 ),
 Field('funding', 'text',
 comment= XML(T('Significant funding sources under which the data has been collected over the lifespan of the project. %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-1-3', scheme=True, host=True)))))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-3', scheme=True, host=True)), _target='new')))
 ),
 Field('project_abstract', 'text',
 comment= XML(T('Descriptive abstract that summarizes information about the umbrella project context of the specific project. %s',
@@ -125,7 +125,7 @@ A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, 
 ),
 Field('related_project','text', 
 comment= XML(T('A recursive link to another project. This allows projects to be nested under one another. %s', 
-A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-5', scheme=True, host=True)), _target='new')))
+A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-8', scheme=True, host=True)), _target='new')))
 ),
 format = '%(title)s' 
 )
@@ -147,6 +147,8 @@ Field('contact','string', comment = 'A contact name for general enquiries.  This
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
 Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
+Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. This might be a DOI, or other persistent URL. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
 Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
 Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
@@ -169,20 +171,24 @@ Field('taxonomic_coverage','string', comment="List of scientific names."),
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
   ),
-Field('alternateidentifier','string',
-comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
+Field('publisher','string',
+comment = XML(T('The publisher of this data set (e.g. repository, publishing house, any institution making the data available). %s.',
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-2-18', scheme=True, host=True)), _target='new')))     
 ),
 Field('pubdate','date'),
 Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
+Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+Field('provision_date','date', comment = 'The date provided.'),
+Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
+Field('request_date','date', comment = 'Date provision requested.'),
 format = '%(shortname)s'
     )
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
 db.dataset.creator.requires = [IS_NOT_EMPTY()]
-    
+db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
 #### ONE (dataset) TO MANY (entity)
   
@@ -237,6 +243,9 @@ db.define_table(
     Field('name'),
     Field('email'),
     Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
+    Field('role_description', 'text', comment = "Description of the role."),
+    Field('begin_date', 'date', comment = "Access granted on this date"),
+    Field('end_date', 'date', comment = "Access revoked on this date"),
     format = '%(name)s'
     )
 db.accessor.email.requires = [IS_EMAIL()]
@@ -267,6 +276,8 @@ db.define_table(
     Field('dataset_id',db.dataset),
     Field('data_owner', 'string', comment = 'The person or organisation with authority to grant permissions to access data.'),
     Field('data_owner_contact', 'string', comment = 'Optional.'),
+    Field('accessibility', 'string', comment = XML(T("The data can be 1) public, 2) only a group or 3) restricted to a person %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
+    ),
     Field('licencee', comment = 'Optional.'),    
     Field('licence_code', 'string', comment = XML(T("The licence to allow others to copy, distribute or display work and derivative works based upon it and define the way credit will be attributed. Common licences are 'CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND' or 'other'. For more information see http://creativecommons.org/licenses/. %s",     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
     ),
@@ -275,7 +286,8 @@ db.define_table(
     Field('path_to_licence', 'string', comment = 'Optional.')
     )
     
-db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])
+db.intellectualright.licence_code.requires = IS_IN_SET(['CCBY', 'CCBYSA',  'CCBYND', 'CCBYNC', 'CCBYNCSA', 'CCBYNCND', 'other'])    
+db.intellectualright.accessibility.requires = IS_IN_SET(['Public', 'CAR', 'CERAPH',  'Restricted', 'other'])
 #### ONE (checklist) TO one (dataset)
 db.define_table(
     'checklist',
@@ -373,6 +385,9 @@ db.define_table(
 Field('dataset_id',db.dataset),
 Field('bibtex_key', 'string', requires = IS_NOT_EMPTY(),  comment = "For eg from mendeley, use ctrl-k or copy as.  it will be like \cite{xyz}.  COMPULSORY."),
 Field('publication_type','string', requires = IS_IN_SET(['Papers', 'Conference Presentations', 'Reports', 'Policy Briefs', 'Data Packages', 'Software', 'Media'])),
+Field('publication_status','string', requires = IS_IN_SET(['Wishlist','Draft', 'Submitted', 'Revision', 'Accepted', 'Published (peer-reviewed)', 'Published (not peer-reviewed)', 'Self-published (not peer-reviewed)'])),
+Field('publication_status_deadline','date', comment = 'This is the date that the current phase will finish and the next phase of publication starts'),
+Field('title','string'),
 Field('citation', 'string', comment = 'At a minimum author-date-journal, perhaps DOI?'),
 Field('key_results', 'text', comment = 'Include both effect estimates and uncertainty'),
 Field('background_to_study', 'string', comment = ''),
@@ -386,7 +401,6 @@ Field('general_comments', 'text', comment = ''),
 Field('publication_description', 'string'),
 Field('google_pubid','string', comment = 'The unique ID used by google scholar'),
 Field('journal','string'),
-Field('title','string'),
 Field('year_published','integer'),
 Field('impact_factor','double'),
 Field('date_impact_factor_checked','date'),
