@@ -637,7 +637,7 @@ TODO
 An additional, secondary identifier for this entity. The primary identifier belongs in the "id" attribute, but additional identifiers that are used to label this entity, possibly from different data management systems
 **** COMMENT code
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+      Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. This might be a DOI, or other persistent URL. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
 #+end_src
 
 *** dataset recommended citation
@@ -752,7 +752,7 @@ Any information that is not characterised well by EML metadata. Example is a gro
       ),
 #+end_src
 *** TODO dataset alternateidentifier
-#+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
+# +begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
       Field('alternateidentifier','string',
       comment = XML(T('Additional identifier that is used to label this dataset. This might be a DOI, or other persistent URL. %s.',
       A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
@@ -2974,7 +2974,204 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+end_src
 
 * COMMENT ETL
-** COMMENT go-code
+** TODO data inventory report test bookdown
+*** COMMENT go-code
+#+name:go
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  #### name:go ####
+  projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
+  setwd(projdir)
+  library(bookdown)
+
+  flist <- dir("data_inventory_book", pattern = ".Rmd$",full.names = T)
+  flist <- flist[-grep("index.Rmd", flist)]
+  flist
+  file.remove(flist)
+  servers  <- c("ceraph", "coesra", "ucrh")
+  server  <- servers[2]
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects_CAR'"
+  #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
+  do_loops <- TRUE
+  source("data_inventory.R")
+  dbDisconnect(ch)
+  #?bookdown_site
+  setwd("data_inventory_book")
+  #render_book("index.Rmd", "bookdown::pdf_book")
+  render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
+  setwd("..")
+  ##browseURL("data_inventory_book/_book/index.html")
+  #dir()
+
+#+end_src
+
+#+RESULTS: go
+: TRUE
+
+*** COMMENT RMD
+#+begin_src R :session *R* :tangle data_inventory.R :exports none :eval no
+    library(swishdbtools)
+    library(sqldf)
+    library(knitr)
+    library(xtable)  
+    if(do_loops){
+        ##    do_loops  <- T
+    ch  <- connect2postgres2("data_inventory_hanigan_dev4")
+        ##    collection  <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects'"
+    projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
+    from project where %s
+    order by title", collection))
+        ##      print(projects$title)
+    for(i in 1:nrow(projects)){
+        ##i = 11
+        prj <- projects[i,1]
+    datasets <- dbGetQuery(ch,
+    sprintf("select t1.*, t3.licence_code, t3.accessibility
+    from dataset t1
+    join project t2
+    on t1.project_id = t2.id
+    left join (select * from intellectualright) t3
+    on t1.id = t3.dataset_id
+    where t2.title = '%s' 
+      and t1.provision_status = 'Published'
+    order by t1.shortname 
+    ", gsub("'", "\\'", prj))
+    )
+        ##    names(datasets)
+        ##      datasets[,c(1:4, 35)]    
+    ## select t1.*
+    ## from dataset t1
+    ## join project t2
+    ## on t1.project_id = t2.id
+    ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
+    ##                        )
+    ## str(datasets)
+    if(
+    nrow(datasets)==0
+    ) next
+
+        
+    txt <- sprintf('%s\n===\n', prj)
+
+    ## txt <- paste(txt,
+    ##              sprintf("- Abstract: %s\n- Data Owner: %s\n",
+    ##                      projects[i,2],
+    ##                      projects[i,3]
+    ##                      ),
+    ##              sep = "")
+
+      qc <- as.data.frame(t(projects[i,c("title", "personnel_data_owner", "project_abstract")]))
+      names(qc) <- c("metadata_field")
+      qc[,1] <- gsub("\n", " | ", qc[,1])
+
+
+    out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 9, sprintf("0%s", i+1), i+1), 
+      gsub(" ", "-", prj)
+    )
+    sink(
+    out_bookfile
+    )
+    cat(txt)
+    print(xtable(qc), include.rownames = T, type = "html")
+    #qc
+    #kable(qc)
+    cat("\n\n")
+    sink()  
+
+        
+    for(j in 1:nrow(datasets)){
+        ##    j = 1
+        dset <- datasets$title[j]
+    #print(dset)
+    txt <- sprintf('\n%s\n---\n', dset)
+      
+     
+    ## txt <- paste(txt,
+    ##              sprintf("- Dataset Abstract: %s\n- Creator: %s\n- Contact: %s\n\n",
+    ##                      datasets[j,"abstract"],
+    ##                      datasets[j,"creator"],
+    ##                      datasets[j,"contact"]                     
+    ##                      )
+    ##              , sep = "")
+
+    ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
+      qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "alternate_identifier", "associated_party", "access_rules", "recommended_citation", "licence_code", "accessibility")]))
+      names(qc) <- c("metadata_field")
+        qc[,1] <- gsub("\n", " | ", qc[,1])
+    if(!is.na(datasets[j,"publisher"])) datasets[j,"publisher"] <- paste0("[Data set] Retrieved
+      from ", datasets[j,"publisher"])
+    if(
+      is.null(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
+      is.na(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
+              qc[     which(row.names(qc) == "recommended_citation")     ,] == ""
+       )  qc[     which(row.names(qc) == "recommended_citation")     ,]  <-  paste(sapply(datasets[j, c("creator", "pubdate", "title", "publisher")], as.character), sep = "", collapse = ", ")
+  row.names(qc)[which(row.names(qc) == "recommended_citation")] <- "recommended_citation (blame)"
+    if(
+      is.null( qc[     which(row.names(qc) == "licence_code")     ,]) |
+      is.na( qc[     which(row.names(qc) == "licence_code")     ,]) |  
+               qc[     which(row.names(qc) == "licence_code")     ,] == "" 
+       ) qc[     which(row.names(qc) == "licence_code")     ,]  <- "No licence"
+
+    if(
+      is.null( qc[     which(row.names(qc) == "additional_metadata")     ,]) |
+      is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
+               qc[     which(row.names(qc) == "additional_metadata")     ,] == "" 
+       ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
+        pth  <- qc[which(row.names(qc) == "additional_metadata"),]
+
+    if(qc[which(row.names(qc) == "accessibility"),] == "Restricted"
+       & !is.na(qc[which(row.names(qc) == "accessibility"),])){
+            pth <- "Access is restricted"
+            qc[which(row.names(qc) == "additional_metadata"),] <- pth
+        } else {   
+    if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
+    if(server == "coesra") pth  <- file.path("/home/public_share_data/ResearchData_CAR", pth)
+    if(server == "ucrh") pth  <- file.path("Q:", pth)  
+      
+    qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
+                        pth,
+                        '" target = "_blank">',
+                        pth,
+                        '</a>'
+                        )  
+    }
+    #t(qc)
+      
+    sink(out_bookfile, append = T)
+    cat(txt)
+    print(xtable(qc), include.rownames = T, type = "html", sanitize.text.function = function(x){x})
+    cat("\n\n")    
+    sink()
+      #entities <- dbGetQuery(ch,
+      #sprintf("select t1.entityname, entitydescription, physical_distribution
+      #from entity t1
+      #join dataset t2
+      #on t1.dataset_id = t2.id
+      #where t2.title = '%s'", dset)
+      #                       )
+      # str(entities)
+
+      #cat("\n### Files and Folders\n\n")
+      #print(xtable(entities), type = "html", include.rownames = F)
+
+    ## for(k in 1:nrow(entities)){
+    ##   #k = 1
+    ##   ent <- entities[k,"entityname"]
+    ##   txt <- sprintf('\n### %s\n\n', ent)
+    ##   cat(txt)
+    ##   qc <- as.data.frame(t(entities[k,-c(1:2)]))
+    ##   names(qc) <- NULL
+    ##   qc[,1] <- gsub("\n", " | ", qc[,1])
+    ##   print(xtable(qc), include.rownames = T, type = "html")
+    ##   cat("\n\n")  
+    ## }
+
+    }
+    }
+    }
+
+
+#+end_src
+** TODO dataset metadata go-code
 #+name:go
 #+begin_src R :session *R* :tangle no :exports none :eval yes
   #### name:go ####
@@ -2986,8 +3183,8 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   library(disentangle)
   setwd("~/tools/web2py/applications/data_inventory/static/")
   dir()
-  prj <- "Air_Pollution_Monitoring_Stations_National"
-  dsets <- c("Air_Pollution_Monitoring_Stations_National_PM25_2000_2015")
+  prj <- "Study_Regions"
+  dsets <- c("greater_syd_metro_reg_2006")
   #"ROSS RIVER VIRUS RATES"
     #"Biomass_Smoke_Validated_Events"
     #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
@@ -3263,7 +3460,6 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 #+end_src
 
 #+RESULTS:
-
 
 ** load transformed
 *** COMMENT load-code
@@ -3697,7 +3893,6 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   
 #+end_src
 #+RESULTS:
-
 ** short summary of EML fields for projects/datasets homepage
 *** head
   output: html_document
@@ -3768,7 +3963,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   
     taxonomic_coverage,
     additionalinfo,
-    alternateidentifier,
+    alternate_identifier,
     pubdate,
     metadataprovider,
     access_rules,
@@ -4058,7 +4253,6 @@ EML_metadata_short.Rmd
   ```
 
 #+end_src
-
 ** data inventory report
 *** COMMENT go-code
 #+name:go
@@ -4067,13 +4261,13 @@ EML_metadata_short.Rmd
   projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
   setwd(projdir)
   dir()
-  #collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
-  collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData'"
+  ## collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
   do_loops <- TRUE
   rmarkdown::render("data_inventory.Rmd", "html_document")
   dbDisconnect(ch)
     browseURL("data_inventory.html")
-  
+
 #+end_src
 
 #+RESULTS: go
@@ -4193,201 +4387,6 @@ EML_metadata_short.Rmd
   ```
   
 #+end_src
-** TODO data inventory report test bookdown
-*** COMMENT go-code
-#+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
-  #### name:go ####
-  projdir  <- "/home/ivan_hanigan/tools/web2py/applications/data_inventory/static"
-  setwd(projdir)
-  library(bookdown)
-
-  flist <- dir("data_inventory_book", pattern = ".Rmd$",full.names = T)
-  flist <- flist[-grep("index.Rmd", flist)]
-  flist
-  file.remove(flist)
-  servers  <- c("ceraph", "coesra", "ucrh")
-  server  <- servers[2]
-  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects_CAR'"
-  #collection <- "related_project = 'ResearchData' or related_project = 'Environment general AND ResearchData'"
-  do_loops <- TRUE
-  source("data_inventory.R")
-  dbDisconnect(ch)
-  #?bookdown_site
-  setwd("data_inventory_book")
-  #render_book("index.Rmd", "bookdown::pdf_book")
-  render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
-  setwd("..")
-  browseURL("data_inventory_book/_book/index.html")
-  #dir()
-
-#+end_src
-
-#+RESULTS: go
-: TRUE
-
-*** COMMENT RMD
-#+begin_src R :session *R* :tangle data_inventory.R :exports none :eval no
-  library(swishdbtools)
-  library(sqldf)
-  library(knitr)
-  library(xtable)  
-  if(do_loops){
-      ##    do_loops  <- T
-  ch  <- connect2postgres2("data_inventory_hanigan_dev4")
-      ##    collection  <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects'"
-  projects <- dbGetQuery(ch, sprintf("select title, project_abstract, personnel_data_owner
-  from project where %s
-  order by title", collection))
-      ##      print(projects$title)
-  for(i in 1:nrow(projects)){
-      ##i = 11
-      prj <- projects[i,1]
-  datasets <- dbGetQuery(ch,
-  sprintf("select t1.*, t3.licence_code, t3.accessibility
-  from dataset t1
-  join project t2
-  on t1.project_id = t2.id
-  left join (select * from intellectualright) t3
-  on t1.id = t3.dataset_id
-  where t2.title = '%s' 
-    and t1.provision_status = 'Published'
-  order by t1.shortname 
-  ", gsub("'", "\\'", prj))
-  )
-      ##    names(datasets)
-      ##      datasets[,c(1:4, 35)]    
-  ## select t1.*
-  ## from dataset t1
-  ## join project t2
-  ## on t1.project_id = t2.id
-  ## where t2.title = '%s' order by t1.shortname", gsub("'", "\\'", prj))
-  ##                        )
-  ## str(datasets)
-  if(
-  nrow(datasets)==0
-  ) next
-
-      
-  txt <- sprintf('%s\n===\n', prj)
-
-  ## txt <- paste(txt,
-  ##              sprintf("- Abstract: %s\n- Data Owner: %s\n",
-  ##                      projects[i,2],
-  ##                      projects[i,3]
-  ##                      ),
-  ##              sep = "")
-
-    qc <- as.data.frame(t(projects[i,c("title", "personnel_data_owner", "project_abstract")]))
-    names(qc) <- c("metadata_field")
-    qc[,1] <- gsub("\n", " | ", qc[,1])
-
-
-  out_bookfile <-   sprintf("data_inventory_book/%s-%s.Rmd", ifelse(i < 9, sprintf("0%s", i+1), i+1), 
-    gsub(" ", "-", prj)
-  )
-  sink(
-  out_bookfile
-  )
-  cat(txt)
-  print(xtable(qc), include.rownames = T, type = "html")
-  #qc
-  #kable(qc)
-  cat("\n\n")
-  sink()  
-
-      
-  for(j in 1:nrow(datasets)){
-      ##    j = 1
-      dset <- datasets$title[j]
-  #print(dset)
-  txt <- sprintf('\n%s\n---\n', dset)
-    
-   
-  ## txt <- paste(txt,
-  ##              sprintf("- Dataset Abstract: %s\n- Creator: %s\n- Contact: %s\n\n",
-  ##                      datasets[j,"abstract"],
-  ##                      datasets[j,"creator"],
-  ##                      datasets[j,"contact"]                     
-  ##                      )
-  ##              , sep = "")
-
-  ## "studyextent", "temporalcoverage_daterange", "methods_protocol", "sampling_desc", "method_steps", 
-    qc <- as.data.frame(t(datasets[j,c("shortname", "title", "creator", "contact_email", "abstract", "additional_metadata", "alternate_identifier", "access_rules", "recommended_citation", "licence_code", "accessibility")]))
-    names(qc) <- c("metadata_field")
-    qc[,1] <- gsub("\n", " | ", qc[,1])
-  if(
-    is.null(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
-    is.na(qc[     which(row.names(qc) == "recommended_citation")     ,]) |
-            qc[     which(row.names(qc) == "recommended_citation")     ,] == ""
-     )  qc[     which(row.names(qc) == "recommended_citation")     ,]  <-  paste(sapply(datasets[j, c("creator", "pubdate", "title", "publisher")], as.character), sep = "", collapse = ", ")
-  if(
-    is.null( qc[     which(row.names(qc) == "licence_code")     ,]) |
-    is.na( qc[     which(row.names(qc) == "licence_code")     ,]) |  
-             qc[     which(row.names(qc) == "licence_code")     ,] == "" 
-     ) qc[     which(row.names(qc) == "licence_code")     ,]  <- "No licence"
-
-  if(
-    is.null( qc[     which(row.names(qc) == "additional_metadata")     ,]) |
-    is.na( qc[     which(row.names(qc) == "additional_metadata")     ,]) |  
-             qc[     which(row.names(qc) == "additional_metadata")     ,] == "" 
-     ) qc[     which(row.names(qc) == "additional_metadata")     ,]  <- "www.google.com"
-      pth  <- qc[which(row.names(qc) == "additional_metadata"),]
-
-  if(qc[which(row.names(qc) == "accessibility"),] == "Restricted"
-     & !is.na(qc[which(row.names(qc) == "accessibility"),])){
-          pth <- "Access is restricted"
-          qc[which(row.names(qc) == "additional_metadata"),] <- pth
-      } else {   
-  if(server == "ceraph") pth  <- file.path("file://///researchshares.win.canberra.edu.au/ceraph$", pth)
-  if(server == "coesra") pth  <- file.path("/home/public_share_data/ResearchData_CAR", pth)
-  if(server == "ucrh") pth  <- file.path("Q:", pth)  
-    
-  qc[which(row.names(qc) == "additional_metadata"),] <- paste0('<a href = "',
-                      pth,
-                      '" target = "_blank">',
-                      pth,
-                      '</a>'
-                      )  
-  }
-  #t(qc)
-    
-  sink(out_bookfile, append = T)
-  cat(txt)
-  print(xtable(qc), include.rownames = T, type = "html", sanitize.text.function = function(x){x})
-  cat("\n\n")    
-  sink()
-    #entities <- dbGetQuery(ch,
-    #sprintf("select t1.entityname, entitydescription, physical_distribution
-    #from entity t1
-    #join dataset t2
-    #on t1.dataset_id = t2.id
-    #where t2.title = '%s'", dset)
-    #                       )
-    # str(entities)
-
-    #cat("\n### Files and Folders\n\n")
-    #print(xtable(entities), type = "html", include.rownames = F)
-
-  ## for(k in 1:nrow(entities)){
-  ##   #k = 1
-  ##   ent <- entities[k,"entityname"]
-  ##   txt <- sprintf('\n### %s\n\n', ent)
-  ##   cat(txt)
-  ##   qc <- as.data.frame(t(entities[k,-c(1:2)]))
-  ##   names(qc) <- NULL
-  ##   qc[,1] <- gsub("\n", " | ", qc[,1])
-  ##   print(xtable(qc), include.rownames = T, type = "html")
-  ##   cat("\n\n")  
-  ## }
-
-  }
-  }
-  }
-
-
-#+end_src
-
 * COMMENT check in/check out
 ** checkout from child to master when master not exists
 #+begin_src R :session *R* :tangle no :exports none :eval no
@@ -4491,13 +4490,13 @@ EML_metadata_short.Rmd
               project_id, shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
-              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
               pubdate, metadataprovider, title, access_rules, sampling_desc, 
               studyextent, associated_party, methods_protocol, distribution_methods)
               select ",pid2, ", shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
-              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
               pubdate, metadataprovider, title, access_rules, sampling_desc, 
               studyextent, associated_party, methods_protocol, distribution_methods
               from dataset_insert", sep = "")
@@ -4560,7 +4559,7 @@ EML_metadata_short.Rmd
   tbls
   #tbls[c(1:4,9,12:21),1]
   #tbls <- tbls[c(1:4,9,12:21),1]
-  
+
   # get the project id
   proj <- "CTM_CSIRO"
   proj_dat  <- dbGetQuery(ch_source,
@@ -4594,14 +4593,14 @@ EML_metadata_short.Rmd
   } else {
     print("already exists!")
   }
-  
-  
+
+
   # get datasets
   dsets  <- dbGetQuery(ch_source,
                        paste("select * from dataset where project_id = ",pid, sep = "")
                        )
   dsets[,1:3]
-  
+
   # recursively walk back up from attr and licence
   # we are not using publs at the moment for UCRH, but that is future
   # possible
@@ -4631,7 +4630,7 @@ EML_metadata_short.Rmd
   ## 19             project  public 22
   ## 24         publication  public 23
   ## 15     thesaurus_ltern  public 24
-  
+
   # loop over dsets
   dsets[1,]
   for(i in 2:nrow(dsets)){
@@ -4639,7 +4638,7 @@ EML_metadata_short.Rmd
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
     d_id
-  
+
   dbWriteTable(ch_target, "dataset_insert", dsets[i,])
   dbSendQuery(ch_target,
               paste(
@@ -4647,13 +4646,13 @@ EML_metadata_short.Rmd
               id, project_id, shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
-              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
               pubdate, metadataprovider, title, access_rules, sampling_desc, 
               studyextent, associated_party, methods_protocol, distribution_methods)
               select id, project_id, shortname, creator, contact, contact_email, abstract, 
               geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
               temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
-              method_steps, additional_metadata, additionalinfo, alternateidentifier, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
               pubdate, metadataprovider, title, access_rules, sampling_desc, 
               studyextent, associated_party, methods_protocol, distribution_methods
               from dataset_insert", sep = "")
@@ -4663,7 +4662,7 @@ EML_metadata_short.Rmd
   ##                    )
   ## d_id2
   dbRemoveTable(ch_target, "dataset_insert")  
-  
+
   #tbls_todo <- c("entity","intellectualright")  
   #for(tbl_i in tbls_todo){
   #  tbl_i = tbls_todo[1]
@@ -4684,7 +4683,7 @@ EML_metadata_short.Rmd
               from to_insert", sep = "")
               )
   dbRemoveTable(ch_target, "to_insert")
-  
+
   tbl_i <- "intellectualright"
   todo_i <- dbGetQuery(ch_source,
                     sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
@@ -4703,7 +4702,7 @@ EML_metadata_short.Rmd
   dbRemoveTable(ch_target, "to_insert")
   }
   }
-  
+
   # are the sequences out of sync?
   for(tabi in tbls$relname){
     maxi <- dbGetQuery(ch_target, sprintf("select max(id) from %s", tabi))
@@ -4713,8 +4712,224 @@ EML_metadata_short.Rmd
     maxi <- dbGetQuery(ch_source, sprintf("select max(id) from %s", tabi))
     print(data.frame(table = tabi, max = maxi))  
   }
-  
+
 #+end_src
+** checkout from master to child SQLITE, assumes you want to replace child (and manually removed it)
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  require(swishdbtools)
+  library(RSQLite)
+  drv <- dbDriver("SQLite")
+
+  ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
+  ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_epa_vic/databases/storage.sqlite")
+
+  tbls <- pgListTables(ch_source, "public")
+  tbls$no <- 1:nrow(tbls)
+  tbls
+  #tbls[c(1:4,9,12:21),1]
+  #tbls <- tbls[c(1:4,9,12:21),1]
+
+  projs <- c('ABS_data', 'Air_pollution_model_GlobalGWR_PM25', 'Australian_Mortality_ABS', 'Australian_Mortality_AIHW', 'HIA_Health_Impact_Assessments', 'Noise_EPA_Vic', 'Study_Regions')
+
+  for(proj in projs[-c(1:2,7)]){
+  ## get the project id
+  ##proj <- "ABS_data"
+  ##proj <- projs[7]
+  proj    
+  proj_dat  <- dbGetQuery(ch_source,
+                          paste("select * from project where title = '",proj,"'", sep = "")
+                          )
+  pid  <- proj_dat$id
+  t(proj_dat)
+  # check not existing
+  nrow_target  <- dbGetQuery(ch_target,
+                             paste("select * from project where title = '",proj,"'", sep = "")
+                             )
+  nrow_target
+  # if OK then write and return the new pid
+  if(
+    nrow(nrow_target) == 0
+  ){
+  ## SQLite handles date as text
+  inx <- sapply(proj_dat, function(x) inherits(x, "Date") || inherits(x, "POSIXt"))
+  proj_dat[inx] <- lapply(proj_dat[inx], as.character)
+  str(proj_dat)
+      
+  dbWriteTable(ch_target, "project_insert", proj_dat)
+  dbSendQuery(ch_target,
+              "INSERT INTO project(
+              id, title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project)
+              select id, title, personnel_data_owner, personnel_owner_organisationname, 
+              personnel, funding, project_abstract, studyareadescription, project_established, 
+              project_citation, related_project
+              from project_insert")
+  pid2 <- dbGetQuery(ch_target,
+                     paste("select id from project where title = '",proj,"'", sep = "")
+                     )
+  dbRemoveTable(ch_target, "project_insert")  
+  } else {
+    print("already exists!")
+  }
+
+  #dbGetQuery(ch_target, "select id, title from project")
+  #dbDisconnect(ch_target)
+
+  # get datasets
+  dsets  <- dbGetQuery(ch_source,
+                       paste("select * from dataset where project_id = ",pid, sep = "")
+                       )
+  dsets[,1:3]
+
+  # recursively walk back up from attr and licence
+  # we are not using publs at the moment for UCRH, but that is future
+  # possible
+  tbls
+  ##                relname nspname no
+  ## 18       accessdataset  public  1
+  ## 16            accessor  public  2
+  ## 17       accessrequest  public  3
+  ## 20            approval  public  4
+  ## 21                attr  public  5
+  ## 3             auth_cas  public  6
+  ## 2           auth_event  public  7
+  ## 1           auth_group  public  8
+  ## 22     auth_membership  public  9
+  ## 14 authorship_approval  public 10
+  ## 5      auth_permission  public 11
+  ## 10           auth_user  public 12
+  ## 4         bibliometric  public 13
+  ## 13           checklist  public 14
+  ## 7            crosswalk  public 15
+  ## 8           crosswalk2  public 16
+  ## 23             dataset  public 17
+  ## 6               entity  public 18
+  ## 9                error  public 19
+  ## 11   intellectualright  public 20
+  ## 12             keyword  public 21
+  ## 19             project  public 22
+  ## 24         publication  public 23
+  ## 15     thesaurus_ltern  public 24
+
+  # loop over dsets
+  dsets[,1:3]
+  for(i in 1:nrow(dsets)){
+  ##i = 16
+    # grab d_id for use when extracting from entity and licence
+    d_id <- dsets$id[i]
+    d_id
+  ## SQLite handles dates as text
+  ##dsets[,"pubdate"] <- as.character(dsets[,"pubdate"])
+  inx <- sapply(dsets, function(x) inherits(x, "Date") || inherits(x, "POSIXt"))
+  dsets[inx] <- lapply(dsets[inx], as.character)
+  str(dsets)
+  dbWriteTable(ch_target, "dataset_insert", dsets[i,])
+  dbSendQuery(ch_target,
+              paste(
+              "INSERT INTO dataset(
+              id, project_id, shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods)
+              select id, project_id, shortname, creator, contact, contact_email, abstract, 
+              geographicdescription, boundingcoordinates, temporalcoverage_daterange, 
+              temporalcoverage_begindate, temporalcoverage_enddate, taxonomic_coverage, 
+              method_steps, additional_metadata, additionalinfo, alternate_identifier, 
+              pubdate, metadataprovider, title, access_rules, sampling_desc, 
+              studyextent, associated_party, methods_protocol, distribution_methods
+              from dataset_insert", sep = "")
+              )
+  ## d_id2 <- dbGetQuery(ch_target,
+  ##                    "select max(id) from dataset"
+  ##                    )
+  ## d_id2
+  dbRemoveTable(ch_target, "dataset_insert")  
+
+  #tbls_todo <- c("entity","intellectualright")  
+  #for(tbl_i in tbls_todo){
+  #  tbl_i = tbls_todo[1]
+  tbl_i <- "entity"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  if(nrow(todo_i) != 0){
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO entity(
+              id, dataset_id, entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange)
+              select id, dataset_id, entityname, entitydescription, entity_methods, 
+              physical_distribution, physical_distribution_additionalinfo, 
+              numberofrecords, entity_temporalcoverage_daterange
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  }
+
+  tbl_i <- "intellectualright"
+  todo_i <- dbGetQuery(ch_source,
+                    sprintf("select * from public.%s where dataset_id = %s", tbl_i, d_id)
+                    )
+  todo_i
+  if(nrow(todo_i) > 0){    
+  dbWriteTable(ch_target, "to_insert", todo_i)
+  dbSendQuery(ch_target,
+              paste("INSERT INTO intellectualright(
+              id, dataset_id, licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee)            
+              select id, dataset_id, licence_code, licence_text, path_to_licence, 
+              data_owner_contact, data_owner, special_conditions, licencee
+              from to_insert", sep = "")
+              )
+  dbRemoveTable(ch_target, "to_insert")
+  }
+      
+  }
+
+  }
+  ## # are the sequences out of sync?
+  ## for(tabi in tbls$relname){
+  ##   maxi <- dbGetQuery(ch_target, sprintf("select max(id) from %s", tabi))
+  ##   print(data.frame(table = tabi, max = maxi))
+  ## }
+  ## for(tabi in tbls$relname){
+  ##   maxi <- dbGetQuery(ch_source, sprintf("select max(id) from %s", tabi))
+  ##   print(data.frame(table = tabi, max = maxi))  
+  ## }
+
+  dbDisconnect(ch_target)
+
+  ## this is great but I need to change the prefix Env General
+  ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_epa_vic/databases/storage.sqlite")
+  dbGetQuery(ch_target,
+             "
+  UPDATE dataset
+  SET additional_metadata = REPLACE(additional_metadata, 'Environment_General/', '')
+  ")
+  dbGetQuery(ch_target,
+   sprintf("select t1.shortname, t1.additional_metadata
+   from dataset t1
+  ")
+  )
+
+  dbGetQuery(ch_target,
+             "
+  UPDATE dataset
+  SET alternate_identifier = REPLACE(alternate_identifier, 'Environment_General', 'ResearchData_EPA_Vic')
+  ")
+  dbGetQuery(ch_target,
+   sprintf("select t1.shortname, t1.alternate_identifier
+   from dataset t1
+  ")
+  )
+  dbDisconnect(ch_target)
+
+#+end_src
+
 ** DEPRECATED identify-aquire-post-update-review procedures
 - doco for identified data are in a sep database so not to mess up clean inventory
 - once data aquisitioon has started transfer to the main data inventory
