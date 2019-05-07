@@ -494,7 +494,7 @@ We use the informative abstract method. The eml/dataset/project/abstract should 
 - The KNB definition can be found at these links: [[./eml-2.1.1/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML 2.1.1 definition]] or [[https://knb.ecoinformatics.org/#external//emlparser/docs/eml-2.1.1/eml-project.html#studyAreaDescription][EML online]]
 **** COMMENT comment studydesc
 #+begin_src markdown :tangle ~/tools/web2py/applications/data_inventory/models/db.py :exports reports :eval no :padline no
-      Field('studyAreaDescription','string', 
+      Field('studyareadescription','string', 
       comment= XML(T('This can include descriptions of the geographic, temporal, and taxonomic coverage of the research location. %s', 
       A('More', _href=XML(URL('static','index.html', anchor='sec-5-1-4', scheme=True, host=True)))))
       ),
@@ -2999,13 +2999,13 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   #render_book("index.Rmd", "bookdown::pdf_book")
   render_book( "index.Rmd", gitbook(split_by = "section", self_contained = FALSE, config = list(sharing = NULL, toc = list(collapse = "section"))) )
   setwd("..")
-  ##browseURL("data_inventory_book/_book/index.html")
+  #browseURL("data_inventory_book/_book/index.html")
   #dir()
 
 #+end_src
 
 #+RESULTS: go
-: TRUE
+: /home/ivan_hanigan/tools/web2py/applications/data_inventory/static/data_inventory_book
 
 *** COMMENT RMD
 #+begin_src R :session *R* :tangle data_inventory.R :exports none :eval no
@@ -3171,85 +3171,6 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 
 
 #+end_src
-** TODO dataset metadata go-code
-#+name:go
-#+begin_src R :session *R* :tangle no :exports none :eval yes
-  #### name:go ####
-  library(rmarkdown)
-  library(bookdown)
-  table_type = "latex"
-  show_exemplar <- F
-  library(knitr)
-  library(disentangle)
-  setwd("~/tools/web2py/applications/data_inventory/static/")
-  dir()
-  prj <- "Study_Regions"
-  dsets <- c("greater_syd_metro_reg_2006")
-  #"ROSS RIVER VIRUS RATES"
-    #"Biomass_Smoke_Validated_Events"
-    #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
-  #dsets <- "Local_Land_Services_NSW_20140205"
-    #"DROUGHT_AWAP_GRIDS_1900_2015"
-  #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
-  ## dsets  <- c("ABS_SEIFA",
-  ## "ASGM_mortality",
-  ## "ASGC_1981_2010",
-  ## "ABS_meshblocks",
-  ## "ABS Correspondence",
-  ## "ABS_Census_2001",
-  ## "ABS_POA", "ABS_LGA",
-  ## "ABS_Census_2011")
-  for(i in 1:length(dsets)){
-  #  i = 1
-  dset  <- dsets[i]
-    #"Vally20091223_RossRiverRates Restricted Data"
-    #"biomass_smoke_events_db"
-  #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
-  # walkability_osm  
-  entities <- T
-
-  #render("data_deposit_form.Rmd") 
-  # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
-  #browseURL("data_deposit_form.html")
-  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
-  #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
-   #browseURL("EML_metadata_fields.html")
-      if(table_type == "html"){
-          file_ext <- "html"
-      rmarkdown::render("EML_metadata_short.Rmd", "html_document")         
-      } else {
-          file_ext <- "pdf"
-      rmarkdown::render("EML_metadata_short.Rmd", "pdf_document2") 
-      }
-  # browseURL("EML_metadata_short.pdf")
-  pth <- as.character(qc_out[which(qc_out$variable == "additional_metadata"),])[2]
-  pth
-      outfile  <- paste(lcu(dset), "_metadata.", file_ext, sep = "")
-  #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
-  outfile <- file.path("~", pth, outfile)
-
-  outfile
-  #outfile <- file.path("~/projects_ceraph", prj,
-  #dset, outfile)
-  #outfile <- file.path("/home/ivan_hanigan/Dropbox/projects_ceraph_transfers/Data inventory_files", outfile)
-  #outfile <- file.path("~/projects", prj, dset, outfile)
-
-  #file.rename("EML_metadata_fields.html", outfile)
-  file.rename(sprintf("EML_metadata_short.%s", file_ext), outfile)
-
-  }  
-  setwd(
-    dirname(outfile)
-    )
-  #browseURL(basename(outfile))
-  setwd("~/tools/web2py/applications/data_inventory/static/")
-  # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
-  dbDisconnect(ch)
-#+end_src
-
-#+RESULTS: go
-: TRUE
-
 ** summary of data for ETL
 #+begin_src R :session *R* :tangle data_deposit_form.Rmd :exports none :eval no :padline no
   ---
@@ -3893,8 +3814,87 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   
 #+end_src
 #+RESULTS:
-** short summary of EML fields for projects/datasets homepage
-*** head
+** TODO dataset metadata 
+*** TODO go-code
+#+name:go
+#+begin_src R :session *R* :tangle no :exports none :eval yes
+  #### name:go ####
+  library(rmarkdown)
+  library(bookdown)
+  table_type = "latex" #"html" # or latex
+  show_exemplar <- F
+  library(knitr)
+  library(disentangle)
+  setwd("~/tools/web2py/applications/data_inventory/static/")
+  dir()
+  prj <- "StreetPro"
+  dsets <- c("StreetPro_Navigation_2012")
+  #"ROSS RIVER VIRUS RATES"
+    #"Biomass_Smoke_Validated_Events"
+    #"Eco-social observatories: Tipping points" #"Air_pollution_modelling_LUR_LCT"  # "Air pollution modelling: LUR_Western_Sydney"  "Air_Pollution_Monitoring_Stations_NSW" #
+  #dsets <- "Local_Land_Services_NSW_20140205"
+    #"DROUGHT_AWAP_GRIDS_1900_2015"
+  #dsets <- c("LUR_LCT_2006_2008","LUR_LCT_active_samplers", "LUR_LCT_passive_samplers_2006_2008")
+  ## dsets  <- c("ABS_SEIFA",
+  ## "ASGM_mortality",
+  ## "ASGC_1981_2010",
+  ## "ABS_meshblocks",
+  ## "ABS Correspondence",
+  ## "ABS_Census_2001",
+  ## "ABS_POA", "ABS_LGA",
+  ## "ABS_Census_2011")
+  for(i in 1:length(dsets)){
+  #  i = 1
+  dset  <- dsets[i]
+    #"Vally20091223_RossRiverRates Restricted Data"
+    #"biomass_smoke_events_db"
+  #"ESTPDB" # "LUR_LCT_passive_samplers_2006_2008" #"LUR_Western_Sydney_passive_samplers"  # "AP_monitor_NSW_2014_2015" #  "biomass_smoke_events_database"
+  # walkability_osm  
+  entities <- T
+
+  #render("data_deposit_form.Rmd") 
+  # knitr::knit2html("data_deposit_form.Rmd", stylesheet='custom.css')
+  #browseURL("data_deposit_form.html")
+  #knitr::knit2html("EML_metadata_fields.Rmd", stylesheet='custom.css')
+  #rmarkdown::render("EML_metadata_fields.Rmd") #, stylesheet='custom.css')
+   #browseURL("EML_metadata_fields.html")
+      if(table_type == "html"){
+          file_ext <- "html"
+      rmarkdown::render("EML_metadata_short.Rmd", "html_document")         
+      } else {
+          file_ext <- "pdf"
+      rmarkdown::render("EML_metadata_short.Rmd", "pdf_document2") 
+      }
+  # browseURL("EML_metadata_short.pdf")
+  pth <- as.character(qc_out[which(qc_out$variable == "additional_metadata"),])[2]
+  pth
+      outfile  <- paste(lcu(dset), "_metadata.", file_ext, sep = "")
+  #outfile <- file.path("/home/ResearchData", prj,dset, outfile)
+  outfile <- file.path("~", pth, outfile)
+
+  outfile
+  #outfile <- file.path("~/projects_ceraph", prj,
+  #dset, outfile)
+  #outfile <- file.path("/home/ivan_hanigan/Dropbox/projects_ceraph_transfers/Data inventory_files", outfile)
+  #outfile <- file.path("~/projects", prj, dset, outfile)
+
+  #file.rename("EML_metadata_fields.html", outfile)
+  file.rename(sprintf("EML_metadata_short.%s", file_ext), outfile)
+
+  }  
+  setwd(
+    dirname(outfile)
+    )
+  #browseURL(basename(outfile))
+  setwd("~/tools/web2py/applications/data_inventory/static/")
+  # no good, do in word? system("pandoc -i data_deposit_form.html -o data_deposit_form.docx")
+  dbDisconnect(ch)
+#+end_src
+
+#+RESULTS: go
+: TRUE
+*** TODO short summary of EML fields for projects/datasets homepage
+**** head
   output: html_document
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   ---
@@ -3913,7 +3913,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   library(xtable)  
   
   ch  <- connect2postgres2("data_inventory_hanigan_dev4")  
-
+  ##ch <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_to_get/databases/storage.sqlite")
   #prj <- "Air_Pollution_Monitoring_Stations_WA"
   #dset <- "AP_WA_19942012"
   
@@ -3930,7 +3930,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   ```
   
 #+end_src
-*** dataset overview
+**** dataset overview
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   
   
@@ -4068,7 +4068,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   #}
   ```
 #+end_src
-*** umbrella project
+**** umbrella project
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
     
 
@@ -4110,7 +4110,7 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
   ## }  
   ```
 #+end_src
-*** dataset overview
+**** dataset overview
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
   # Dataset or study metadata   
   ```{r, echo = F, eval = T, results="asis"}  
@@ -4164,9 +4164,433 @@ pg_restore -i -h localhost -p 5432 -U postgres -d data_inventory_hanigan_dev4_ba
 
 #+end_src
 
-*** files entities overview
+**** files entities overview
 EML_metadata_short.Rmd
 #+begin_src R :session *R* :tangle EML_metadata_short.Rmd :exports none :eval no :padline no
+
+  # File / Entity level information 
+
+  ```{r, echo = F, eval = T, results="asis"}
+
+  #### entity ####
+  #dat <- dbGetQuery(ch, "select * from entity")
+  dat_ent <- dbGetQuery(ch,
+  #cat(
+  sprintf("select 
+  t3.*
+  from project t1
+  join dataset t2
+  on t1.id = t2.project_id
+  join entity t3
+  on t2.id = t3.dataset_id
+  where t1.title = '%s'
+  and t2.shortname = '%s' order by entityname", prj, dset)
+  )
+
+  if(nrow(dat_ent) == 0){
+
+   print("No files documented yet")
+
+  } else {
+
+  if(entities){    
+  help_ent  <- sqldf("select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%entity%'",
+    connection = ch)
+  #help_ent
+
+
+  for(j in 1:nrow(dat_ent)){
+  #j = 1
+
+  ent_j <- data.frame(V1 = names(dat_ent), V2=t(dat_ent[j,]))
+  ent_j$order <- 1:nrow(ent_j)
+  name <- as.character(ent_j[3,2])
+  pander::pandoc.header(print(paste("Entity: ", name, sep = " ")), level = 2)
+
+    qc_ent <- merge(ent_j, help_ent, by.x = "V1", by.y = "datinv", all.x = T)
+    qc_ent2 <- qc_ent[order(qc_ent$order),c(1,2,5)]
+  #qc_ent2
+  #qc_ent3 <- data.frame(index = rep(title2, nrow(qc_ent2)),
+  #                      index = c(title2, rep("", nrow(qc_ent2) - 1)),
+  #                      meta = qc_ent2)
+  names(qc_ent2) <- c("variable","value","help")
+  qc_ent2[,2] <- gsub("\n", " | ", qc_ent2[,2])
+  #print(kable(qc_ent2, row.names = F))
+  if(show_exemplar){
+  tabcode <- xtable(qc_ent2[-c(1,2),]) #, type = table_type, include.rownames = F)
+  } else {
+  tabcode <- xtable(qc_ent2[-c(1,2),-3]) #, type = table_type, include.rownames = F)
+  }
+  #write.csv(qc_ent2, paste(dset, "_data_deposit_form.csv", sep = ""), row.names = F)
+
+  if(table_type == 'latex'){
+    if(show_exemplar){
+          align(tabcode) <-  c( 'l', 'p{2.1in}', 'p{4in}', 'p{2in}')  
+    } else {
+          align(tabcode) <-  c( 'l', 'p{2.1in}', 'p{6in}')
+    }
+  print(tabcode, tabular.environment='longtable',
+            type = table_type, comment=FALSE,
+            floating=FALSE, caption.placement = "top",
+            hline.after = c(-1,nrow(qc_ent2[-c(1,2),])), 
+            add.to.row = list(pos = list(0),command = "\\hline \\endhead "),
+            include.rownames=F) #, sanitize.text.function = function(x) x)
+
+  } else {
+  print(tabcode, type = table_type, include.rownames = F)
+  }
+
+  }
+
+
+  } else {
+  print(xtable(dat_ent[,c("entityname","entitydescription","physical_distribution")]), type = table_type, include.rownames = F)
+  }   
+
+  }
+  ```
+
+#+end_src
+** TODO dataset metadata SQLITE VERSION FOR CASSANDRA IN GOT
+https://cloudstor.aarnet.edu.au/plus/apps/files/?dir=/Shared/CAR_staging_area/data_management_plan/data_inventory_got/static
+*** go-code
+#+name:go
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short_go.R :exports none :eval yes
+  #### name:go ####
+  projdir <- "~/tools/web2py/applications/data_inventory_got/static/"
+  setwd(projdir)
+  library(rmarkdown)
+  library(bookdown)
+  library(sqldf)
+  library(knitr)
+  library(xtable)  
+  library(tcltk)
+  ## library(disentangle)
+  lcu <- function (x) 
+  {
+    x <- make.names(x)
+    x <- tolower(x)
+    x <- gsub("\\.", "_", x)
+    x <- gsub("_+", "_", x)
+    return(x)
+  }
+
+  library(RSQLite)
+  if(exists('ch'))   dbDisconnect(ch)  
+  drv <- dbDriver("SQLite")
+  ch <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_got/databases/storage.sqlite")
+  #### name:summary of project info ####
+  table_type = "html" #or "latex"
+  show_exemplar <- F # this adds notes like a FAQ
+
+  projs <- dbGetQuery(ch, "select id, title from project")
+  projs # choose
+  prj <- "NASA_FIRMS_FIRE_AND_SMOKE"
+  pid <- projs$id[which(projs$title == prj)]
+  dsets <- dbGetQuery(ch,
+  sprintf("select title 
+  from dataset
+  where project_id = %s", pid)                    
+                      )
+  dsets
+
+
+  for(i in 1:nrow(dsets)){
+      ##  i = 1
+      dset  <- dsets[i,1]
+      entities <- T
+      
+      if(table_type == "html"){
+          file_ext <- "html"
+          rmarkdown::render("EML_metadata_short.Rmd", "html_document")
+      } else {
+          file_ext <- "pdf"
+          rmarkdown::render("EML_metadata_short.Rmd", "pdf_document2")
+      }
+
+      pth <- as.character(qc_out[which(qc_out$variable == "additional_metadata"),])[2]
+      ## pth
+      outfile  <- paste(lcu(dset), "_metadata.", file_ext, sep = "")
+      outfile <- file.path("~", pth, outfile)
+      ## outfile
+      if(file.exists(dirname(outfile))){
+        file.rename(sprintf("EML_metadata_short.%s", file_ext), outfile)
+      } else { 
+        dir.create(dirname(outfile), recursive = TRUE)
+        file.rename(sprintf("EML_metadata_short.%s", file_ext), outfile)
+      }
+        
+  }
+
+  setwd(
+      dirname(outfile)
+  )
+  browseURL(basename(outfile))
+  dbDisconnect(ch)
+  setwd(projdir)
+
+#+end_src
+
+#+RESULTS: go
+: TRUE
+*** TODO short summary of EML fields for projects/datasets homepage
+**** head
+  output: html_document
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short.Rmd :exports none :eval no :padline no
+  ---
+  title: EML metadata fields
+  classoption: landscape
+  ---
+  
+  Date metadata document produced: `r Sys.Date()`.
+  
+  
+#+end_src
+**** dataset overview
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short.Rmd :exports none :eval no :padline no
+  
+  
+  ```{r, echo = F, eval = T, results="asis"}
+  
+  #### for each dataset
+  #dat$shortname
+  # for(i in 1:nrow(dat)){
+  
+  # i = which(dat$shortname == dset)
+  
+  
+  dat <- dbGetQuery(ch,
+  sprintf("select shortname,title,
+    creator,
+    contact,
+    contact_email,
+    abstract,
+    additional_metadata,
+    associated_party, recommended_citation,
+    studyextent,
+    geographicdescription,
+    boundingcoordinates,
+    temporalcoverage_daterange,
+    temporalcoverage_begindate,
+    temporalcoverage_enddate,
+    methods_protocol,
+    sampling_desc,
+    method_steps,
+  
+    taxonomic_coverage,
+    additionalinfo,
+    alternate_identifier,
+    pubdate,
+    metadataprovider,
+    access_rules,
+    distribution_methods, publisher
+   from dataset
+   where shortname ='%s'", dset)
+  )
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  # dat_i
+   dat_i$order <- 1:nrow(dat_i)
+    #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
+    #      collapse = ", ", sep = "")
+    #title
+  
+  help  <- dbGetQuery(ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%dataset%'"
+    )
+  # head(help)
+  
+  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  #qc[1,]
+  #names(qc)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  #qc2
+  #qc3 <- data.frame(index1 = rep(paste("0. dataset", dset), nrow(qc2)),
+  #           index2 = c(title, rep("", nrow(qc2) - 1)),
+  #           metadata = qc2)
+  #names(qc3) <- c("index1", "index2", "variable", "value", "help")
+  names(qc2) <- c("variable", "value", "help")
+  #names(qc2)
+  #### Keyword
+  ## ky <- dbGetQuery(ch,
+  ##   #cat(q
+  ##   paste("select t3.keyword
+  ##   from dataset t1
+  ##   join keyword t3
+  ##   on t1.id = t3.dataset_id
+  ##   where t1.shortname = '",dset,"'
+  ##   ", sep = "")
+  ## )
+  
+  ## if(nrow(ky) > 0){
+  ## ky <- ky[,1]
+  ## } else {
+  ## ky <- ''
+  ## }
+  ## ky <- paste(ky, sep = "", collapse=", ")
+  ## ky <- data.frame(variable = "keywords", value = ky, help="Keywords or phrases that concisely describe the resource. Example is biodiversity. Use a controlled vocabulary thesaurus")
+  
+  
+  ## qc_out <- rbind(qc2, ky)
+  qc_out <- qc2
+  ## #qc_out[,1:3]
+  #qc_out
+  
+  #kable(qc_out, row.names = F)
+  
+  
+  dat <- dbGetQuery(ch,
+  sprintf("select t1.id, dataset_id, data_owner, data_owner_contact, licence_code, licence_text, licencee, path_to_licence, special_conditions, accessibility
+  from intellectualright t1
+  join dataset t2
+  on t1.dataset_id =  t2.id
+   where shortname ='%s'", dset)
+  )
+  if(nrow(dat) == 0){
+  dat <- data.frame(id = '', dataset_id = '', data_owner='', data_owner_contact='', licence_code = '',
+    licence_text = '',licencee='', path_to_licence='', special_conditions='')
+  }
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+   #dat_i
+   dat_i$order <- 1:nrow(dat_i)
+    #title <- paste(c(as.character(dat_i[dat_i$V1 %in% c('shortname','title'),2])),
+    #      collapse = ", ", sep = "")
+    #title
+  
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%intellectualright%'"
+    )
+  # head(help)
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help")
+  # names(  qc2)
+  qc_out <- rbind(qc_out, qc2[-c(1,2),])
+  qc_out[,2] <- gsub("\n", " | ", qc_out[,2])
+  qc_out_raw <- qc_out
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c('shortname','title',
+  'creator',
+  'contact',
+  'contact_email',
+  'abstract'),]
+  #if(show_exemplar){
+  #print(xtable(qc_out[,]), type = table_type, include.rownames = F)
+  #} else {
+  #print(xtable(qc_out[,-2]), type = table_type, include.rownames = F)
+  #}
+  ```
+#+end_src
+**** umbrella project
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short.Rmd :exports none :eval no :padline no
+    
+
+
+  ```{r, echo = F, eval = T, results="asis"}  
+
+  dat <- sqldf(connection = ch,
+    sprintf("select t1.title,  personnel_data_owner, project_abstract
+    from project t1
+    where t1.title = '%s'", prj)
+    )
+  #names(dat)
+  #t(dat)
+
+  ####  help
+  help  <- sqldf(connection = ch,
+    "select t1.eml_node, t1.help_comment, t1.datinv
+    from crosswalk t1
+    where eml_table like '%project%'"
+    )
+  # head(help)
+
+  dat_i <- data.frame(V1 = names(dat), V2=t(dat[1,]))
+  #dat_i
+  dat_i$order <- 1:nrow(dat_i)  
+  qc <- merge(dat_i, help, by.x = "V1", by.y = "datinv", all.x = TRUE)
+  qc2 <- qc[order(qc$order),c(1,2,5)]
+  names(qc2) <- c("variable", "value", "help")
+  qc2[,1] <- gsub("title", "umbrella_project_title", qc2[,1])
+  qc2[,1] <- gsub("personnel_data_owner", "project_owner_or_originator", qc2[,1])  
+  qc2[,2] <- gsub("\n", " | ", qc2[,2])
+  qc2 <- rbind(qc_out, qc2)
+
+
+  ## if(show_exemplar){
+  ## print(xtable(qc2[,]), type = table_type, include.rownames = F)
+  ## } else {
+  ## print(xtable(qc2[,-2]), type = table_type, include.rownames = F)
+  ## }  
+  ```
+#+end_src
+**** dataset overview
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short.Rmd :exports none :eval no :padline no
+  # Dataset or study metadata   
+  ```{r, echo = F, eval = T, results="asis"}  
+  if(!is.na(qc_out_raw[qc_out_raw$variable == "publisher","value"])) qc_out_raw[qc_out_raw$variable == "publisher","value"] <- paste0("[Data set] Retrieved from ", qc_out_raw[qc_out_raw$variable == "publisher","value"])
+  if(
+     is.null(qc_out_raw[which(qc_out_raw$variable == "recommended_citation"),"value"]) |
+     is.na(qc_out_raw[which(qc_out_raw$variable == "recommended_citation"),"value"]) |
+     qc_out_raw[which(qc_out_raw$variable == "recommended_citation"),"value"] == ""
+     )  qc_out_raw[which(qc_out_raw$variable == "recommended_citation"),"value"]  <-  paste(sapply(c(qc_out_raw[which(qc_out_raw$variable == "creator"),"value"], qc_out_raw[which(qc_out_raw$variable == "pubdate"),"value"], qc_out_raw[which(qc_out_raw$variable == "title"),"value"], qc_out_raw[which(qc_out_raw$variable == "publisher"),"value"]), as.character), sep = "", collapse = ", ")
+
+  qc_out <- qc_out_raw[qc_out_raw$variable %in% c('recommended_citation',
+  'additional_metadata', 'alternate_identifier',
+  'studyextent',
+  'temporalcoverage_daterange',
+  'methods_protocol',
+  'sampling_desc',
+  'method_steps',
+  'associated_party',
+  'access_rules',
+  'distribution_methods',
+  'keywords',
+  'licence_code',
+  'licence_text','path_to_licence','licencee',
+  'data_owner',
+  'data_owner_contact',
+  'special_conditions', 'accessibility'
+  ),]
+  qc_out <- rbind(qc2, qc_out)
+  if(
+  qc_out[qc_out$variable == "licence_code",'value'] == ""
+  ){
+    qc_out[qc_out$variable == "licence_code",'value'] <- "No licence"
+  }
+  if(show_exemplar){
+  tabcode <- xtable(qc_out[,])
+  } else {
+  tabcode <- xtable(qc_out[,-3])
+  }
+
+  if(table_type == 'latex'){
+    if(show_exemplar){
+        align(tabcode) <-  c( 'l', 'p{1.7in}', 'p{4in}', 'p{2in}')  
+    } else {
+          align(tabcode) <-  c( 'l', 'p{1.7in}', 'p{6in}')
+    }
+  print(tabcode, tabular.environment='longtable',
+            type = table_type, comment=FALSE,
+            floating=FALSE, caption.placement = "top",
+            hline.after = c(-1,nrow(qc_out)), 
+            add.to.row = list(pos = list(0),command = "\\hline \\endhead "),
+            include.rownames=F) #, sanitize.text.function = function(x) x)
+
+  } else {
+  print(tabcode, type = table_type, include.rownames = F)
+  }
+  ```
+
+#+end_src
+
+**** files entities overview
+EML_metadata_short.Rmd
+#+begin_src R :session *R* :tangle /home/ivan_hanigan/tools/web2py/applications/data_inventory_got/static/EML_metadata_short.Rmd :exports none :eval no :padline no
 
   # File / Entity level information 
 
@@ -4253,6 +4677,7 @@ EML_metadata_short.Rmd
   ```
 
 #+end_src
+
 ** data inventory report
 *** COMMENT go-code
 #+name:go
@@ -4714,27 +5139,66 @@ EML_metadata_short.Rmd
   }
 
 #+end_src
-** checkout from master to child SQLITE, assumes you want to replace child (and manually removed it)
+** checkout from master to child SQLITE, assumes you want to replace child (and manually removed it) TODO int rights accessibility missing
+shared with cassandra on cloudstor
+~/Desktop/data_inventory_query_ETL.R
 #+begin_src R :session *R* :tangle no :exports none :eval no
   require(swishdbtools)
   library(RSQLite)
   drv <- dbDriver("SQLite")
 
   ch_source <- connect2postgres2("data_inventory_hanigan_dev4")  
+  ##ch_source <- dbConnect(drv, dbname = "~/Downloads/storage.sqlite")
+  ##ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_to_get/databases/storage.sqlite")
+  ##ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_got/databases/storage.sqlite")
   ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_epa_vic/databases/storage.sqlite")
 
-  tbls <- pgListTables(ch_source, "public")
-  tbls$no <- 1:nrow(tbls)
-  tbls
+  ##tbls <- pgListTables(ch_source, "public")
+  ##tbls$no <- 1:nrow(tbls)
+  ##tbls
   #tbls[c(1:4,9,12:21),1]
   #tbls <- tbls[c(1:4,9,12:21),1]
 
-  projs <- c('ABS_data', 'Air_pollution_model_GlobalGWR_PM25', 'Australian_Mortality_ABS', 'Australian_Mortality_AIHW', 'HIA_Health_Impact_Assessments', 'Noise_EPA_Vic', 'Study_Regions')
+  ##projs <- c('Satellite_NO2_LUR','Satellite_PM25_LUR')
+  collection <- "related_project = 'Environment general' or related_project = 'Environment general AND ResearchData' or related_project = 'ResearchProjects_CAR'"
+  projs <- dbGetQuery(ch_source, sprintf("select title, project_abstract, personnel_data_owner
+    from project where %s
+    order by title", collection))
+  print(projs$title)
 
-  for(proj in projs[-c(1:2,7)]){
+
+
+  for(i in 1:nrow(projs)){
+      ##i = 1
+      prj <- projs[i,1]
+      print(prj)
+      datasets <- dbGetQuery(ch_source,
+                             sprintf("select t2.title as proj_title, t1.*, t3.licence_code, t3.accessibility
+      from dataset t1
+      join project t2
+      on t1.project_id = t2.id
+      left join (select * from intellectualright) t3
+      on t1.id = t3.dataset_id
+      where t2.title = '%s' 
+        and t1.provision_status = 'Published'
+      order by t1.shortname 
+      ", gsub("'", "\\'", prj))
+      )
+      ##datasets[1:4,]
+      if(i == 1){
+          projs_todo <- datasets
+      } else {
+          projs_todo <- rbind(projs_todo, datasets)
+      }
+  }    
+  projs_todo[,1:3]
+  names(projs_todo)
+  projs_todoV2 <- unique(projs_todo[,1])
+  projs_todoV2
+  for(proj in projs_todoV2[-1]){
   ## get the project id
   ##proj <- "ABS_data"
-  ##proj <- projs[7]
+  ## proj <- projs_todoV2[1]
   proj    
   proj_dat  <- dbGetQuery(ch_source,
                           paste("select * from project where title = '",proj,"'", sep = "")
@@ -4778,14 +5242,14 @@ EML_metadata_short.Rmd
 
   # get datasets
   dsets  <- dbGetQuery(ch_source,
-                       paste("select * from dataset where project_id = ",pid, sep = "")
+                       paste("select * from dataset where provision_status = 'Published' and project_id = ",pid, sep = "")
                        )
   dsets[,1:3]
 
   # recursively walk back up from attr and licence
   # we are not using publs at the moment for UCRH, but that is future
   # possible
-  tbls
+  ##tbls
   ##                relname nspname no
   ## 18       accessdataset  public  1
   ## 16            accessor  public  2
@@ -4815,7 +5279,7 @@ EML_metadata_short.Rmd
   # loop over dsets
   dsets[,1:3]
   for(i in 1:nrow(dsets)){
-  ##i = 16
+  ##i = 1
     # grab d_id for use when extracting from entity and licence
     d_id <- dsets$id[i]
     d_id
@@ -4902,31 +5366,32 @@ EML_metadata_short.Rmd
   ## }
 
   dbDisconnect(ch_target)
+  dbDisconnect(ch_source)
 
-  ## this is great but I need to change the prefix Env General
-  ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_epa_vic/databases/storage.sqlite")
-  dbGetQuery(ch_target,
-             "
-  UPDATE dataset
-  SET additional_metadata = REPLACE(additional_metadata, 'Environment_General/', '')
-  ")
-  dbGetQuery(ch_target,
-   sprintf("select t1.shortname, t1.additional_metadata
-   from dataset t1
-  ")
-  )
+  ## ## this is great but I need to change the prefix Env General
+  ## ch_target <- dbConnect(drv, dbname = "~/tools/web2py/applications/data_inventory_epa_vic/databases/storage.sqlite")
+  ## dbGetQuery(ch_target,
+  ##            "
+  ## UPDATE dataset
+  ## SET additional_metadata = REPLACE(additional_metadata, 'Environment_General/', '')
+  ## ")
+  ## dbGetQuery(ch_target,
+  ##  sprintf("select t1.shortname, t1.additional_metadata
+  ##  from dataset t1
+  ## ")
+  ## )
 
-  dbGetQuery(ch_target,
-             "
-  UPDATE dataset
-  SET alternate_identifier = REPLACE(alternate_identifier, 'Environment_General', 'ResearchData_EPA_Vic')
-  ")
-  dbGetQuery(ch_target,
-   sprintf("select t1.shortname, t1.alternate_identifier
-   from dataset t1
-  ")
-  )
-  dbDisconnect(ch_target)
+  ## dbGetQuery(ch_target,
+  ##            "
+  ## UPDATE dataset
+  ## SET alternate_identifier = REPLACE(alternate_identifier, 'Environment_General', 'ResearchData_EPA_Vic')
+  ## ")
+  ## dbGetQuery(ch_target,
+  ##  sprintf("select t1.shortname, t1.alternate_identifier
+  ##  from dataset t1
+  ## ")
+  ## )
+  ## dbDisconnect(ch_target)
 
 #+end_src
 
