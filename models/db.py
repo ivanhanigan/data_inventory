@@ -207,7 +207,7 @@ comment= XML(T('Additional Information about the storage of the resource, includ
       ),
 Field('entity_temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
 Field('entity_methods', 'text', comment = "Information on the specific methods used to collect information in this entity."),
-Field('numberOfRecords', 'integer', comment = 'The number of rows in a table.'),
+Field('numberofrecords', 'integer', comment = 'The number of rows in a table.'),
 format = '%(entityname)s'
 )
 #### ONE (entity) TO MANY (attributes/variables)
