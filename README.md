@@ -18,6 +18,18 @@
 1. In the top right corner you have to sign up first with a local username and password
 1. README is at http://127.0.0.1:8181/data_inventory/static/index.html
 
+### Roadmap for python3
+
+1. investigate port to py4web (the evolution of web2py: https://github.com/web2py/py4web)
+2. for the time being try to continue using with python 2. 
+3. if using the postgres database backend need to use older psycopg2 (to avoid postgres `RuntimeError: No driver of supported ones ('psycopg2',) is available`)
+
+```
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python2 get-pip.py
+pip2 install psycopg2
+```
+
 Licence: CC-BY-4.0
 
 ![cc-by-4_0.png](cc-by-4_0.png)
