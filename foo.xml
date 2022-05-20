@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1" packageId="169c69f6-f319-4354-9a0b-887114131b50" system="uuid" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.1.1 https://eml.ecoinformatics.org/eml-2.1.1/eml.xsd">
+  <dataset id="1">
+    <abstract>Community-driven collection of data for air pollution events. Database available at https://github.com/swish-climate-impact-assessment/biomass_smoke_events_db the CARDAT folder 'Environment_General/Biomass_Smoke_Validated_Events/Biomass_Smoke_Validated_Events' is just for storing the additional metadata.&#13;
+&#13;
+References:&#13;
+Johnston, F. H., Hanigan, I. C., Henderson, S. B., Morgan, G. G., Portner, T., Williamson, G. J., &amp; Bowman, D. M. J. S. (2011). Creating an Integrated Historical Record of Extreme Particulate Air Pollution Events in Australian Cities from 1994 to 2007. Journal of the Air &amp; Waste Management Association, 61(4), 390-398. http://doi.org/10.3155/1047-3289.61.4.390. &#13;
+Hanigan IC, Morgan GG, Williamson GJ, Salimi F, Henderson SB, Turner MR, Bowman DMJS and Johnston FH. (2018) Extensible Database of Validated Biomass Smoke Events for Health Research. Fire (MDPI), https://dx.doi.org/10.3390/fire1030050</abstract>
+    <abstract>The Biomass Smoke Validated Events Database is an open and extensible data collection recording historical spikes in air pollution and validation of whether they were caused by biomass smoke (e.g. from burning vegetation or forest fires). This collection contains validated events of extreme biomass smoke pollution across several major urban centres and smaller regional towns in the Australian States of New South Wales, Western Australia, and Tasmania that are intermittently affected by extreme episodes of biomass smoke. The collection provides researchers with tools that allow them either to add new data, or to use the existing data to study new statistical associations between pollution spikes and health outcomes around those days. Exposure to smoke from biomass burning is a contributor to morbidity and mortality in groups susceptible to the health effects of smoke. Researchers are invited to extend the database with new events or additional data for already identified events. </abstract>
+    <contact>
+      <positionName>CAR Data Team</positionName>
+      <electronicMailAddress>car.data@sydney.edu.au</electronicMailAddress>
+    </contact>
+    <coverage>
+      <geographicCoverage>
+        <geographicDescription>EPSG:3577</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-1886000</westBoundingCoordinate>
+          <eastBoundingCoordinate>2119000</eastBoundingCoordinate>
+          <northBoundingCoordinate>-1100000</northBoundingCoordinate>
+          <southBoundingCoordinate>-4840000</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <taxonomicCoverage>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+        </taxonomicClassification>
+      </taxonomicCoverage>
+    </coverage>
+    <creator>
+      <individualName>
+        <givenName>Ivan</givenName>
+        <surName>Hanigan</surName>
+      </individualName>
+      <userId directory="ORCID">https://orcid.org/0000-0002-6360-6793</userId>
+    </creator>
+    <dataTable>
+      <entityName>storage.sqlite</entityName>
+      <entityDescription>Biomass Smoke database storage/sqlite</entityDescription>
+      <attributeList>
+        <attribute>
+          <attributeName>test</attributeName>
+          <attributeDefinition>testing the attributes</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+    </dataTable>
+    <funding>Originally part of the ARC linkage project on biomass smoke and human health (Bowman, Johnston and Morgan), then developed by Hanigan using CSIRO PhD top-up funds and the ARDC data commons funding.</funding>
+    <personnel>
+      <individualName>
+        <givenName>Ivan</givenName>
+        <surName>Hanigan</surName>
+      </individualName>
+      <organizationName>Curtin University</organizationName>
+      <role>principalInvestigator</role>
+    </personnel>
+    <project id="1"/>
+    <pubDate>NA</pubDate>
+    <publisher>
+      <organizationName>2019-09-25</organizationName>
+    </publisher>
+    <shortName>Biomass_Smoke_Validated_Events</shortName>
+    <title>Biomass_Smoke_Validated_Events</title>
+  </dataset>
+  <additionalMetadata>
+    <metadata>
+      <unitList>https://github.com/swish-climate-impact-assessment/biomass_smoke_events_db</unitList>
+    </metadata>
+  </additionalMetadata>
+</eml:eml>
