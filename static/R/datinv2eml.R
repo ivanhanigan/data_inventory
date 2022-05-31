@@ -1,23 +1,3 @@
-if(!require(EML)) {install.packages("EML"); library(EML)}
-if(!require(cardatdbtools)) {remotes::install_github("cardat/cardatdbtools"); library(cardatdbtools)}
-if(!require(data.table)) {install.packages("data.table"); library(data.table)}
-if(!require(RSQLite)) {install.packages("RSQLite")}; library(RSQLite)
-connect2pg <- FALSE
-if(connect2pg){
-db <- "data_inventory_car"
-username <- "ivan_hanigan"
-hostip <- "swish4.tern.org.au"
-pwd <- getPassword()
-ch <- connect2postgres(db = db, 
-                       user = username, 
-                       hostip = hostip,
-                       p = pwd)
-} else {
-  
-  sqlite <- dbDriver("SQLite")
-  ch <- dbConnect(sqlite,"databases/storage.sqlite")
-  
-}
 
 ######################################################################################################S
 datinv2eml <- function(
@@ -28,7 +8,10 @@ datinv2eml <- function(
     dset_shortname = "Biomass_Smoke_Validated_Events"
     ,
     entity_name = "storage.sqlite"
-    
+    ,
+    show_data_table = FALSE
+    ,
+    datinv_source = "datinv"
 ){
   ls_projs <- dbGetQuery(ch, "select title from project")
   ##ls_projs
@@ -55,10 +38,13 @@ datinv2eml <- function(
   meta_dataset <- meta_dataset[shortname == dset_shortname,]
   ##meta_dataset$geographicdescription
   bbox1 <- strsplit(meta_dataset$boundingcoordinates,split = ",")
-  bbox <- lapply(bbox1, strsplit, " = ")
+  bbox <- lapply(bbox1, strsplit, ":")
+  bbox <- t(rbindlist(bbox))
+  bbox <- gsub(" ","",bbox)
+  ##bbox[which(bbox[,1]=="north"),2]
   coverage <- set_coverage(geographicDescription = meta_dataset$geographicdescription,
-                           north = unlist(bbox[[1]][1])[2], south = unlist(bbox[[1]][2])[2],
-                           east = unlist(bbox[[1]][3])[2], west = unlist(bbox[[1]][4])[2])
+                           north = bbox[which(bbox[,1]=="north"),2], south = bbox[which(bbox[,1]=="south"),2],
+                           east = bbox[which(bbox[,1]=="east"),2], west = bbox[which(bbox[,1]=="west"),2])
   
   meta_rights <- as.data.table(
     dbGetQuery(ch, sprintf(
@@ -102,8 +88,10 @@ from attr where entity_id = ',
       entity$id
     )
   )
+  meta_dataset$pubdate <- ifelse(is.na(meta_dataset$pubdate), Sys.Date(), meta_dataset$pubdate)
   
-  if(nrow(attributes) > 0){ 
+  #### do the EML ####
+  if(show_data_table){ 
   attributes$measurementScale <- "nominal"
   attributes$domain <- "textDomain"
   attributeList <-  set_attributes(attributes)
@@ -111,7 +99,7 @@ from attr where entity_id = ',
     packageId = uuid::UUIDgenerate(),  
     system = "uuid",
     dataset = eml$dataset(
-      id = as.character(meta_dataset$id),
+      id = as.character(paste(datinv_source, meta_dataset$id, sep = "_")),
       shortName = meta_dataset$shortname,
       title = meta_dataset$title,
       creator = creator_info,
@@ -121,6 +109,7 @@ from attr where entity_id = ',
       coverage = coverage,
       intellectualRights = meta_rights$special_conditions,
       publisher = list(organizationName = meta_dataset$publisher),
+      alternateIdentifier = meta_dataset$alternate_identifier,
       dataTable = eml$dataTable(
         entityName = entity$entityname,
         entityDescription = entity$entitydescription,
@@ -149,7 +138,7 @@ from attr where entity_id = ',
       packageId = uuid::UUIDgenerate(),  
       system = "uuid",
       dataset = eml$dataset(
-        id = as.character(meta_dataset$id),
+        id = as.character(paste(datinv_source, meta_dataset$id, sep = "_")),
         shortName = meta_dataset$shortname,
         title = meta_dataset$title,
         creator = creator_info,
@@ -158,7 +147,8 @@ from attr where entity_id = ',
         abstract = meta_dataset$abstract,
         coverage = coverage,
         intellectualRights = meta_rights$special_conditions,
-        publisher = list(organizationName = meta_dataset$publisher)
+        publisher = list(organizationName = meta_dataset$publisher),
+        alternateIdentifier = meta_dataset$alternate_identifier
         
         ,
         project = eml$project(id = as.character(meta_proj$id),
@@ -184,26 +174,3 @@ from attr where entity_id = ',
 }
 
 #########################################################################################3
-my_eml <- datinv2eml(
-    ch = ch
-    , 
-    proj_name = "Biomass_Smoke_Validated_Events" 
-    ,
-    dset_shortname = "Biomass_Smoke_Validated_Events"
-    ,
-    entity_name = "storage.sqlite")
-
-my_eml
-
-dir()
-file_output <- paste0("foo",".xml")
-write_eml(my_eml, file_output)
-
-##dbDisconnect(ch)
-
-eml_record <- as_emld(file_output)
-cat(eml_record$dataset$coverage$geographicCoverage$geographicDescription)
-eml_record$dataset$dataTable$attributeList
-
-eml_record$dataset$dataTable$attributeList[[1]]$attributeName
-eml_record$dataset$dataTable$attributeList[[1]]$attributeDefinition
