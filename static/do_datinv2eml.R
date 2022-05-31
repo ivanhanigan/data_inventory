@@ -31,9 +31,9 @@ my_eml <- datinv2eml(
   ,
   dset_shortname = "AWAP_GRIDS_1900_2015" #"Biomass_Smoke_Validated_Events"
   ,
-  entity_name = "GTif_maxave_1961010119610101.tif" #"storage.sqlite"
+  entity_name = "GTif_{variable}_{daterange}.tif" #"storage.sqlite"
   ,
-  show_data_table = F
+  show_data_table = T
   ,
   datinv_source = "datinv"
   )
@@ -42,7 +42,7 @@ my_eml
 
 dir()
 
-file_output <- paste0("static/foo",".xml")
+file_output <- paste0("static/AWAP_GRIDS_1900_2015",".xml")
 
 write_eml(my_eml, file_output)
 eml_validate(file_output)
@@ -52,5 +52,5 @@ eml_record <- as_emld(file_output)
 cat(eml_record$dataset$coverage$geographicCoverage$geographicDescription)
 eml_record$dataset$dataTable$attributeList
 
-eml_record$dataset$dataTable$attributeList[[1]]$attributeName
-eml_record$dataset$dataTable$attributeList[[1]]$attributeDefinition
+eml_record$dataset$dataTable$attributeList$attribute[[1]]$attributeName
+eml_record$dataset$dataTable$attributeList$attribute[[1]]$attributeDefinition

@@ -13,7 +13,7 @@ datinv2eml <- function(
     ,
     datinv_source = "datinv"
 ){
-  ls_projs <- dbGetQuery(ch, "select title from project")
+  ##ls_projs <- dbGetQuery(ch, "select title from project")
   ##ls_projs
   # retrieve project metadata
   meta_proj <- as.data.table(
