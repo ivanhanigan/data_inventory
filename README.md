@@ -25,9 +25,10 @@
 3. if using the postgres database backend need to use older psycopg2 (to avoid postgres `RuntimeError: No driver of supported ones ('psycopg2',) is available`)
 
 ```
-wget https://bootstrap.pypa.io/get-pip.py
+sudo apt update
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 sudo python2 get-pip.py
-pip2 install psycopg2
+pip2 install psycopg2-binary
 ```
 
 Licence: CC-BY-4.0
