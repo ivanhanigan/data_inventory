@@ -88,7 +88,7 @@ use_janrain(auth, filename='private/janrain.key')
 db.define_table(
     'project',
 Field('title', 'string',
-comment= XML(T('The project places the data into its larger research context.  %s',
+comment= XML(T('Overarching project in format [Organisation]_[Project Title/Theme]_[Project Topic].%s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new')))
 ),
 Field('personnel_data_owner','string', 
@@ -129,8 +129,12 @@ A('More', _href=XML(URL('static','index.html', anchor='sec-2-1-8', scheme=True, 
 ),
 format = '%(title)s' 
 )
-  
+
+# require unique and non-empty title
+db.project.title.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB()]
+# require a project data owner
 db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
+
 #### ONE (project) TO MANY (dataset)
 
 db.define_table(
@@ -167,7 +171,7 @@ Field('boundingcoordinates','string',
 comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add altitudeMinimum, altitudeMax). %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
-Field('taxonomic_coverage','string', comment="List of scientific names."),
+# Field('taxonomic_coverage','string', comment="List of scientific names."),
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
   ),
