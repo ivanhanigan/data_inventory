@@ -89,11 +89,12 @@ db.define_table(
     'project',
 Field('title', 'string',
 comment= XML(T('Overarching project in format [Organisation]_[Project Title/Theme]_[Project Topic].%s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new')))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-1', scheme=True, host=True)), _target='new'))),
+unique=True
 ),
 Field('personnel_data_owner','string', 
 comment= XML(T('This is the data owner (or project originator). It is a compulsory field.  %s',
-A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new')))
+A('More', _href=XML(URL('static','index.html',  anchor='sec-2-1-2', scheme=True, host=True)), _target='new'))),
 ),
 Field('personnel_owner_organisationname','string', 
 comment= XML(T('This is the data owner organisation. %s',
@@ -131,7 +132,7 @@ format = '%(title)s'
 )
 
 # require unique and non-empty title
-db.project.title.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB()]
+db.project.title.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, 'project.title')]
 # require a project data owner
 db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
 
@@ -139,6 +140,7 @@ db.project.personnel_data_owner.requires = IS_NOT_EMPTY()
 
 db.define_table(
     'dataset',
+    ## title, personnel, identification of dataset
     Field('project_id',db.project),
 Field('shortname','string', comment = XML(T('A concise name, eg. vernal-data-1999. %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-1', scheme=True, host=True)),  _target='new')))
@@ -147,22 +149,19 @@ Field('title','string', comment = XML(T('Structure eg: project, data type, locat
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
 ),
 Field('creator','string', comment='The name of the person, organization, or position who created the data'),
-Field('contact','string', comment = 'A contact name for general enquiries.  This field defaults to creator.'),
+Field('contact','string', comment = 'A contact name for general enquiries.', default = "CARDAT Data Team"),
 Field('contact_email','string', comment = 'An email address for general enquiries.'),
-Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
-Field('additional_metadata' ,'string', comment="Any additional metadata such as folder path or URL links to related webpages."),
-Field('alternate_identifier' ,'string', comment = XML(T('An additional, secondary identifier for this entity, possibly from different data management systems. This might be a DOI, or other persistent URL. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
-Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
-Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
-Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
-Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
-Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
-Field('methods_protocol' , 'text', comment = XML(T('The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps). %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-9', scheme=True, host=True)))))),
-Field('sampling_desc' ,'text', comment = XML(T('Similar to a description of sampling procedures found in the methods section of a journal article. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-10', scheme=True, host=True)))))),
-Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
 Field('associated_party','text', comment = XML(T('A person, organisational role or organisation who has had an important role in the creation or maintenance of the data (i.e. parties who grant access to survey sites as landholder or land manager, or may have provided funding for the surveys). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))
   ),
+Field('additional_metadata' ,'string', comment="Folder path from Environment_General or ResearchProjects_CAR. Any additional metadata such as folder path or URL links to related webpages."),
+Field('alternate_identifier' ,'string', comment = XML(T('URL link or DOI. An additional, secondary identifier for this entity, possibly from different data management systems. This might be a DOI, or other persistent URL. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+Field('recommended_citation', 'text', comment="For example: 1. Creator (Publication Year): Title. Publisher. Identifier. 2. Creator (Publication Year): Title. Publisher. Date retrieved from website (URL). 3. Creator (Publication Year): Title. Publisher. Date received from data provider (name, role or organisation)."),
+
+  ## description of data contained
+Field('abstract','text', comment = XML(T('A brief overview of the resource that is being documented. The abstract should include basic information that summarizes the study/data. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2', scheme=True, host=True)))))),
+Field('studyextent' ,'text', comment="Both a specific sampling area and frequency (temporal boundaries, frequency of occurrence, spatial extent and spatial resolution)."),
+# spatial
 Field('geographicdescription','string',
 comment = XML(T('A general description of the geographic area in which the data were collected. This can be a simple place name (e.g. Kakadu National Park). %s',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
@@ -172,6 +171,16 @@ comment = XML(T('bounding coordinates in order N, S, E, W (Optionally also add a
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2', scheme=True, host=True)))))     
 ),
 # Field('taxonomic_coverage','string', comment="List of scientific names."),
+# temporal
+Field('temporalcoverage_daterange','string', comment = "A text description of the temporal range that events were observed on"),
+Field('temporalcoverage_begindate','date', comment="A begin date.  The dates that events were observed on."),
+Field('temporalcoverage_enddate','date', comment="A end date. The dates that events were observed on."),
+
+# how data collected/created
+Field('methods_protocol' , 'text', comment = XML(T('The protocol field is used to either reference a protocol citation or describe the methods that were prescribed to define a study or dataset. Note that the protocol is intended to be used to document a prescribed procedure which may or may not have been performed (see Method Steps). %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-9', scheme=True, host=True)))))),
+Field('sampling_desc' ,'text', comment = XML(T('Similar to a description of sampling procedures found in the methods section of a journal article. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-10', scheme=True, host=True)))))),
+Field('method_steps','text', comment=XML(T('EACH method step to implement the measurement protocols and set up the study. Note that the method is used to describe procedures that were actually performed. The method may have diverged from the protocol purposefully, or perhaps incidentally, but the procedural lineage is still preserved and understandable. %s', A('More', _href=XML(URL('static', 'index.html',  anchor='sec-5-2-11', scheme=True, host=True)))))),
+# other
 Field('additionalinfo','string', comment = XML(T('Any information that is not characterised well by EML metadata. Example is a group id for grouping datasets apart from EML-project (such as a funding stream, or a particular documentation such as provision agreement). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-5-2-15', scheme=True, host=True)),  _target='new')))
   ),
@@ -179,21 +188,30 @@ Field('publisher','string',
 comment = XML(T('The publisher of this data set (e.g. repository, publishing house, any institution making the data available). %s.',
 A('More', _href=XML(URL('static','index.html',  anchor='sec-2-2-18', scheme=True, host=True)), _target='new')))     
 ),
-Field('pubdate','date'),
+
+# sharing
 Field('access_rules','text', comment = "The eml-access module describes the level of access that is to be allowed or denied to a resource for a particular user or group of users"),
 Field('distribution_methods','text', comment = "The methods of distribution used for others to access the software, data, and documentation."),
 Field('metadataprovider','string', comment = 'The name of the person who produced the metadata.'),
-Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
-Field('provision_date','date', comment = 'The date provided.'),
+
+# publication process
 Field('request_notes','text', comment = 'Any relevant information regarding this data provision request.'),
 Field('request_date','date', comment = 'Date provision requested.'),
+Field('provision_status','string', comment = 'The status of this data provision (Identified, Requested or Provided).'),
+Field('provision_date','date', comment = 'The date provided.'),
+Field('pubdate','date'),
 format = '%(shortname)s'
     )
+
+# require unique and non-empty title
+db.dataset.shortname.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, 'dataset.shortname')]
+db.dataset.title.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, 'dataset.title')]
 
 db.dataset.contact_email.requires = [IS_EMAIL()]
 db.dataset.creator.requires = [IS_NOT_EMPTY()]
 db.dataset.provision_status.requires = IS_IN_SET(['','Identified', 'Requested', 'Provided', 'QC', 'Published'])      
 # db.dataset.metadataprovider.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'dataset.metadataprovider')]
+
 #### ONE (dataset) TO MANY (entity)
   
 db.define_table(
