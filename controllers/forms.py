@@ -2,9 +2,30 @@
 response.menu = [['2024 Experimental Inventory', False, URL('data_inventory','default','index')],
                  ['Manage Projects', False, URL('manage_projects')],
                  ['Manage Datasets', False, URL('manage_datasets')],
-                 ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
-                 ['Set Access to a Dataset', False, URL('access_dataset')],
+                 # ['Manage Accessors or Groups', False, URL('manage_accessors_or_groups')],
+                 # ['Set Access to a Dataset', False, URL('access_dataset')],
+                 ['Manage Access Requests', False, URL('access_requests')],
                  ['Documentation', False, XML(URL('static','index.html', scheme=True, host=True))]]
+                 
+def access_requests():
+  
+    grid = SQLFORM.smartgrid(db.accessrequest,#linked_tables=['dataset', 'entity', 'publication', 'intellectualright', 'attr','accessrequest', 'authorship_approval'
+                                                      #],
+                             fields = [db.accessrequest.title, 
+                             # db.accessrequest.description,
+                             db.accessrequest.primary_purpose,
+                             # db.accessrequest.output_status,
+                             db.accessrequest.name,
+                             # db.accessrequest.contact,
+                             # db.accessrequest.contact_email,
+                             db.accessrequest.begin_date
+                             # ,
+                             # db.accessrequest.end_date
+                             ],
+                             user_signature=True,maxtextlength =200, csv=False, paginate=50)
+    return dict(grid=grid)
+
+  
 def access_dataset():
     form = SQLFORM.factory(
         Field('accessdataset_id',requires=IS_IN_DB(db,db.accessdataset.id,'%(name)s')),
@@ -48,8 +69,8 @@ def manage_projects():
 
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
+                                       # db.accessrequest.accessdataset_id, 
+                                       # db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
 
                                        db.intellectualright.licence_code,
@@ -71,8 +92,8 @@ def manage_datasets():
                                        db.dataset.contact_email,
                                        db.entity.entityname, db.entity.entitydescription, db.entity.physical_distribution,
                                        db.attr.variable_name, db.attr.variable_definition,
-                                       db.accessrequest.accessdataset_id, 
-                                       db.accessrequest.dataset_id,
+                                       # db.accessrequest.accessdataset_id, 
+                                       # db.accessrequest.dataset_id,
                                        db.accessrequest.title, 
                                        db.keyword.keyword,
                                        db.intellectualright.licence_code,

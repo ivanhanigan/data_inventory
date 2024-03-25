@@ -243,47 +243,65 @@ db.define_table(
     Field('units', 'string', comment = 'Standard Unit of Measurement'),
     Field('value_labels', 'string', comment = 'Labels for levels of a factor.  For example a=bud, b=flower, c=fruiting')      
     )
+    
+#### USER ACCESS TO DATASETS ####
 #### accessdatasets
   
-db.define_table(
-    'accessdataset',
-    Field('name','string',
-comment= XML(T('A person or group. Keep this to a short (two or three word) title as it is used to specify access requests in the acessrequest table). %s',    
-    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
-    ),
-    Field('email'),
-    Field('bio', 'string', comment = "A short description of this person/group."),
-    format = '%(name)s'
-    )
-db.accessdataset.name.requires = IS_NOT_EMPTY()
-db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
+# db.define_table(
+#     'accessdataset',
+#     Field('name','string',
+# comment= XML(T('A person or group. Keep this to a short (two or three word) title as it is used to specify access requests in the acessrequest table). %s',    
+#     A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+#     ),
+#     Field('email'),
+#     Field('bio', 'string', comment = "A short description of this person/group."),
+#     format = '%(name)s'
+#     )
+# db.accessdataset.name.requires = IS_NOT_EMPTY()
+# db.accessdataset.email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
 #### MANY (accessors) TO MANY (accessdataset members)
 
-db.define_table(
-    'accessor',
-    Field('accessdataset_id',db.accessdataset),
-    Field('name'),
-    Field('email'),
-    Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
-    Field('role_description', 'text', comment = "Description of the role."),
-    Field('begin_date', 'date', comment = "Access granted on this date"),
-    Field('end_date', 'date', comment = "Access revoked on this date"),
-    format = '%(name)s'
-    )
-db.accessor.email.requires = [IS_EMAIL()]
+# db.define_table(
+#     'accessor',
+#     Field('accessdataset_id',db.accessdataset),
+#     Field('name'),
+#     Field('email'),
+#     Field('role', 'string', comment = "The role that this person will have in the project, specifically in relation to the data."),
+#     Field('role_description', 'text', comment = "Description of the role."),
+#     Field('begin_date', 'date', comment = "Access granted on this date"),
+#     Field('end_date', 'date', comment = "Access revoked on this date"),
+#     format = '%(name)s'
+#     )
+# db.accessor.email.requires = [IS_EMAIL()]
 # , IS_NOT_IN_DB(db, 'accessor.email')]
 #### MANY (datasets) TO MANY (accessors)
 
 db.define_table(
     'accessrequest',
-    Field('dataset_id',db.dataset),
-    Field('accessdataset_id',db.accessdataset),
+    # Field('dataset_id',db.dataset),
+    # Field('accessdataset_id',db.accessdataset),
     Field('title', 'string', comment = "A short (two or three word) title of the project for which the data are to be used"),
     Field('description', 'text', comment = "A description of the project for which the data are to be used. Include description of any ethics committee approvals and the intended publication strategy."),
+    Field('primary_purpose', 'string', comment = ""),
+    Field('output_status', 'string', comment = ""),
+    Field('name','string', comment= XML(T('A person or group. Keep this to a short (two or three word) title as it is used to specify access requests in the acessrequest table). %s',
+    A('More', _href=XML(URL('static','index.html',  anchor='sec-5-3-4', scheme=True, host=True)))))
+    ),
+    Field('contact','string',
+comment= "Person to contact (if name is a group or has nominated different person to contact)."),
+    Field('contact_email', 'string', comment = "Email of contact (or name if no other contact)."),
     Field('begin_date', 'date', comment = "Access granted on this date"),
     Field('end_date', 'date', comment = "Access revoked on this date"),
-    format = '%(title)s %(accessdataset_id)s -> %(dataset_id)s'
+    format = '%(title)s'# %(accessdataset_id)s -> %(dataset_id)s'
     )
+
+db.accessrequest.title.requires = [IS_NOT_EMPTY()]    
+db.accessrequest.contact_email.requires = [IS_EMAIL(), IS_NOT_EMPTY()]
+db.accessrequest.name.requires = [IS_NOT_EMPTY()]
+db.accessrequest.primary_purpose.requires = IS_IN_SET(['', 'Research','Government', 'Teaching', 'Education (postgraduate)', 'Education (undergraduate)', 'Commercial/Industry', 'Other'])
+db.accessrequest.output_status.requires = IS_IN_SET(['', 'Unknown (lapsed)', 'No output', 'Pending', 'Completed'])
+
+
 #### MANY (keywords) TO one (dataset)
 
 db.define_table(
